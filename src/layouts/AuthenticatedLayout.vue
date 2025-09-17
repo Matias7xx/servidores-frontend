@@ -2,19 +2,19 @@
   <div class="min-h-screen bg-gray-100 flex flex-col">
     <!-- Navbar -->
     <Navbar @toggle-sidebar="toggleSidebar" />
-    
+
     <!-- Layout com Sidebar -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
       <Sidebar :is-collapsed="isSidebarCollapsed" />
-      
+
       <!-- Main Content -->
       <div class="flex-1 flex flex-col min-h-0">
         <main class="flex-1 p-2 sm:p-4 overflow-auto">
           <!-- Conteúdo dinâmico das páginas -->
           <router-view />
         </main>
-        
+
         <!-- Footer -->
         <Footer />
       </div>

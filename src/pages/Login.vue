@@ -1,22 +1,30 @@
 <template>
   <div class="min-h-screen flex flex-col sm:justify-center items-center pt-4 sm:pt-0 px-4 sm:px-6 bg-gradient-to-b from-gray-50 to-gray-200">
-        
+
     <!-- Logo e título -->
     <div class="relative z-10 mb-6 sm:mb-8 flex flex-col items-center">
-      <img 
-        src="/img/logo-pc.png" 
-        alt="Logo PCPB" 
+      <img
+        src="/img/logo-pc.png"
+        alt="Logo PCPB"
         class="w-24 sm:w-32 lg:w-40 h-auto drop-shadow-lg flex-shrink-0"
       />
-      
+
       <div class="mt-2 sm:mt-3 text-center">
-        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Nome do Sistema</h1>
+        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Recursos Humanos | Servidor</h1>
+        <p class="text-sm text-gray-600">Polícia Civil da Paraíba</p>
       </div>
     </div>
 
     <!-- Card de Login -->
-    <div class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-gray-200">      
-      
+    <div class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-gray-200">
+
+      <!-- Mensagens de erro gerais -->
+      <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+        <div class="text-sm text-red-600">
+          {{ errors.general[0] }}
+        </div>
+      </div>
+
       <!-- Mensagem de status -->
       <div v-if="status" class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 rounded-lg text-green-700 text-sm">
         {{ status }}
@@ -36,12 +44,13 @@
             </div>
             <input
               id="matricula"
+              ref="matriculaInput"
               v-model="form.matricula"
               type="text"
               :class="[
                 'pl-10 pr-4 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
-                errors.matricula 
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                errors.matricula
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:border-[#c1a85a] focus:ring-[#c1a85a]'
               ]"
               required
@@ -49,10 +58,12 @@
               placeholder="Informe sua Matrícula"
               maxlength="7"
               minlength="7"
+              :disabled="isLoading"
+              @input="clearFieldError('matricula')"
             />
           </div>
           <div v-if="errors.matricula" class="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
-            {{ errors.matricula }}
+            {{ Array.isArray(errors.matricula) ? errors.matricula[0] : errors.matricula }}
           </div>
         </div>
 
@@ -69,20 +80,28 @@
             </div>
             <input
               id="password"
+              ref="passwordInput"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               :class="[
                 'pl-10 pr-10 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
-                errors.password 
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                errors.password
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:border-[#c1a85a] focus:ring-[#c1a85a]'
               ]"
               required
               placeholder="••••••••"
+              :disabled="isLoading"
+              autocomplete="current-password"
+              @input="clearFieldError('password')"
+              @keydown="checkCapsLock"
+              @keyup="checkCapsLock"
+              @focus="checkCapsLock"
+              @blur="capsLockOn = false"
             />
-            <button 
-              type="button" 
-              @click="togglePasswordVisibility" 
+            <button
+              type="button"
+              @click="togglePasswordVisibility"
               class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
             >
               <svg v-if="showPassword" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,18 +113,27 @@
               </svg>
             </button>
           </div>
+
+          <!-- Aviso de Caps Lock -->
+          <div v-if="capsLockOn" class="mt-1 sm:mt-2 flex items-center text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 rounded-md border border-amber-200">
+            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span>Caps Lock está ativo</span>
+          </div>
+
           <div v-if="errors.password" class="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
-            {{ errors.password }}
+            {{ Array.isArray(errors.password) ? errors.password[0] : errors.password }}
           </div>
         </div>
 
         <!-- Lembrar-me -->
         <div class="flex items-center">
-          <input 
+          <input
             id="remember"
-            v-model="form.remember" 
-            type="checkbox" 
-            class="rounded border-gray-300 h-4 w-4 text-[#c1a85a] focus:ring-[#c1a85a]" 
+            v-model="form.remember"
+            type="checkbox"
+            class="rounded border-gray-300 h-4 w-4 text-[#c1a85a] focus:ring-[#c1a85a]"
           />
           <label for="remember" class="ml-2 text-sm text-gray-600">Lembrar-me</label>
         </div>
@@ -113,21 +141,21 @@
         <!-- Botões de ação -->
         <div class="flex flex-col space-y-3 sm:space-y-4">
           <!-- Botão de Login -->
-          <button 
+          <button
             type="submit"
             :class="[
               'w-full flex items-center justify-center space-x-2 px-6 py-2 sm:py-3 bg-[#c1a85a] text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c1a85a] transition-all duration-200 text-sm sm:text-base',
-              isLoading 
-                ? 'opacity-75 cursor-not-allowed' 
-                : 'hover:bg-[#c1a85a] hover:shadow-lg transform hover:-translate-y-0.5'
+              isLoading
+                ? 'opacity-75 cursor-not-allowed'
+                : 'hover:bg-[#a8924e] hover:shadow-lg transform hover:-translate-y-0.5'
             ]"
             :disabled="isLoading"
           >
             <!-- Spinner de loading -->
-            <svg 
-              v-if="isLoading" 
-              class="animate-spin h-4 w-4 text-white" 
-              fill="none" 
+            <svg
+              v-if="isLoading"
+              class="animate-spin h-4 w-4 text-white"
+              fill="none"
               viewBox="0 0 24 24"
             >
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -137,17 +165,17 @@
           </button>
 
           <!-- Link Esqueci a senha -->
-          <button 
+          <!-- <button
             type="button"
             class="text-sm text-gray-600 hover:text-[#c1a85a] underline transition-colors duration-200 text-center"
             @click="handleForgotPassword"
           >
             Esqueceu sua senha?
-          </button>
+          </button> -->
         </div>
       </form>
     </div>
-    
+
     <!-- Rodapé -->
     <div class="mt-4 sm:mt-8 text-center px-4">
       <div class="text-xs sm:text-sm text-gray-600">
@@ -159,12 +187,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-
-// Composables
-const router = useRouter()
-const authStore = useAuthStore()
+import api from '../services/api'
 
 // Estado reativo
 const form = reactive({
@@ -173,59 +196,142 @@ const form = reactive({
   remember: false
 })
 
-const errors = reactive({})
+const errors = ref({})
 const status = ref('')
 const isLoading = ref(false)
 const showPassword = ref(false)
+const capsLockOn = ref(false)
 const currentYear = new Date().getFullYear()
 
 // Refs dos elementos
-const logoRef = ref(null)
-const cardRef = ref(null)
+const matriculaInput = ref(null)
+const passwordInput = ref(null)
 
 // Métodos
+const clearFieldError = (field) => {
+  if (errors.value[field]) {
+    delete errors.value[field]
+  }
+  if (errors.value.general) {
+    delete errors.value.general
+  }
+}
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
 
+const checkCapsLock = (event) => {
+  if (event.getModifierState) {
+    capsLockOn.value = event.getModifierState('CapsLock')
+  }
+}
+
 const validateForm = () => {
-  // Limpar erros anteriores
-  Object.keys(errors).forEach(key => delete errors[key])
-  
+  const newErrors = {}
+
   if (!form.matricula || form.matricula.length !== 7) {
-    errors.matricula = 'A matrícula deve ter exatamente 7 caracteres'
+    newErrors.matricula = 'A matrícula deve ter exatamente 7 caracteres'
   }
-  
+
   if (!form.password || form.password.length < 6) {
-    errors.password = 'A senha deve ter pelo menos 6 caracteres'
+    newErrors.password = 'A senha deve ter pelo menos 6 caracteres'
   }
-  
-  return Object.keys(errors).length === 0
+
+  errors.value = newErrors
+  return Object.keys(newErrors).length === 0
 }
 
 const handleSubmit = async () => {
   if (!validateForm()) return
-  
+
   isLoading.value = true
   status.value = ''
-  
+  errors.value = {}
+
   try {
-    await authStore.login({
-      matricula: form.matricula,
-      password: form.password,
-      remember: form.remember
+    console.log('Iniciando login...', form)
+
+    const csrfResponse = await fetch('/login', {
+      method: 'GET',
+      credentials: 'include'
     })
-    
-    status.value = 'Login realizado com sucesso!'
-    
-    // O router guard vai redirecionar automaticamente
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
-    
+
+    if (!csrfResponse.ok) {
+      throw new Error('Erro ao obter token CSRF')
+    }
+
+    const csrfHtml = await csrfResponse.text()
+    const csrfMatch = csrfHtml.match(/<meta name="csrf-token" content="([^"]+)"/)
+
+    if (!csrfMatch) {
+      throw new Error('Token CSRF não encontrado')
+    }
+
+    const csrfToken = csrfMatch[1]
+    console.log('Token CSRF obtido:', csrfToken.substring(0, 10) + '...')
+
+    // Fazer o login
+    const formData = new FormData()
+    formData.append('matricula', form.matricula.trim())
+    formData.append('password', form.password)
+    formData.append('_token', csrfToken)
+    if (form.remember) {
+      formData.append('remember', '1')
+    }
+
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json',
+      },
+      credentials: 'include',
+      body: formData
+    })
+
+    console.log('Response status:', response.status)
+
+    if (response.ok || response.status === 302) {
+      /* status.value = 'Login realizado com sucesso!' */
+
+      // Não redirecionar! Apenas recarregar a página atual do Vue
+      // O proxy vai manter a sessão e o Vue vai detectar que está autenticado
+      setTimeout(() => {
+        // Usar router para navegar para home em vez de reload
+        window.location.href = '/'
+      }, 1000)
+
+    } else {
+      // Tratar erros
+      const contentType = response.headers.get('content-type')
+      let data
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        data = { message: 'Erro desconhecido' }
+      }
+
+      console.log('Response data:', data)
+
+      if (response.status === 422 && data.errors) {
+        errors.value = data.errors
+      } else if (response.status === 401) {
+        errors.value = { general: ['Matrícula ou senha incorretos.'] }
+      } else if (response.status === 419) {
+        errors.value = { general: ['Erro de segurança. Tente novamente.'] }
+      } else {
+        errors.value = { general: ['Erro no servidor. Tente novamente.'] }
+      }
+
+      form.password = ''
+    }
+
   } catch (error) {
     console.error('Erro no login:', error)
-    status.value = 'Erro ao realizar login. Verifique suas credenciais.'
+    form.password = ''
+    errors.value = { general: ['Erro de conexão. Verifique se o servidor Laravel está rodando.'] }
   } finally {
     isLoading.value = false
   }
@@ -233,19 +339,13 @@ const handleSubmit = async () => {
 
 const handleForgotPassword = () => {
   // Implementar lógica de esqueci minha senha
-  alert('Implementar funcionalidade de recuperação de senha')
+  alert('Entre em contato com o suporte para recuperação de senha.')
 }
 
-// Animações de entrada
 onMounted(() => {
-  // Animação simples
-  const elements = document.querySelectorAll('[data-animate]')
-  elements.forEach((el, index) => {
-    setTimeout(() => {
-      el.style.opacity = '1'
-      el.style.transform = 'translateY(0)'
-    }, index * 100)
-  })
+  if (matriculaInput.value) {
+    matriculaInput.value.focus()
+  }
 })
 </script>
 
@@ -269,7 +369,7 @@ button, a {
 /* Visual para campos de formulário */
 input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.25);
+  box-shadow: 0 0 0 2px rgba(193, 168, 90, 0.25);
 }
 
 /* Responsividade */
@@ -285,7 +385,7 @@ input:focus {
   a {
     transition-duration: 0.01ms !important;
   }
-  
+
   .animate-spin {
     animation: none;
   }

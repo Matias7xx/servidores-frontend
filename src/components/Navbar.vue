@@ -9,19 +9,19 @@
           <div class="logo-container">
             <div class="logo-text">
               <span class="text-lg font-semibold">
-                Sistema 
-                <span class="text-[#c1a85a]">|</span> 
-                PCPB
+                Recursos Humanos
+                <span class="text-[#c1a85a]">|</span>
+                Servidor
               </span>
             </div>
             <div class="logo-tagline hidden md:block">
-              <small class="text-gray-400 text-sm">Nome do Sistema</small>
+              <small class="text-gray-400 text-sm">Polícia Civil da Paraíba</small>
             </div>
           </div>
         </a>
-        
+
         <!-- Botão Toggle Sidebar -->
-        <button 
+        <button
           @click="$emit('toggle-sidebar')"
           class="btn btn-link ml-4 lg:ml-6 bg-black text-white hover:text-gray-300 transition-colors"
           type="button"
@@ -38,37 +38,39 @@
       <!-- Perfil do usuário -->
       <div class="relative">
         <div class="dropdown">
-          <button 
+          <button
             @click="toggleDropdown"
             class="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none"
             type="button"
           >
-            <span class="mr-2 hidden sm:inline">Usuário</span>
+            <span class="mr-2 hidden sm:inline" v-if="authStore.user?.name">{{ authStore.user.name }}</span>
+            <span v-else class="mr-2 hidden sm:inline">Usuário</span>
+
             <svg class="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
             </svg>
             <!-- Setinha do dropdown -->
-            <svg 
+            <svg
               :class="[
                 'w-4 h-4 transition-transform duration-200',
                 isDropdownOpen ? 'rotate-180' : ''
               ]"
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
-          
+
           <!-- Dropdown Menu -->
-          <div 
+          <div
             v-show="isDropdownOpen"
             @click.away="closeDropdown"
             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
           >
-            <a 
-              href="#" 
+            <a
+              href="#"
               @click="handleLogout"
               class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
             >

@@ -1,18 +1,22 @@
-import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+  plugins: [vue()],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    proxy: {
+      // Proxy para API e autenticação do Laravel
+      '/login': 'http://localhost:8092',
+      '/logout': 'http://localhost:8092',
+      '/api': 'http://localhost:8092',
+      '/sanctum': 'http://localhost:8092',
+    }
+  },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
+      '@': '/src'
+    }
+  }
 })
