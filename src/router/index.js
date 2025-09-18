@@ -6,7 +6,12 @@ import Login from '../pages/Login.vue'
 
 //views para integrar com Laravel
 const Home = () => import('../pages/Home.vue')
-const InformacoesPessoais = () => import('../pages/InformacoesPessoais.vue')
+const InformacoesPessoais = () => import('../pages/pessoais/InformacoesPessoais.vue')
+const DependentesLista = () => import('../pages/dependentes/DependentesLista.vue')
+const DependentesCreate = () => import('../pages/dependentes/DependentesCreate.vue')
+const DependentesEdit = () => import('../pages/dependentes/DependentesEdit.vue')
+const DependentesInativos = () => import('../pages/dependentes/DependentesInativos.vue')
+
 
 const routes = [
   {
@@ -34,6 +39,42 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: 'Informações Pessoais - PCPB'
+    }
+  },
+  {
+    path: '/dependentes',
+    name: 'dependentes',
+    component: DependentesLista,
+    meta: {
+      requiresAuth: true,
+      title: 'Dependentes - PCPB'
+    }
+  },
+  {
+    path: '/dependentes/create',
+    name: 'dependentes_create',
+    component: DependentesCreate,
+    meta: {
+      requiresAuth: true,
+      title: 'Cadastrar Dependente - PCPB'
+    }
+  },
+  {
+    path: '/dependentes/edit/:id',
+    name: 'dependentes_edit',
+    component: DependentesEdit,
+    meta: {
+      requiresAuth: true,
+      title: 'Editar Dependente - PCPB'
+    }
+  },
+  {
+    path: '/dependentes/inativos',
+    name: 'dependentes_inativos',
+    component: DependentesInativos,
+    meta: {
+      requiresAuth: true,
+      title: 'Dependentes Inativos - PCPB'
     }
   },
   {

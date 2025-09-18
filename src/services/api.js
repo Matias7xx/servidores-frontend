@@ -3,7 +3,6 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: '/', // URL relativa, vai usar o proxy
   headers: {
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
     'X-Requested-With': 'XMLHttpRequest'
   },
@@ -24,6 +23,11 @@ api.interceptors.request.use(async (config) => {
     }
   }
 
+  // Se não for FormData, definir Content-Type como JSON
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json'
+  }
+
   return config
 })
 
@@ -31,6 +35,18 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Debug do erro
+    console.error('API Error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+      config: {
+        method: error.config?.method,
+        url: error.config?.url,
+        headers: error.config?.headers
+      }
+    })
+
     if (error.response?.status === 419) {
       console.log('Token CSRF expirado')
       alert('Sessão expirada. A página será recarregada.')

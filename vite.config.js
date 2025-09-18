@@ -12,6 +12,7 @@ export default defineConfig({
       '/logout': 'http://localhost:8092',
       '/api': 'http://localhost:8092',
       '/sanctum': 'http://localhost:8092',
+      '/storage': 'http://localhost:8092'
     }
   },
   resolve: {

@@ -631,7 +631,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { servidorService } from '../services/servidorService'
+import { servidorService } from '@/services/servidorService'
 
 // Estado local
 const loading = ref(true)
