@@ -82,7 +82,6 @@
                     <option value="">Selecione</option>
                     <option value="Cônjuge">Cônjuge</option>
                     <option value="Filho(a)">Filho(a)</option>
-                    <option value="Afilhado(a)">Afilhado(a)</option>
                     <option value="Pai">Pai</option>
                     <option value="Mãe">Mãe</option>
                   </select>
