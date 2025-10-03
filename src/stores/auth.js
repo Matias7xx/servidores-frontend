@@ -58,8 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.post('/login', formData)
 
       if (response.data.success) {
-        isAuthenticated.value = true
-        user.value = response.data.user
+        await initAuth() // Busca o User com todos os dados, incluindo foto
         console.log('✅ Login bem-sucedido')
         return { success: true }
       }

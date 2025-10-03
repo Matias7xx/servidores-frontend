@@ -45,22 +45,47 @@
           <button
             @click="toggleDropdown"
             @keydown.escape="closeDropdown"
-            class="flex items-center text-white hover:text-gray-300 transition-colors p-2 rounded focus:outline-none"
+            class="flex items-center text-white hover:text-gray-300 transition-colors p-2 rounded focus:outline-none group"
             type="button"
             :aria-expanded="isDropdownOpen"
             aria-haspopup="true"
             aria-label="Menu do usuário"
           >
-            <span class="mr-2 hidden sm:inline" v-if="authStore.user?.name">{{ authStore.user.name }}</span>
-            <span v-else class="mr-2 hidden sm:inline">Usuário</span>
+            <span class="mr-3 hidden sm:inline font-medium" v-if="authStore.user?.name">
+              {{ authStore.user.name }}
+            </span>
+            <span v-else class="mr-3 hidden sm:inline font-medium">Usuário</span>
 
-            <svg class="w-6 h-6 mr-1" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
-            </svg>
+            <!-- FOTO DO SERVIDOR -->
+            <div class="relative">
+              <img
+                v-if="authStore.user?.foto"
+                :src="authStore.user.foto"
+                alt="Foto do servidor"
+                class="w-14 h-14 rounded-full object-cover border-2 border-gray-600 group-hover:border-gray-400 transition-all shadow-lg"
+                @error="handleImageError"
+              />
 
+              <!-- ÍCONE DE USER COMO FALLBACK -->
+              <div
+                v-else
+                class="w-12 h-12 rounded-full bg-gray-700 border-2 border-gray-600 group-hover:border-gray-400 flex items-center justify-center transition-all shadow-lg"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-300"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Seta dropdown -->
             <svg
               :class="[
-                'w-4 h-4 transition-transform duration-200',
+                'w-4 h-4 ml-2 transition-transform duration-200',
                 isDropdownOpen ? 'rotate-180' : ''
               ]"
               fill="none"
@@ -122,6 +147,14 @@ const toggleDropdown = () => {
 
 const closeDropdown = () => {
   isDropdownOpen.value = false
+}
+
+const handleImageError = () => {
+  console.warn('Erro ao carregar foto do servidor')
+  // Remove a foto para exibir o ícone padrão
+  if (authStore.user) {
+    authStore.user.foto = null
+  }
 }
 
 const handleLogout = async () => {
