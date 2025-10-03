@@ -15,12 +15,13 @@ export const useDependentesStore = defineStore('dependentes', () => {
     try {
       const response = await dependentesService.getDependentes()
       if (response.success) {
-        dependentes.value = response.data
+        dependentes.value = response.data.dependentes || []
       } else {
         error.value = response.message
       }
     } catch (err) {
       error.value = err.message || 'Erro ao carregar dependentes'
+      console.error('Erro ao carregar dependentes:', err)
     } finally {
       loading.value = false
     }
@@ -33,12 +34,13 @@ export const useDependentesStore = defineStore('dependentes', () => {
     try {
       const response = await dependentesService.getDependentesInativos()
       if (response.success) {
-        dependentesInativos.value = response.data
+        dependentesInativos.value = response.data.dependentes || []
       } else {
         error.value = response.message
       }
     } catch (err) {
       error.value = err.message || 'Erro ao carregar dependentes inativos'
+      console.error('Erro ao carregar dependentes inativos:', err)
     } finally {
       loading.value = false
     }
@@ -51,15 +53,19 @@ export const useDependentesStore = defineStore('dependentes', () => {
     try {
       const response = await dependentesService.createDependente(dados)
       if (response.success) {
-        await carregarDependentes() // Recarregar lista
-        return true
+        await carregarDependentes()
+        return { success: true, message: response.message }
       } else {
         error.value = response.message
-        return false
+        return { success: false, message: response.message }
       }
     } catch (err) {
       error.value = err.message || 'Erro ao criar dependente'
-      return false
+      return {
+        success: false,
+        error: err,
+        message: err.response?.data?.message || 'Erro ao criar dependente'
+      }
     } finally {
       loading.value = false
     }
@@ -72,58 +78,62 @@ export const useDependentesStore = defineStore('dependentes', () => {
     try {
       const response = await dependentesService.updateDependente(dados)
       if (response.success) {
-        await carregarDependentes() // Recarregar lista
-        return true
+        await carregarDependentes()
+        return { success: true, message: response.message }
       } else {
         error.value = response.message
-        return false
+        return { success: false, message: response.message }
       }
     } catch (err) {
       error.value = err.message || 'Erro ao atualizar dependente'
-      return false
+      return {
+        success: false,
+        error: err,
+        message: err.response?.data?.message || 'Erro ao atualizar dependente'
+      }
     } finally {
       loading.value = false
     }
   }
 
-  const inativarDependente = async (id) => {
+  const inativarDependente = async (id, matricula) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await dependentesService.inativarDependente(id)
+      const response = await dependentesService.inativarDependente(id, matricula)
       if (response.success) {
-        await carregarDependentes() // Recarregar lista
-        return true
+        await carregarDependentes()
+        return { success: true, message: response.message }
       } else {
         error.value = response.message
-        return false
+        return { success: false, message: response.message }
       }
     } catch (err) {
       error.value = err.message || 'Erro ao inativar dependente'
-      return false
+      return { success: false, error: err }
     } finally {
       loading.value = false
     }
   }
 
-  const reativarDependente = async (id) => {
+  const reativarDependente = async (id, matricula) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await dependentesService.reativarDependente(id)
+      const response = await dependentesService.reativarDependente(id, matricula)
       if (response.success) {
-        await carregarDependentesInativos() // Recarregar lista de inativos
-        await carregarDependentes() // Recarregar lista de ativos
-        return true
+        await carregarDependentesInativos()
+        await carregarDependentes()
+        return { success: true, message: response.message }
       } else {
         error.value = response.message
-        return false
+        return { success: false, message: response.message }
       }
     } catch (err) {
       error.value = err.message || 'Erro ao reativar dependente'
-      return false
+      return { success: false, error: err }
     } finally {
       loading.value = false
     }

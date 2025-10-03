@@ -1,238 +1,273 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
-      <!-- Header com título e botões -->
-      <div class="bg-white shadow-sm border-b">
-        <div class="px-6 py-4">
-          <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-gray-700">Lista</h1>
-            <div class="flex space-x-2">
-              <router-link
-                to="/dependentes/create"
-                class="inline-flex items-center gap-1 bg-gray-600 text-white text-sm font-semibold rounded-full px-4 py-1 hover:bg-gray-700 transition"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                Cadastrar novo dependente
-              </router-link>
-              <router-link
-                to="/dependentes/inativos"
-                class="inline-flex items-center gap-1 bg-gray-600 text-white text-sm font-semibold rounded-full px-4 py-1 hover:bg-gray-700 transition"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                Listar inativos
-              </router-link>
-            </div>
-          </div>
+  <div>
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-neutral-900">Dependentes</h1>
+          <p class="text-sm text-neutral-500 mt-1.5">Gerencie seus dependentes cadastrados</p>
+        </div>
+        <div class="flex gap-3">
+          <!-- <button
+            @click="fetchDependentes"
+            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline mr-1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Recarregar
+          </button> -->
+          <router-link
+            to="/dependentes/inativos"
+            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline mr-1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Inativos
+          </router-link>
+          <router-link
+            to="/dependentes/create"
+            class="px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline mr-1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Novo Dependente
+          </router-link>
         </div>
       </div>
+    </div>
 
-      <!-- Conteúdo principal -->
-      <div class="px-6 py-6">
-        <!-- Loading -->
-        <div v-if="loading" class="flex justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
+    <!-- Loading -->
+    <div v-if="dependentesStore.loading" class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"></div>
+    </div>
 
-        <!-- Erro -->
-        <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-          {{ error }}
-        </div>
+    <!-- Erro -->
+    <div v-else-if="dependentesStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <p class="font-medium text-red-900">Erro ao carregar dados</p>
+      <p class="text-sm text-red-700 mt-1">{{ dependentesStore.error }}</p>
+    </div>
 
-        <!-- Tabela -->
-        <div v-else class="overflow-x-auto border border-gray-300 rounded-lg bg-white">
-          <!-- Header da tabela -->
-          <div class="bg-black text-white p-2 rounded-t-lg border-l-8" style="border-left-color: rgb(193,168,90);">
-            <h2 class="text-xl font-semibold">
-              Dependentes Ativos
-            </h2>
-          </div>
+    <!-- Tabela -->
+    <div v-else class="bg-white rounded-lg border border-neutral-200 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-neutral-200">
+        <h2 class="text-sm font-semibold text-neutral-900">
+          Ativos <span class="text-neutral-500 font-normal">({{ dependentesStore.dependentes.length }})</span>
+        </h2>
+      </div>
 
-          <!-- Tabela -->
-          <div v-if="dependentes.length === 0" class="p-6 text-center text-gray-500">
-            Nenhum dependente ativo encontrado
-          </div>
+      <div v-if="dependentesStore.dependentes.length === 0" class="p-12 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-neutral-300 mb-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+        </svg>
+        <p class="text-neutral-500 text-sm">Nenhum dependente cadastrado</p>
+        <router-link
+          to="/dependentes/create"
+          class="inline-block mt-4 text-sm text-neutral-900 font-medium hover:text-neutral-700"
+        >
+          Cadastrar primeiro dependente →
+        </router-link>
+      </div>
 
-          <table v-else class="w-full text-sm">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">#</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Nome</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Sexo</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Parentesco</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Data Nascimento</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">CPF</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Anexo</th>
-                <th class="px-4 py-2 text-left font-medium text-gray-900">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(dependente, index) in dependentes" :key="dependente.id" class="border-t hover:bg-gray-50">
-                <td class="px-4 py-3 text-gray-900">{{ index + 1 }}</td>
-                <td class="px-4 py-3 text-gray-900">{{ dependente.nome }}</td>
-                <td class="px-4 py-3 text-gray-900">{{ dependente.sexo_dependente }}</td>
-                <td class="px-4 py-3 text-gray-900">{{ dependente.tipo_dependente }}</td>
-                <td class="px-4 py-3 text-gray-900">{{ formatarData(dependente.data_nascimento) }}</td>
-                <td class="px-4 py-3 text-gray-900">{{ dependente.cpf }}</td>
-                <td class="px-4 py-3">
-                  <button
-                    v-if="dependente.documento"
-                    @click="abrirAnexo(dependente.documento)"
-                    class="inline-flex items-center gap-1 bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600 transition"
+      <div v-else class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-neutral-50 border-b border-neutral-200">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">#</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Nome</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Sexo</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Parentesco</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Nascimento</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">CPF</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Anexo</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-200">
+            <tr v-for="(dependente, index) in dependentesStore.dependentes" :key="dependente.id" class="hover:bg-neutral-50 transition-colors">
+              <td class="px-6 py-4 text-sm text-neutral-500">{{ index + 1 }}</td>
+              <td class="px-6 py-4 text-sm font-medium text-neutral-900">{{ dependente.nome }}</td>
+              <td class="px-6 py-4 text-sm text-neutral-700">{{ convertSexoFromDatabase(dependente.sexo_dependente) }}</td>
+              <td class="px-6 py-4 text-sm text-neutral-700">{{ dependente.tipo_dependente }}</td>
+              <td class="px-6 py-4 text-sm text-neutral-700">{{ formatarData(dependente.data_nascimento) }}</td>
+              <td class="px-6 py-4 text-sm text-neutral-700">{{ formatarCPF(dependente.cpf) }}</td>
+              <td class="px-6 py-4">
+                <button
+                  v-if="dependente.documento"
+                  @click="abrirAnexo(dependente.documento)"
+                  class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                  </svg>
+                  Ver
+                </button>
+                <span v-else class="text-xs text-neutral-400">Sem anexo</span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <router-link
+                    :to="`/dependentes/edit/${dependente.id}`"
+                    class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                    title="Editar"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c-.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                     </svg>
-                    Ver Anexo
+                  </router-link>
+                  <button
+                    @click="confirmarExclusao(dependente)"
+                    class="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    title="Inativar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
                   </button>
-                  <span v-else class="text-gray-500 text-xs">Sem anexo</span>
-                </td>
-                <td class="px-4 py-3">
-                  <div class="flex space-x-2">
-                    <router-link
-                      :to="`/dependentes/edit/${dependente.id}`"
-                      class="inline-flex items-center gap-1 bg-yellow-500 text-white text-xs px-2 py-1 rounded hover:bg-yellow-600 transition"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                          stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                      </svg>
-                      Editar
-                    </router-link>
-                    <button
-                      @click="confirmarExclusao(dependente)"
-                      class="inline-flex items-center gap-1 bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 transition"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                          stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                      Excluir
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
 
-      <!-- Toast de notificação -->
+    <!-- Toast -->
+    <Transition name="toast">
       <div v-if="showToast" :class="[
-        'fixed top-4 right-4 flex items-center w-full max-w-xs p-4 mb-4 rounded-lg shadow-sm',
-        toastType === 'success' ? 'text-gray-500 bg-green-100' : 'text-gray-500 bg-red-100'
+        'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+        toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500'
       ]" role="alert">
         <div :class="[
-          'inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-lg',
-          toastType === 'success' ? 'text-green-500 bg-green-100' : 'text-red-500 bg-red-100'
+          'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
         ]">
-          <svg v-if="toastType === 'success'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+          <svg v-if="toastType === 'success'" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
-          <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+          <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
           </svg>
         </div>
-        <div class="ms-3 text-sm font-normal">{{ toastMessage }}</div>
-        <button type="button" @click="hideToast" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100">
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
+        </div>
+        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
-    </div>
+    </Transition>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { dependentesService } from '@/services/dependentesService'
+import { ref, onMounted, watch, onActivated } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useDependentesStore } from '@/stores/dependentes'
+import { useAuthStore } from '@/stores/auth'
 
-// Estado
-const loading = ref(true)
-const error = ref(null)
-const dependentes = ref([])
+const router = useRouter()
+const route = useRoute()
 
-// Toast
+const dependentesStore = useDependentesStore()
+const authStore = useAuthStore()
+
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-// Métodos
+const convertSexoFromDatabase = (sexo) => {
+  if (!sexo) return ''
+  return sexo === 'M' ? 'Masculino' : 'Feminino'
+}
+
 const fetchDependentes = async () => {
-  try {
-    loading.value = true
-    error.value = null
-
-    const response = await dependentesService.getDependentes()
-
-    if (response.success) {
-      dependentes.value = response.data
-    } else {
-      error.value = response.message
-    }
-  } catch (err) {
-    error.value = 'Erro ao conectar com o servidor'
-    console.error('Erro detalhado:', err)
-  } finally {
-    loading.value = false
+  await dependentesStore.carregarDependentes()
+  if (dependentesStore.error) {
+    showToastMessage(dependentesStore.error, 'error')
   }
 }
 
 const confirmarExclusao = async (dependente) => {
-  if (confirm(`Tem certeza que deseja excluir o dependente "${dependente.nome}"?`)) {
+  if (confirm(`Tem certeza que deseja inativar o dependente "${dependente.nome}"?`)) {
     try {
-      const response = await dependentesService.inativarDependente(dependente.id)
+      const matricula = authStore.user?.matricula || ''
+      if (!matricula) {
+        showToastMessage('Erro: Matrícula do usuário não encontrada', 'error')
+        return
+      }
 
-      if (response.success) {
-        showToastMessage('Dependente inativado com sucesso!', 'success')
-        await fetchDependentes() // Recarregar lista
+      const result = await dependentesStore.inativarDependente(dependente.id, matricula)
+      if (result.success) {
+        showToastMessage(result.message || 'Dependente inativado com sucesso!', 'success')
       } else {
-        showToastMessage(response.message, 'error')
+        showToastMessage(result.message || 'Erro ao inativar dependente', 'error')
       }
     } catch (err) {
       showToastMessage('Erro ao inativar dependente', 'error')
-      console.error('Erro:', err)
     }
   }
 }
 
 const abrirAnexo = (documento) => {
   const url = `/storage/doc_dependentes/${documento}`
-  const janela = window.open(url, 'anexo', 'width=600,height=600,scrollbars=yes,status=no,toolbar=no,location=no,menubar=no,resizable=yes')
-  if (!janela) {
-    alert('Popup bloqueado! Permita popups para visualizar o anexo.')
-  }
+  window.open(url, 'anexo', 'width=600,height=600')
 }
 
 const formatarData = (data) => {
   if (!data) return ''
-  return new Date(data).toLocaleDateString('pt-BR')
+  const date = new Date(data)
+  return date.toLocaleDateString('pt-BR')
+}
+
+const formatarCPF = (cpf) => {
+  if (!cpf) return ''
+  cpf = cpf.replace(/\D/g, '')
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
 }
 
 const showToastMessage = (message, type = 'success') => {
   toastMessage.value = message
   toastType.value = type
   showToast.value = true
-
-  setTimeout(() => {
-    hideToast()
-  }, 5000)
+  setTimeout(() => hideToast(), 5000)
 }
 
 const hideToast = () => {
   showToast.value = false
 }
 
-// Lifecycle
+watch(() => route.fullPath, (newPath) => {
+  if (newPath === '/dependentes') {
+    fetchDependentes()
+  }
+})
+
+onActivated(() => {
+  fetchDependentes()
+})
+
 onMounted(() => {
   fetchDependentes()
 })
 </script>
+
+<style scoped>
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>

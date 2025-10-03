@@ -1,300 +1,274 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
-      <!-- Header -->
-      <div class="bg-white shadow-sm border-b">
-        <div class="px-6 py-4">
-          <h1 class="text-2xl font-semibold text-gray-700">Cadastro</h1>
-        </div>
-      </div>
+  <div>
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-semibold text-neutral-900">Novo Dependente</h1>
+      <p class="text-sm text-neutral-500 mt-1.5">Cadastre um novo dependente</p>
+    </div>
 
-      <!-- Loading -->
-      <div v-if="loading" class="flex justify-center py-8">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
+    <!-- Loading -->
+    <div v-if="loadingData" class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"></div>
+    </div>
 
-      <!-- Erro -->
-      <div v-else-if="error" class="px-6 py-6">
-        <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-          {{ error }}
-        </div>
-      </div>
+    <!-- Formulário -->
+    <div v-else>
+      <form @submit.prevent="salvarDependente" class="space-y-5">
 
-      <!-- Formulário -->
-      <div v-else class="px-6 py-6">
-        <form @submit.prevent="salvarDependente" class="space-y-1">
-          <!-- Card do formulário -->
-          <div class="overflow-x-auto border border-gray-300 rounded-lg bg-white">
-            <!-- Header da seção -->
-            <div class="bg-black text-white p-2 rounded-t-lg border-l-8" style="border-left-color: rgb(193,168,90);">
-              <h2 class="text-xl font-semibold">
-                Dependentes
-              </h2>
+        <!-- Card: Dados do Dependente -->
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Dados do Dependente</h2>
+
+          <div class="grid gap-5 md:grid-cols-2 mb-5">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Nome Completo <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                v-model="form.nome"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.nome
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+                required
+              />
+              <span v-if="errors.nome" class="text-red-600 text-xs mt-1.5 block">{{ errors.nome[0] }}</span>
             </div>
 
-            <!-- Conteúdo do formulário -->
-            <div class="p-3">
-              <!-- Primeira linha -->
-              <div class="grid gap-6 md:grid-cols-2 mb-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                  <input
-                    type="text"
-                    v-model="form.nome"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2',
-                      errors.nome ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                    required
-                  />
-                  <span v-if="errors.nome" class="text-red-500 text-sm">{{ errors.nome[0] }}</span>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Sexo</label>
-                  <select
-                    v-model="form.sexo_dependente"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2',
-                      errors.sexo_dependente ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    <option value="Masculino">Masculino</option>
-                    <option value="Feminino">Feminino</option>
-                  </select>
-                  <span v-if="errors.sexo_dependente" class="text-red-500 text-sm">{{ errors.sexo_dependente[0] }}</span>
-                </div>
-              </div>
-
-              <!-- Segunda linha -->
-              <div class="grid gap-6 md:grid-cols-2 mb-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Tipo parentesco</label>
-                  <select
-                    v-model="form.tipo_dependente"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2',
-                      errors.tipo_dependente ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                    required
-                  >
-                    <option value="">Selecione</option>
-                    <option value="Cônjuge">Cônjuge</option>
-                    <option value="Filho(a)">Filho(a)</option>
-                    <option value="Pai">Pai</option>
-                    <option value="Mãe">Mãe</option>
-                  </select>
-                  <span v-if="errors.tipo_dependente" class="text-red-500 text-sm">{{ errors.tipo_dependente[0] }}</span>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Data Nascimento</label>
-                  <input
-                    type="date"
-                    v-model="form.data_nascimento"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2',
-                      errors.data_nascimento ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                    required
-                  />
-                  <span v-if="errors.data_nascimento" class="text-red-500 text-sm">{{ errors.data_nascimento[0] }}</span>
-                </div>
-              </div>
-
-              <!-- Terceira linha -->
-              <div class="grid gap-6 md:grid-cols-2 mb-6">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
-                  <input
-                    type="text"
-                    v-model="form.cpf"
-                    @input="formatarCPF"
-                    maxlength="11"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2',
-                      errors.cpf ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                    placeholder="Somente números"
-                    required
-                  />
-                  <span v-if="errors.cpf" class="text-red-500 text-sm">{{ errors.cpf[0] }}</span>
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Anexo <span class="text-red-500">(.pdf)</span>
-                  </label>
-                  <input
-                    type="file"
-                    @change="onFileChange"
-                    accept=".pdf"
-                    :class="[
-                      'w-full border rounded-lg py-1 px-2 text-sm',
-                      errors.anexo ? 'border-red-500' : 'border-gray-300'
-                    ]"
-                  />
-                  <span v-if="errors.anexo" class="text-red-500 text-sm">{{ errors.anexo[0] }}</span>
-                </div>
-              </div>
-
-              <!-- Botões -->
-              <div class="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  @click="$router.push('/dependentes')"
-                  class="inline-flex items-center gap-1 bg-gray-600 text-white text-sm font-semibold rounded-full px-4 py-2 hover:bg-gray-700 transition"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                  </svg>
-                  Voltar para a lista
-                </button>
-
-                <button
-                  type="submit"
-                  :disabled="submitting"
-                  class="inline-flex items-center gap-1 bg-green-600 text-white text-sm font-semibold rounded-full px-4 py-2 hover:bg-green-700 transition disabled:opacity-50"
-                >
-                  <svg v-if="!submitting" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                  </svg>
-                  <span v-if="submitting">Cadastrando...</span>
-                  <span v-else>Cadastrar novo dependente</span>
-                </button>
-              </div>
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Sexo <span class="text-red-500">*</span>
+              </label>
+              <select
+                v-model="form.sexo_dependente"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.sexo_dependente
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+                required
+              >
+                <option value="">Selecione</option>
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+              <span v-if="errors.sexo_dependente" class="text-red-600 text-xs mt-1.5 block">{{ errors.sexo_dependente[0] }}</span>
             </div>
           </div>
-        </form>
-      </div>
 
-      <!-- Toast de notificação -->
+          <div class="grid gap-5 md:grid-cols-2 mb-5">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Tipo de Parentesco <span class="text-red-500">*</span>
+              </label>
+              <select
+                v-model="form.tipo_dependente"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.tipo_dependente
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+                required
+              >
+                <option value="">Selecione</option>
+                <option value="Cônjuge">Cônjuge</option>
+                <option value="Filho(a)">Filho(a)</option>
+                <option value="Pai">Pai</option>
+                <option value="Mãe">Mãe</option>
+              </select>
+              <span v-if="errors.tipo_dependente" class="text-red-600 text-xs mt-1.5 block">{{ errors.tipo_dependente[0] }}</span>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Data de Nascimento <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                v-model="form.data_nascimento"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.data_nascimento
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+                required
+              />
+              <span v-if="errors.data_nascimento" class="text-red-600 text-xs mt-1.5 block">{{ errors.data_nascimento[0] }}</span>
+            </div>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                CPF <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                v-model="form.cpf"
+                @input="formatarCPF"
+                maxlength="11"
+                placeholder="Somente números"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 placeholder:text-neutral-400',
+                  errors.cpf
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+                required
+              />
+              <span v-if="errors.cpf" class="text-red-600 text-xs mt-1.5 block">{{ errors.cpf[0] }}</span>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Anexo <span class="text-red-500">(.pdf)</span>
+              </label>
+              <input
+                type="file"
+                @change="onFileChange"
+                accept=".pdf"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.anexo
+                    ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                ]"
+              />
+              <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{ errors.anexo[0] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-3">
+          <button
+            type="button"
+            @click="$router.push('/dependentes')"
+            class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            :disabled="dependentesStore.loading"
+            class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+          >
+            <span v-if="dependentesStore.loading">Cadastrando...</span>
+            <span v-else>Cadastrar Dependente</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Toast -->
+    <Transition name="toast">
       <div v-if="showToast" :class="[
-        'fixed top-4 right-4 flex items-center w-full max-w-xs p-4 mb-4 rounded-lg shadow-sm',
-        toastType === 'success' ? 'text-gray-500 bg-green-100' : 'text-gray-500 bg-red-100'
+        'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+        toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500'
       ]" role="alert">
         <div :class="[
-          'inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-lg',
-          toastType === 'success' ? 'text-green-500 bg-green-100' : 'text-red-500 bg-red-100'
+          'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
         ]">
-          <svg v-if="toastType === 'success'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
+          <svg v-if="toastType === 'success'" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
-          <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
+          <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
           </svg>
         </div>
-        <div class="ms-3 text-sm font-normal">{{ toastMessage }}</div>
-        <button type="button" @click="hideToast" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100">
-          <svg class="w-3 h-3" fill="none" viewBox="0 0 14 14">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
+        </div>
+        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
+    </Transition>
 
-      <!-- Modal de confirmação para reativação -->
-      <div v-if="showReactiveModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-          <div class="mt-3 text-center">
-            <h3 class="text-lg font-medium text-gray-900">Dependente já cadastrado</h3>
-            <div class="mt-2 px-7 py-3">
-              <p class="text-sm text-gray-500">
-                Este dependente já está cadastrado, porém está inativo. Deseja reativá-lo?
-              </p>
-            </div>
-            <div class="flex justify-center space-x-4 px-4 py-3">
-              <button
-                @click="cancelarReativacao"
-                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                @click="confirmarReativacao"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              >
-                Reativar
-              </button>
-            </div>
-          </div>
+    <!-- Modal de Reativação -->
+    <div v-if="showReactiveModal" class="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 class="text-lg font-semibold text-neutral-900 mb-3">Dependente já cadastrado</h3>
+        <p class="text-sm text-neutral-600 mb-6">
+          Este dependente já está cadastrado, porém está inativo. Deseja reativá-lo?
+        </p>
+        <div class="flex justify-end gap-3">
+          <button
+            @click="cancelarReativacao"
+            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="confirmarReativacao"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+          >
+            Reativar
+          </button>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useDependentesStore } from '@/stores/dependentes'
+import { useAuthStore } from '@/stores/auth'
 import { dependentesService } from '@/services/dependentesService'
 
-// Router
 const router = useRouter()
+const dependentesStore = useDependentesStore()
+const authStore = useAuthStore()
 
-// Estado
-const loading = ref(true)
-const submitting = ref(false)
-const error = ref(null)
+const loadingData = ref(false)
 
-// Formulário
 const form = reactive({
+  matricula: '',
   nome: '',
   cpf: '',
   sexo_dependente: '',
   tipo_dependente: '',
   data_nascimento: '',
-  anexo: null
+  anexo: null,
+  historico: '',
+  documento: '',
+  status: 'A'
 })
 
 const errors = reactive({})
 
-// Toast
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-// Modal de reativação
 const showReactiveModal = ref(false)
 const dependenteParaReativar = ref(null)
 
-// Métodos
-const fetchData = async () => {
-  try {
-    loading.value = true
-    error.value = null
-
-    const response = await dependentesService.getDadosCreate()
-
-    if (response.success) {
-      // Dados carregados com sucesso
-      console.log('Dados para criação:', response.data)
-    } else {
-      error.value = response.message
-    }
-  } catch (err) {
-    error.value = 'Erro ao conectar com o servidor'
-    console.error('Erro detalhado:', err)
-  } finally {
-    loading.value = false
-  }
-}
-
 const formatarCPF = (event) => {
-  // Remove tudo que não for número
   form.cpf = event.target.value.replace(/[^0-9]/g, '')
 }
 
 const onFileChange = (event) => {
   const file = event.target.files[0]
   if (file) {
-    // Validar tipo de arquivo
     if (file.type !== 'application/pdf') {
       showToastMessage('Apenas arquivos PDF são permitidos', 'error')
       event.target.value = ''
       return
     }
 
-    // Validar tamanho (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
       event.target.value = ''
@@ -307,48 +281,62 @@ const onFileChange = (event) => {
 
 const salvarDependente = async () => {
   try {
-    submitting.value = true
-
-    // Limpar erros anteriores
     Object.keys(errors).forEach(key => delete errors[key])
 
-    const response = await dependentesService.createDependente(form)
+    if (!form.matricula) {
+      form.matricula = authStore.user?.matricula || ''
+    }
 
-    if (response.success) {
-      showToastMessage('Dependente cadastrado com sucesso!', 'success')
+    if (!form.matricula) {
+      showToastMessage('Erro: Matrícula do usuário não encontrada. Faça login novamente.', 'error')
+      return
+    }
 
-      // Limpar formulário
+    const result = await dependentesStore.criarDependente(form)
+
+    if (result.success) {
+      showToastMessage(result.message || 'Dependente cadastrado com sucesso!', 'success')
+
       Object.keys(form).forEach(key => {
-        form[key] = key === 'anexo' ? null : ''
+        if (key === 'anexo') {
+          form[key] = null
+        } else if (key === 'status') {
+          form[key] = 'A'
+        } else if (key === 'matricula') {
+          form[key] = authStore.user?.matricula || ''
+        } else {
+          form[key] = ''
+        }
       })
 
-      // Redirecionar após 2 segundos
+      const fileInput = document.querySelector('input[type="file"]')
+      if (fileInput) fileInput.value = ''
+
       setTimeout(() => {
         router.push('/dependentes')
-      }, 2000)
+      }, 1500)
     } else {
-      if (response.action === 'confirm_reactivate') {
-        // Mostrar modal de confirmação
-        dependenteParaReativar.value = response.dependente_id
-        showReactiveModal.value = true
-      } else {
-        showToastMessage(response.message, 'error')
-      }
+      showToastMessage(result.message || 'Erro ao cadastrar dependente', 'error')
     }
   } catch (err) {
-    console.error('Erro ao salvar:', err)
+    if (err.response && err.response.status === 409) {
+      const responseData = err.response.data
 
-    if (err.response && err.response.status === 422) {
-      // Erros de validação
+      if (responseData.showConfirmation && responseData.dependenteId) {
+        dependenteParaReativar.value = responseData.dependenteId
+        showReactiveModal.value = true
+      } else {
+        showToastMessage(responseData.message, 'error')
+      }
+    } else if (err.response && err.response.status === 422) {
       const validationErrors = err.response.data.errors
       Object.keys(validationErrors).forEach(key => {
         errors[key] = validationErrors[key]
       })
+      showToastMessage('Verifique os campos do formulário', 'error')
     } else {
       showToastMessage('Erro ao cadastrar dependente', 'error')
     }
-  } finally {
-    submitting.value = false
   }
 }
 
@@ -360,10 +348,9 @@ const confirmarReativacao = async () => {
       showToastMessage('Dependente reativado com sucesso!', 'success')
       showReactiveModal.value = false
 
-      // Redirecionar após 2 segundos
       setTimeout(() => {
         router.push('/dependentes')
-      }, 2000)
+      }, 1500)
     } else {
       showToastMessage(response.message, 'error')
     }
@@ -391,8 +378,9 @@ const hideToast = () => {
   showToast.value = false
 }
 
-// Lifecycle
 onMounted(() => {
-  fetchData()
+  if (authStore.user && authStore.user.matricula) {
+    form.matricula = authStore.user.matricula
+  }
 })
 </script>

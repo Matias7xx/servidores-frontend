@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/', // URL relativa, vai usar o proxy
+  baseURL: '/',
   headers: {
     'Accept': 'application/json',
     'X-Requested-With': 'XMLHttpRequest'
@@ -9,22 +9,29 @@ const api = axios.create({
   withCredentials: true
 })
 
-// Interceptor para adicionar token CSRF automaticamente
+// Interceptor para adicionar token CSRF
 api.interceptors.request.use(async (config) => {
-  // Para métodos que precisam de CSRF token
   if (['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase())) {
-    // Tentar pegar o token do meta tag primeiro
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+
+    if (!csrfToken) {
+      // Buscar cookie CSRF
+      try {
+        await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
+        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      } catch (error) {
+        console.error('Erro ao obter CSRF token:', error)
+      }
+    }
 
     if (csrfToken) {
       config.headers['X-CSRF-TOKEN'] = csrfToken
-    } else {
-      console.warn('Token CSRF não encontrado')
     }
   }
 
-  // Se não for FormData, definir Content-Type como JSON
-  if (!(config.data instanceof FormData)) {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  } else {
     config.headers['Content-Type'] = 'application/json'
   }
 
@@ -35,28 +42,14 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Debug do erro
-    console.error('API Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-      config: {
-        method: error.config?.method,
-        url: error.config?.url,
-        headers: error.config?.headers
-      }
-    })
-
     if (error.response?.status === 419) {
-      console.log('Token CSRF expirado')
-      alert('Sessão expirada. A página será recarregada.')
+      console.warn('Token CSRF expirado, recarregando...')
       window.location.reload()
       return
     }
 
     if (error.response?.status === 401) {
-      console.log('Não autenticado')
-      // Não redirecionar automaticamente, deixar o componente tratar
+      console.warn('Não autenticado')
     }
 
     return Promise.reject(error)

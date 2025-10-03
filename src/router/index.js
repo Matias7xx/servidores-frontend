@@ -1,19 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
+// Layouts
+import AuthenticatedLayout from '../layouts/AuthenticatedLayout.vue'
+
 // Views
 import Login from '../pages/Login.vue'
-
-//views para integrar com Laravel
 const Home = () => import('../pages/Home.vue')
 const InformacoesPessoais = () => import('../pages/pessoais/InformacoesPessoais.vue')
 const DependentesLista = () => import('../pages/dependentes/DependentesLista.vue')
 const DependentesCreate = () => import('../pages/dependentes/DependentesCreate.vue')
 const DependentesEdit = () => import('../pages/dependentes/DependentesEdit.vue')
 const DependentesInativos = () => import('../pages/dependentes/DependentesInativos.vue')
-
+const FormacaoLista = () => import('../pages/formacao/FormacaoLista.vue')
+const FormacaoCreate = () => import('../pages/formacao/FormacaoCreate.vue')
+const FormacaoEdit = () => import('../pages/formacao/FormacaoEdit.vue')
 
 const routes = [
+  // Login
   {
     path: '/login',
     name: 'Login',
@@ -23,112 +27,75 @@ const routes = [
       title: 'Login - PCPB'
     }
   },
+
+  // Rotas autenticadas (com AuthenticatedLayout)
   {
     path: '/',
-    name: 'Home',
-    component: Home,
-    meta: {
-      requiresAuth: true,
-      title: 'Início - PCPB'
-    }
+    component: AuthenticatedLayout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: Home,
+        meta: { title: 'Início - PCPB' }
+      },
+      {
+        path: 'info_pessoal',
+        name: 'info_pessoal',
+        component: InformacoesPessoais,
+        meta: { title: 'Informações Pessoais - PCPB' }
+      },
+      {
+        path: 'dependentes',
+        name: 'dependentes',
+        component: DependentesLista,
+        meta: { title: 'Dependentes - PCPB' }
+      },
+      {
+        path: 'dependentes/create',
+        name: 'dependentes_create',
+        component: DependentesCreate,
+        meta: { title: 'Cadastrar Dependente - PCPB' }
+      },
+      {
+        path: 'dependentes/edit/:id',
+        name: 'dependentes_edit',
+        component: DependentesEdit,
+        meta: { title: 'Editar Dependente - PCPB' }
+      },
+      {
+        path: 'dependentes/inativos',
+        name: 'dependentes_inativos',
+        component: DependentesInativos,
+        meta: { title: 'Dependentes Inativos - PCPB' }
+      },
+      {
+        path: 'formacao',
+        name: 'formacao',
+        component: FormacaoLista,
+        meta: { title: 'Formação Acadêmica - PCPB' }
+      },
+      {
+        path: 'formacao/create',
+        name: 'formacao_create',
+        component: FormacaoCreate,
+        meta: { title: 'Cadastrar Formação - PCPB' }
+      },
+      {
+        path: 'formacao/edit/:id',
+        name: 'formacao_edit',
+        component: FormacaoEdit,
+        meta: { title: 'Editar Formação - PCPB' }
+      }
+    ]
   },
-  {
-    path: '/info_pessoal',
-    name: 'info_pessoal',
-    component: InformacoesPessoais,
-    meta: {
-      requiresAuth: true,
-      title: 'Informações Pessoais - PCPB'
-    }
-  },
-  {
-    path: '/dependentes',
-    name: 'dependentes',
-    component: DependentesLista,
-    meta: {
-      requiresAuth: true,
-      title: 'Dependentes - PCPB'
-    }
-  },
-  {
-    path: '/dependentes/create',
-    name: 'dependentes_create',
-    component: DependentesCreate,
-    meta: {
-      requiresAuth: true,
-      title: 'Cadastrar Dependente - PCPB'
-    }
-  },
-  {
-    path: '/dependentes/edit/:id',
-    name: 'dependentes_edit',
-    component: DependentesEdit,
-    meta: {
-      requiresAuth: true,
-      title: 'Editar Dependente - PCPB'
-    }
-  },
-  {
-    path: '/dependentes/inativos',
-    name: 'dependentes_inativos',
-    component: DependentesInativos,
-    meta: {
-      requiresAuth: true,
-      title: 'Dependentes Inativos - PCPB'
-    }
-  },
-  {
-    path: '/item2',
-    name: 'item2',
-    component: () => import('../pages/Home.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Menu Item 2 - PCPB'
-    }
-  },
-  {
-    path: '/item3',
-    name: 'item3',
-    component: () => import('../pages/Home.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Menu Item 3 - PCPB'
-    }
-  },
-  {
-    path: '/item4',
-    name: 'item4',
-    component: () => import('../pages/Home.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Menu Item 4 - PCPB'
-    }
-  },
-  {
-    path: '/submenu1',
-    name: 'submenu1',
-    component: () => import('../pages/Submenu1.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Submenu Item 1 - PCPB'
-    }
-  },
-  {
-    path: '/submenu2',
-    name: 'submenu2',
-    component: () => import('../pages/Home.vue'),
-    meta: {
-      requiresAuth: true,
-      title: 'Submenu Item 2 - PCPB'
-    }
-  },
+
+  // 404
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../pages/Home.vue'),
-    meta: {
-      title: 'Página não encontrada - PCPB'
-    }
+    redirect: '/'
   }
 ]
 
@@ -137,57 +104,52 @@ const router = createRouter({
   routes
 })
 
-// Guards de navegação
-router.beforeEach(async (to, from, next) => {
-  console.log(`Navegando de ${from.name || 'inicial'} para ${to.name}`)
+// Flag para controlar se a inicialização já foi feita
+let authInitialized = false
 
+// Navigation Guard
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Definir título da página
+  // Definir título
   if (to.meta.title) {
     document.title = to.meta.title
   }
 
-  // Se a store ainda não foi inicializada, inicializar
-  if (authStore.user === null && authStore.isAuthenticated === false) {
-    console.log('Store não inicializada, inicializando...')
-    await authStore.initAuth()
+  // Resetar flag
+  if (window.__authInitialized === false) {
+    authInitialized = false
+    window.__authInitialized = undefined
   }
 
-  // Log do estado de autenticação
-  console.log('Estado de autenticação:', {
-    isAuthenticated: authStore.isAuthenticated,
-    user: authStore.user,
-    toRoute: to.name,
-    requiresAuth: to.meta.requiresAuth,
-    requiresGuest: to.meta.requiresGuest
-  })
+  if (!authInitialized) {
+    try {
+      await authStore.initAuth()
+      authInitialized = true
+    } catch (error) {
+      console.error('Erro ao inicializar autenticação no router:', error)
+      authInitialized = true
+    }
+  }
 
-  // Verificar se requer autenticação
+  // Se precisa de auth e não está autenticado
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    console.log('Rota requer autenticação, redirecionando para login')
-    next({
-      name: 'Login',
-      query: { redirect: to.fullPath }
-    })
+    // Só adiciona redirect se não for a home
+    if (to.path !== '/') {
+      next({ name: 'Login', query: { redirect: to.fullPath } })
+    } else {
+      next({ name: 'Login' })
+    }
     return
   }
 
-  // Verificar se é rota para visitantes apenas (login)
+  // Se é login e já está autenticado
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    console.log('Usuário já autenticado, redirecionando para home')
     next({ name: 'Home' })
     return
   }
 
-  // Se chegou até aqui, prosseguir normalmente
-  console.log('Navegação permitida')
   next()
-})
-
-// Log após navegação
-router.afterEach((to, from) => {
-  console.log(`✅ Navegação concluída: ${from.name || 'inicial'} → ${to.name}`)
 })
 
 export default router

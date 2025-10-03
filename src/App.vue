@@ -1,70 +1,14 @@
 <template>
   <div id="app" class="min-h-screen">
-    <!-- Loading inicial -->
-    <div v-if="isInitializing" class="flex items-center justify-center min-h-screen bg-gray-50">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p class="mt-4 text-gray-600">Carregando...</p>
-      </div>
-    </div>
-
-    <template v-else>
-      <!-- Se autenticado, usar AuthenticatedLayout -->
-      <AuthenticatedLayout v-if="authStore.isAuthenticated" />
-
-      <!-- Se não autenticado, mostrar apenas o Login -->
-      <Login v-else />
-    </template>
+    <router-view />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useAuthStore } from './stores/auth'
-import AuthenticatedLayout from './layouts/AuthenticatedLayout.vue'
-import Login from './pages/Login.vue'
-
-// Store de autenticação
-const authStore = useAuthStore()
-
-// Estado local para controlar o loading inicial
-const isInitializing = ref(true)
-
-// Inicializar autenticação ao montar o componente
-onMounted(async () => {
-  console.log('🚀 Inicializando App Vue...')
-  console.log('📊 Dados disponíveis:', {
-    windowUser: window.User,
-    windowLaravel: window.Laravel
-  })
-
-  try {
-    // Inicializar autenticação baseada nos dados do Laravel
-    await authStore.initAuth()
-    console.log('✅ Autenticação inicializada:', {
-      isAuthenticated: authStore.isAuthenticated,
-      user: authStore.user
-    })
-  } catch (error) {
-    console.error('❌ Erro ao inicializar autenticação:', error)
-    // Em caso de erro, assumir que não está autenticado
-    authStore.isAuthenticated = false
-    authStore.user = null
-  } finally {
-    // Sempre parar o loading após tentar inicializar
-    isInitializing.value = false
-    console.log('🔄 Inicialização concluída')
-  }
-})
-
-// Cleanup ao desmontar
-onUnmounted(() => {
-  console.log('🔄 App Vue desmontado')
-})
 </script>
 
 <style>
-/*  estilos globais */
+/* estilos globais */
 * {
   box-sizing: border-box;
 }
@@ -102,20 +46,15 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Focus styles para acessibilidade */
-button:focus,
-input:focus,
-select:focus,
-textarea:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
 /* Remover outline para mouse users */
 .js-focus-visible button:focus:not(.focus-visible),
 .js-focus-visible input:focus:not(.focus-visible),
 .js-focus-visible select:focus:not(.focus-visible),
 .js-focus-visible textarea:focus:not(.focus-visible) {
+  outline: none;
+}
+
+input:focus, select:focus {
   outline: none;
 }
 </style>

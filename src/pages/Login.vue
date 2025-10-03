@@ -19,9 +19,9 @@
     <div class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-gray-200">
 
       <!-- Mensagens de erro gerais -->
-      <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+      <div v-if="errors.general || authStore.error" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
         <div class="text-sm text-red-600">
-          {{ errors.general[0] }}
+          {{ errors.general?.[0] || authStore.error }}
         </div>
       </div>
 
@@ -58,7 +58,7 @@
               placeholder="Informe sua Matrícula"
               maxlength="7"
               minlength="7"
-              :disabled="isLoading"
+              :disabled="authStore.loading"
               @input="clearFieldError('matricula')"
             />
           </div>
@@ -91,7 +91,7 @@
               ]"
               required
               placeholder="••••••••"
-              :disabled="isLoading"
+              :disabled="authStore.loading"
               autocomplete="current-password"
               @input="clearFieldError('password')"
               @keydown="checkCapsLock"
@@ -144,16 +144,16 @@
           <button
             type="submit"
             :class="[
-              'w-full flex items-center justify-center space-x-2 px-6 py-2 sm:py-3 bg-[#c1a85a] text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#c1a85a] transition-all duration-200 text-sm sm:text-base',
-              isLoading
+              'w-full flex items-center justify-center space-x-2 px-6 py-2 sm:py-3 bg-[#c1a85a] text-white font-medium rounded-md focus:outline-none transition-all duration-200 text-sm sm:text-base',
+              authStore.loading
                 ? 'opacity-75 cursor-not-allowed'
                 : 'hover:bg-[#a8924e] hover:shadow-lg transform hover:-translate-y-0.5'
             ]"
-            :disabled="isLoading"
+            :disabled="authStore.loading"
           >
             <!-- Spinner de loading -->
             <svg
-              v-if="isLoading"
+              v-if="authStore.loading"
               class="animate-spin h-4 w-4 text-white"
               fill="none"
               viewBox="0 0 24 24"
@@ -161,17 +161,8 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+            <span>{{ authStore.loading ? 'Entrando...' : 'Entrar' }}</span>
           </button>
-
-          <!-- Link Esqueci a senha -->
-          <!-- <button
-            type="button"
-            class="text-sm text-gray-600 hover:text-[#c1a85a] underline transition-colors duration-200 text-center"
-            @click="handleForgotPassword"
-          >
-            Esqueceu sua senha?
-          </button> -->
         </div>
       </form>
     </div>
@@ -187,7 +178,13 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import api from '../services/api'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+
+const router = useRouter()
+const route = useRoute()
+
+const authStore = useAuthStore()
 
 // Estado reativo
 const form = reactive({
@@ -198,7 +195,6 @@ const form = reactive({
 
 const errors = ref({})
 const status = ref('')
-const isLoading = ref(false)
 const showPassword = ref(false)
 const capsLockOn = ref(false)
 const currentYear = new Date().getFullYear()
@@ -215,6 +211,7 @@ const clearFieldError = (field) => {
   if (errors.value.general) {
     delete errors.value.general
   }
+  authStore.clearError()
 }
 
 const togglePasswordVisibility = () => {
@@ -245,101 +242,36 @@ const validateForm = () => {
 const handleSubmit = async () => {
   if (!validateForm()) return
 
-  isLoading.value = true
   status.value = ''
   errors.value = {}
 
   try {
-    console.log('Iniciando login...', form)
-
-    const csrfResponse = await fetch('/login', {
-      method: 'GET',
-      credentials: 'include'
+    await authStore.login({
+      matricula: form.matricula.trim(),
+      password: form.password,
+      remember: form.remember
     })
 
-    if (!csrfResponse.ok) {
-      throw new Error('Erro ao obter token CSRF')
-    }
+    setTimeout(() => {
+      const redirectTo = route.query.redirect || '/'
+      router.push(redirectTo)
+    }, 1000)
 
-    const csrfHtml = await csrfResponse.text()
-    const csrfMatch = csrfHtml.match(/<meta name="csrf-token" content="([^"]+)"/)
-
-    if (!csrfMatch) {
-      throw new Error('Token CSRF não encontrado')
-    }
-
-    const csrfToken = csrfMatch[1]
-    console.log('Token CSRF obtido:', csrfToken.substring(0, 10) + '...')
-
-    // Fazer o login
-    const formData = new FormData()
-    formData.append('matricula', form.matricula.trim())
-    formData.append('password', form.password)
-    formData.append('_token', csrfToken)
-    if (form.remember) {
-      formData.append('remember', '1')
-    }
-
-    const response = await fetch('/login', {
-      method: 'POST',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/json',
-      },
-      credentials: 'include',
-      body: formData
-    })
-
-    console.log('Response status:', response.status)
-
-    if (response.ok || response.status === 302) {
-      /* status.value = 'Login realizado com sucesso!' */
-
-      // Não redirecionar! Apenas recarregar a página atual do Vue
-      // O proxy vai manter a sessão e o Vue vai detectar que está autenticado
-      setTimeout(() => {
-        // Usar router para navegar para home em vez de reload
-        window.location.href = '/'
-      }, 1000)
-
+  } catch (err) {
+    if (err.response?.status === 422 && err.response?.data?.errors) {
+      errors.value = err.response.data.errors
     } else {
-      // Tratar erros
-      const contentType = response.headers.get('content-type')
-      let data
-
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json()
-      } else {
-        data = { message: 'Erro desconhecido' }
+      errors.value = {
+        general: [authStore.error || 'Erro ao fazer login. Tente novamente.']
       }
-
-      console.log('Response data:', data)
-
-      if (response.status === 422 && data.errors) {
-        errors.value = data.errors
-      } else if (response.status === 401) {
-        errors.value = { general: ['Matrícula ou senha incorretos.'] }
-      } else if (response.status === 419) {
-        errors.value = { general: ['Erro de segurança. Tente novamente.'] }
-      } else {
-        errors.value = { general: ['Erro no servidor. Tente novamente.'] }
-      }
-
-      form.password = ''
     }
 
-  } catch (error) {
-    console.error('Erro no login:', error)
     form.password = ''
-    errors.value = { general: ['Erro de conexão. Verifique se o servidor Laravel está rodando.'] }
-  } finally {
-    isLoading.value = false
-  }
-}
 
-const handleForgotPassword = () => {
-  // Implementar lógica de esqueci minha senha
-  alert('Entre em contato com o suporte para recuperação de senha.')
+    if (passwordInput.value) {
+      passwordInput.value.focus()
+    }
+  }
 }
 
 onMounted(() => {
