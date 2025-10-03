@@ -10,13 +10,20 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0', // Permite acesso externo ao container
     port: 5173,
     strictPort: true,
     cors: true,
+    watch: {
+      usePolling: true, // Hot reload no Docker
+    },
+    hmr: {
+      clientPort: 5173 // Porta para Hot Module Replacement
+    },
     proxy: {
       // Login e Logout
       '^/(login|logout)': {
-        target: 'http://localhost:8092',
+        target: 'http://host.docker.internal:8092', // Acessa o host da máquina
         changeOrigin: true,
         secure: false,
         credentials: 'include',
@@ -27,19 +34,19 @@ export default defineConfig({
         }
       },
       '/api': {
-        target: 'http://localhost:8092',
+        target: 'http://host.docker.internal:8092',
         changeOrigin: true,
         secure: false,
         credentials: 'include'
       },
       '/sanctum': {
-        target: 'http://localhost:8092',
+        target: 'http://host.docker.internal:8092',
         changeOrigin: true,
         secure: false,
         credentials: 'include'
       },
       '/storage': {
-        target: 'http://localhost:8092',
+        target: 'http://host.docker.internal:8092',
         changeOrigin: true,
         secure: false
       }
