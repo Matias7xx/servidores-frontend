@@ -24,8 +24,8 @@ const routes = [
     component: Login,
     meta: {
       requiresGuest: true,
-      title: 'Login - PCPB'
-    }
+      title: 'Login - PCPB',
+    },
   },
 
   // Rotas autenticadas (com AuthenticatedLayout)
@@ -38,70 +38,70 @@ const routes = [
         path: '',
         name: 'Home',
         component: Home,
-        meta: { title: 'Início - PCPB' }
+        meta: { title: 'Início - PCPB' },
       },
       {
         path: 'info_pessoal',
         name: 'info_pessoal',
         component: InformacoesPessoais,
-        meta: { title: 'Informações Pessoais - PCPB' }
+        meta: { title: 'Informações Pessoais - PCPB' },
       },
       {
         path: 'dependentes',
         name: 'dependentes',
         component: DependentesLista,
-        meta: { title: 'Dependentes - PCPB' }
+        meta: { title: 'Dependentes - PCPB' },
       },
       {
         path: 'dependentes/create',
         name: 'dependentes_create',
         component: DependentesCreate,
-        meta: { title: 'Cadastrar Dependente - PCPB' }
+        meta: { title: 'Cadastrar Dependente - PCPB' },
       },
       {
         path: 'dependentes/edit/:id',
         name: 'dependentes_edit',
         component: DependentesEdit,
-        meta: { title: 'Editar Dependente - PCPB' }
+        meta: { title: 'Editar Dependente - PCPB' },
       },
       {
         path: 'dependentes/inativos',
         name: 'dependentes_inativos',
         component: DependentesInativos,
-        meta: { title: 'Dependentes Inativos - PCPB' }
+        meta: { title: 'Dependentes Inativos - PCPB' },
       },
       {
         path: 'formacao',
         name: 'formacao',
         component: FormacaoLista,
-        meta: { title: 'Formação Acadêmica - PCPB' }
+        meta: { title: 'Formação Acadêmica - PCPB' },
       },
       {
         path: 'formacao/create',
         name: 'formacao_create',
         component: FormacaoCreate,
-        meta: { title: 'Cadastrar Formação - PCPB' }
+        meta: { title: 'Cadastrar Formação - PCPB' },
       },
       {
         path: 'formacao/edit/:id',
         name: 'formacao_edit',
         component: FormacaoEdit,
-        meta: { title: 'Editar Formação - PCPB' }
-      }
-    ]
+        meta: { title: 'Editar Formação - PCPB' },
+      },
+    ],
   },
 
   // 404
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    redirect: '/'
-  }
+    redirect: '/',
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 })
 
 // Flag para controlar se a inicialização já foi feita

@@ -50,7 +50,7 @@ export const useServidorStore = defineStore('servidor', () => {
       return {
         success: false,
         message: err.response?.data?.message || 'Erro ao atualizar servidor',
-        errors: err.response?.data?.errors || {}
+        errors: err.response?.data?.errors || {},
       }
     } finally {
       loading.value = false
@@ -70,6 +70,6 @@ export const useServidorStore = defineStore('servidor', () => {
     error,
     carregarServidor,
     atualizarServidor,
-    limparErros
+    limparErros,
   }
 })

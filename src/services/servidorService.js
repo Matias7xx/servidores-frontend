@@ -17,5 +17,5 @@ export const servidorService = {
   async updateServidor(data) {
     const response = await api.post('/api/info_pessoal_update', data)
     return response.data
-  }
+  },
 }

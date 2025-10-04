@@ -62,7 +62,6 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('✅ Login bem-sucedido')
         return { success: true }
       }
-
     } catch (err) {
       console.error('Erro no login:', err)
 
@@ -118,6 +117,6 @@ export const useAuthStore = defineStore('auth', () => {
     initAuth,
     login,
     logout,
-    clearError
+    clearError,
   }
 })

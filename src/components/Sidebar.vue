@@ -2,7 +2,7 @@
   <aside
     :class="[
       'transition-all duration-300 bg-black min-h-screen flex-shrink-0',
-      isCollapsed ? 'w-16' : 'w-64'
+      isCollapsed ? 'w-16' : 'w-64',
     ]"
     :aria-label="isCollapsed ? 'Menu de navegação (recolhido)' : 'Menu de navegação'"
     role="complementary"
@@ -15,7 +15,7 @@
             to="/"
             :class="[
               'w-full flex items-center px-4 py-3 text-gray-100 hover:text-white hover:bg-[#c1a85a] transition-all  mr-2',
-              $route.name === 'Home' ? 'bg-[#c1a85a] text-white shadow-lg' : ''
+              $route.name === 'Home' ? 'bg-[#c1a85a] text-white shadow-lg' : '',
             ]"
             :aria-current="$route.name === 'Home' ? 'page' : undefined"
           >
@@ -26,7 +26,9 @@
               viewBox="0 0 20 20"
               aria-hidden="true"
             >
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-9 9a1 1 0 001.414 1.414L2 12.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-4.586l.293.293a1 1 0 001.414-1.414l-9-9z"></path>
+              <path
+                d="M10.707 2.293a1 1 0 00-1.414 0l-9 9a1 1 0 001.414 1.414L2 12.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-4.586l.293.293a1 1 0 001.414-1.414l-9-9z"
+              ></path>
             </svg>
             <span v-show="!isCollapsed" class="text-base truncate">Dashboard</span>
           </router-link>
@@ -37,7 +39,7 @@
               @click="toggleInformacoesMenu"
               :class="[
                 'w-full flex items-center justify-between px-4 py-3 text-gray-100 hover:text-white hover:bg-[#c1a85a] transition-all text-left mr-2',
-                isInformacoesOpen ? 'text-white bg-[#c1a85a] shadow-lg' : ''
+                isInformacoesOpen ? 'text-white bg-[#c1a85a] shadow-lg' : '',
               ]"
               :aria-expanded="isInformacoesOpen"
               aria-controls="submenu-informacoes"
@@ -51,19 +53,32 @@
                   viewBox="0 0 24 24"
                   aria-hidden="true"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  ></path>
                 </svg>
                 <span v-show="!isCollapsed" class="text-base truncate">Informações</span>
               </div>
               <svg
                 v-show="!isCollapsed"
-                :class="['w-4 h-4 transition-transform duration-200', isInformacoesOpen ? 'rotate-180' : '']"
+                :class="[
+                  'w-4 h-4 transition-transform duration-200',
+                  isInformacoesOpen ? 'rotate-180' : '',
+                ]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
                 aria-hidden="true"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
               </svg>
             </button>
 
@@ -85,12 +100,23 @@
                   to="/info_pessoal"
                   :class="[
                     'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
-                    $route.name === 'info_pessoal' ? 'text-white bg-[#c1a85a]' : ''
+                    $route.name === 'info_pessoal' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'info_pessoal' ? 'page' : undefined"
                 >
-                  <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  <svg
+                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    ></path>
                   </svg>
                   <span class="truncate">Pessoais</span>
                 </router-link>
@@ -99,12 +125,23 @@
                   to="/dependentes"
                   :class="[
                     'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
-                    $route.name === 'dependentes' ? 'text-white bg-[#c1a85a]' : ''
+                    $route.name === 'dependentes' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'dependentes' ? 'page' : undefined"
                 >
-                  <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  <svg
+                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    ></path>
                   </svg>
                   <span class="truncate">Dependentes</span>
                 </router-link>
@@ -113,12 +150,23 @@
                   to="/formacao"
                   :class="[
                     'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
-                    $route.name === 'formacao' ? 'text-white bg-[#c1a85a]' : ''
+                    $route.name === 'formacao' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'formacao' ? 'page' : undefined"
                 >
-                  <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                  <svg
+                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    ></path>
                   </svg>
                   <span class="truncate">Formação</span>
                 </router-link>
@@ -141,7 +189,12 @@
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              ></path>
             </svg>
             <svg
               v-else
@@ -151,8 +204,19 @@
               viewBox="0 0 24 24"
               aria-hidden="true"
             >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             <span v-show="!isCollapsed" class="text-base truncate">
               {{ isLoggingOut ? 'Saindo...' : 'Sair' }}
@@ -172,8 +236,8 @@ import { useAuthStore } from '../stores/auth'
 const props = defineProps({
   isCollapsed: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const authStore = useAuthStore()
@@ -202,23 +266,36 @@ const handleLogout = async () => {
   }
 }
 
-watch(() => route.path, (newPath) => {
-  if (newPath.startsWith('/info-') || newPath.startsWith('/dependentes') || newPath.startsWith('/formacao')) {
-    isInformacoesOpen.value = true
-  }
-}, { immediate: true })
+watch(
+  () => route.path,
+  (newPath) => {
+    if (
+      newPath.startsWith('/info-') ||
+      newPath.startsWith('/dependentes') ||
+      newPath.startsWith('/formacao')
+    ) {
+      isInformacoesOpen.value = true
+    }
+  },
+  { immediate: true },
+)
 
 // Fechar submenu quando sidebar colapsa
-watch(() => props.isCollapsed, (newVal) => {
-  if (newVal) {
-    isInformacoesOpen.value = false
-  }
-})
+watch(
+  () => props.isCollapsed,
+  (newVal) => {
+    if (newVal) {
+      isInformacoesOpen.value = false
+    }
+  },
+)
 </script>
 
 <style scoped>
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-spin {

@@ -1,31 +1,22 @@
-import axios from 'axios'
+import api from './api'
 
 class FormacaoService {
-  // Configurar token CSRF
-  async setCsrfToken() {
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-    if (token) {
-      axios.defaults.headers.common['X-CSRF-TOKEN'] = token
-    }
-  }
-
   // Listar formações
   async getFormacoes() {
     try {
-      await this.setCsrfToken()
-      const response = await axios.get('/api/servidor_formacao_list')
+      const response = await api.get('/api/servidor_formacao_list')
 
       return {
         success: true,
         data: response.data.data,
-        message: 'Formações carregadas com sucesso'
+        message: 'Formações carregadas com sucesso',
       }
     } catch (error) {
       console.error('Erro ao carregar formações:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar formações',
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -33,20 +24,19 @@ class FormacaoService {
   // Buscar dados para criar formação
   async getFormacaoCreate() {
     try {
-      await this.setCsrfToken()
-      const response = await axios.get('/api/servidor_formacao_create')
+      const response = await api.get('/api/servidor_formacao_create')
 
       return {
         success: true,
         data: response.data.data,
-        message: 'Dados carregados com sucesso'
+        message: 'Dados carregados com sucesso',
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar dados',
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -54,17 +44,16 @@ class FormacaoService {
   // Criar formação
   async createFormacao(formData) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.post('/api/servidor_formacao_store', formData, {
+      const response = await api.post('/api/servidor_formacao_store', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       })
 
       return {
         success: true,
         data: response.data.data,
-        message: response.data.message || 'Formação cadastrada com sucesso'
+        message: response.data.message || 'Formação cadastrada com sucesso',
       }
     } catch (error) {
       console.error('Erro ao criar formação:', error)
@@ -72,7 +61,7 @@ class FormacaoService {
         success: false,
         message: error.response?.data?.message || 'Erro ao cadastrar formação',
         errors: error.response?.data?.errors,
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -80,20 +69,19 @@ class FormacaoService {
   // Buscar dados para editar formação
   async getFormacaoEdit(id) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.get(`/api/servidor_formacao_edit/${id}`)
+      const response = await api.get(`/api/servidor_formacao_edit/${id}`)
 
       return {
         success: true,
         data: response.data.data,
-        message: 'Dados carregados com sucesso'
+        message: 'Dados carregados com sucesso',
       }
     } catch (error) {
       console.error('Erro ao carregar formação:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar formação',
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -101,17 +89,16 @@ class FormacaoService {
   // Atualizar formação
   async updateFormacao(formData) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.post('/api/servidor_formacao_update', formData, {
+      const response = await api.post('/api/servidor_formacao_update', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       })
 
       return {
         success: true,
         data: response.data.data,
-        message: response.data.message || 'Formação atualizada com sucesso'
+        message: response.data.message || 'Formação atualizada com sucesso',
       }
     } catch (error) {
       console.error('Erro ao atualizar formação:', error)
@@ -119,7 +106,7 @@ class FormacaoService {
         success: false,
         message: error.response?.data?.message || 'Erro ao atualizar formação',
         errors: error.response?.data?.errors,
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -127,20 +114,19 @@ class FormacaoService {
   // Inativar formação
   async inativarFormacao(id) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.post('/api/servidor_formacao_inativar', { id })
+      const response = await api.post('/api/servidor_formacao_inativar', { id })
 
       return {
         success: true,
         data: response.data.data,
-        message: response.data.message || 'Formação inativada com sucesso'
+        message: response.data.message || 'Formação inativada com sucesso',
       }
     } catch (error) {
       console.error('Erro ao inativar formação:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao inativar formação',
-        error: error.response?.data
+        error: error.response?.data,
       }
     }
   }
@@ -148,9 +134,7 @@ class FormacaoService {
   // Buscar classes por área
   async getClassesByArea(areaId) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.get(`/api/formacao/classes/${areaId}`)
-
+      const response = await api.get(`/api/formacao/classes/${areaId}`)
       return response.data
     } catch (error) {
       console.error('Erro ao carregar classes:', error)
@@ -161,9 +145,7 @@ class FormacaoService {
   // Buscar cursos por classe
   async getCursosByClasse(classeId) {
     try {
-      await this.setCsrfToken()
-      const response = await axios.get(`/api/formacao/cursos/${classeId}`)
-
+      const response = await api.get(`/api/formacao/cursos/${classeId}`)
       return response.data
     } catch (error) {
       console.error('Erro ao carregar cursos:', error)

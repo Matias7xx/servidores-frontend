@@ -2,7 +2,9 @@
   <div>
     <!-- Loading State -->
     <div v-if="servidorStore.loading" class="flex justify-center items-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"></div>
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
+      ></div>
     </div>
 
     <!-- Estado de Erro -->
@@ -14,7 +16,12 @@
         </div>
         <button @click="servidorStore.limparErros()" class="text-red-500 hover:text-red-700">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -22,7 +29,6 @@
 
     <!-- Conteúdo -->
     <div v-else>
-
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-2xl font-semibold text-neutral-900">Informações Pessoais</h1>
@@ -31,10 +37,11 @@
 
       <!-- Form -->
       <form @submit.prevent="updateDados" class="space-y-5">
-
         <!-- Card: Dados Básicos -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Dados Básicos</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Dados Básicos
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-3 mb-5">
             <div>
@@ -44,7 +51,7 @@
                 v-model="form.nome"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
-              >
+              />
             </div>
 
             <div>
@@ -54,7 +61,7 @@
                 :value="servidorStore.servidor?.cargo_nome?.nome"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
-              >
+              />
             </div>
 
             <div>
@@ -64,7 +71,7 @@
                 :value="servidorStore.servidor?.matricula"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
-              >
+              />
             </div>
           </div>
 
@@ -76,7 +83,7 @@
                 v-model="form.cpf"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
-              >
+              />
             </div>
 
             <div>
@@ -86,11 +93,13 @@
                 v-model="form.sexo"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
-              >
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-2">Data de Nascimento</label>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Data de Nascimento</label
+              >
               <input
                 type="date"
                 v-model="form.datanascimento"
@@ -98,21 +107,23 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('datanascimento')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('datanascimento')"
-              >
+              />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-2">Orientação Sexual</label>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Orientação Sexual</label
+              >
               <select
                 v-model="form.orientacao"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('orientacao')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('orientacao')"
               >
@@ -128,7 +139,9 @@
 
         <!-- Card: Filiação e Documentos -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Filiação e Documentos</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Filiação e Documentos
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-2 mb-5">
             <div>
@@ -140,10 +153,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('pai')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('pai')"
-              >
+              />
             </div>
 
             <div>
@@ -155,10 +168,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('mae')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('mae')"
-              >
+              />
             </div>
           </div>
 
@@ -172,10 +185,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('pasep')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('pasep')"
-              >
+              />
             </div>
 
             <div>
@@ -187,10 +200,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('reservista')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('reservista')"
-              >
+              />
             </div>
 
             <div>
@@ -202,10 +215,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('numerocnh')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('numerocnh')"
-              >
+              />
             </div>
 
             <div>
@@ -217,17 +230,19 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('categoriacnh')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('categoriacnh')"
-              >
+              />
             </div>
           </div>
         </div>
 
         <!-- Card: Características Pessoais -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Características Pessoais</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Características Pessoais
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-4 mb-5">
             <div>
@@ -239,10 +254,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('nacionalidade')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('nacionalidade')"
-              >
+              />
             </div>
 
             <div>
@@ -254,10 +269,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('naturalidade')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('naturalidade')"
-              >
+              />
             </div>
 
             <div>
@@ -269,10 +284,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('cor_raca')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('cor_raca')"
-              >
+              />
             </div>
 
             <div>
@@ -283,7 +298,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('religiao')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('religiao')"
               >
@@ -308,7 +323,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('tiposanguineo')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('tiposanguineo')"
               >
@@ -328,7 +343,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('fator_rh')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('fator_rh')"
               >
@@ -348,10 +363,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('alergia')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20 placeholder:text-neutral-400'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('alergia')"
-              >
+              />
             </div>
 
             <div>
@@ -362,7 +377,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('grauinstrucao')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('grauinstrucao')"
               >
@@ -382,11 +397,15 @@
 
         <!-- Card: Dados Eleitorais e Uniformes -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Dados Eleitorais e Uniformes</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Dados Eleitorais e Uniformes
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-5 mb-5">
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-neutral-700 mb-2">Título de Eleitor</label>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Título de Eleitor</label
+              >
               <input
                 type="text"
                 v-model="form.titulonumero"
@@ -394,10 +413,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('titulonumero')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('titulonumero')"
-              >
+              />
             </div>
 
             <div>
@@ -409,10 +428,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('titulozona')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('titulozona')"
-              >
+              />
             </div>
 
             <div>
@@ -424,10 +443,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('titulosecao')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('titulosecao')"
-              >
+              />
             </div>
           </div>
 
@@ -440,7 +459,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('tamanhocamisa')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('tamanhocamisa')"
               >
@@ -460,7 +479,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('tamanho_colete')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('tamanho_colete')"
               >
@@ -476,7 +495,9 @@
 
         <!-- Card: Contato -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Contato</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Contato
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-3">
             <div>
@@ -492,18 +513,22 @@
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
                     : canEdit('telefone_1')
                       ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                      : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                      : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('telefone_1')"
-              >
-              <span v-if="errors.email" class="text-red-600 text-xs mt-1.5 block">{{ errors.email[0] }}</span>
+              />
+              <span v-if="errors.email" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.email[0]
+              }}</span>
             </div>
           </div>
         </div>
 
         <!-- Card: Endereço -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Endereço</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Endereço
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-6 mb-5">
             <div>
@@ -515,10 +540,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('cep')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('cep')"
-              >
+              />
             </div>
 
             <div>
@@ -529,12 +554,16 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('estado')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('estado')"
               >
                 <option value="">Selecione</option>
-                <option v-for="estado in servidorStore.estados" :key="estado.codigo" :value="estado.nome">
+                <option
+                  v-for="estado in servidorStore.estados"
+                  :key="estado.codigo"
+                  :value="estado.nome"
+                >
                   {{ estado.nome }}
                 </option>
               </select>
@@ -548,12 +577,16 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('cidade_id')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('cidade_id')"
               >
                 <option value="">Selecione</option>
-                <option v-for="cidade in servidorStore.cidades" :key="cidade.id" :value="cidade.codigo">
+                <option
+                  v-for="cidade in servidorStore.cidades"
+                  :key="cidade.id"
+                  :value="cidade.codigo"
+                >
                   {{ cidade.nome }}
                 </option>
               </select>
@@ -568,10 +601,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('bairro')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('bairro')"
-              >
+              />
             </div>
           </div>
 
@@ -585,10 +618,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('rua')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('rua')"
-              >
+              />
             </div>
 
             <div>
@@ -600,10 +633,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('numero')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('numero')"
-              >
+              />
             </div>
 
             <div>
@@ -616,17 +649,19 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('complemento')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20 placeholder:text-neutral-400'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('complemento')"
-              >
+              />
             </div>
           </div>
         </div>
 
         <!-- Card: Estado Civil -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Estado Civil</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Estado Civil
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-2">
             <div>
@@ -637,7 +672,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('estadocivil')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('estadocivil')"
               >
@@ -660,10 +695,10 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('conjuge')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20 placeholder:text-neutral-400'
-                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('conjuge')"
-              >
+              />
             </div>
           </div>
         </div>
@@ -692,27 +727,55 @@
 
     <!-- Toast de notificação -->
     <Transition name="toast">
-      <div v-if="showToast" :class="[
-        'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
-        toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500'
-      ]" role="alert">
-        <div :class="[
-          'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
-        ]">
-          <svg v-if="toastType === 'success'" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      <div
+        v-if="showToast"
+        :class="[
+          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
+        ]"
+        role="alert"
+      >
+        <div
+          :class="[
+            'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+            toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
+          ]"
+        >
+          <svg
+            v-if="toastType === 'success'"
+            class="w-4 h-4 text-white"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="flex-1">
           <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
         </div>
-        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors">
+        <button
+          type="button"
+          @click="hideToast"
+          class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
+        >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -769,7 +832,7 @@ const form = reactive({
   numero: '',
   complemento: '',
   estadocivil: '',
-  conjuge: ''
+  conjuge: '',
 })
 
 const errors = reactive({})
@@ -780,14 +843,14 @@ const fetchData = async () => {
     await servidorStore.carregarServidor()
 
     if (servidorStore.servidor) {
-      Object.keys(form).forEach(key => {
+      Object.keys(form).forEach((key) => {
         if (key === 'estado') {
           const estadoSalvo = servidorStore.servidor.estado
           if (estadoSalvo && estadoSalvo.length === 2) {
             form[key] = estadoSalvo
           } else if (estadoSalvo) {
-            const estadoEncontrado = servidorStore.estados.find(e =>
-              e.codigo == estadoSalvo || e.id == estadoSalvo
+            const estadoEncontrado = servidorStore.estados.find(
+              (e) => e.codigo == estadoSalvo || e.id == estadoSalvo,
             )
             form[key] = estadoEncontrado ? estadoEncontrado.nome : estadoSalvo
           } else {
@@ -808,11 +871,11 @@ const fetchData = async () => {
 
 const updateDados = async () => {
   try {
-    Object.keys(errors).forEach(key => delete errors[key])
+    Object.keys(errors).forEach((key) => delete errors[key])
 
     const result = await servidorStore.atualizarServidor({
       id: servidorStore.servidor.id,
-      ...form
+      ...form,
     })
 
     if (result.success) {
@@ -832,14 +895,14 @@ const updateDados = async () => {
 
 const resetForm = () => {
   if (servidorStore.servidor) {
-    Object.keys(form).forEach(key => {
+    Object.keys(form).forEach((key) => {
       if (key === 'estado') {
         const estadoSalvo = servidorStore.servidor.estado
         if (estadoSalvo && estadoSalvo.length === 2) {
           form[key] = estadoSalvo
         } else if (estadoSalvo) {
-          const estadoEncontrado = servidorStore.estados.find(e =>
-            e.codigo == estadoSalvo || e.id == estadoSalvo
+          const estadoEncontrado = servidorStore.estados.find(
+            (e) => e.codigo == estadoSalvo || e.id == estadoSalvo,
           )
           form[key] = estadoEncontrado ? estadoEncontrado.nome : estadoSalvo
         } else {
@@ -852,18 +915,45 @@ const resetForm = () => {
       }
     })
   }
-  Object.keys(errors).forEach(key => delete errors[key])
+  Object.keys(errors).forEach((key) => delete errors[key])
   showToastMessage('Alterações canceladas', 'success')
 }
 
 const canEdit = (field) => {
   const editableFields = [
-    'orientacao', 'datanascimento', 'reservista', 'pai', 'mae', 'pasep',
-    'alergia', 'nacionalidade', 'religiao', 'naturalidade', 'tiposanguineo',
-    'fator_rh', 'titulonumero', 'titulozona', 'titulosecao', 'tamanho_colete',
-    'numerocnh', 'categoriacnh', 'grauinstrucao', 'tamanhocamisa', 'cor_raca',
-    'telefone_1', 'telefone_2', 'email', 'cep', 'estado', 'cidade_id',
-    'bairro', 'rua', 'numero', 'complemento', 'estadocivil', 'conjuge'
+    'orientacao',
+    'datanascimento',
+    'reservista',
+    'pai',
+    'mae',
+    'pasep',
+    'alergia',
+    'nacionalidade',
+    'religiao',
+    'naturalidade',
+    'tiposanguineo',
+    'fator_rh',
+    'titulonumero',
+    'titulozona',
+    'titulosecao',
+    'tamanho_colete',
+    'numerocnh',
+    'categoriacnh',
+    'grauinstrucao',
+    'tamanhocamisa',
+    'cor_raca',
+    'telefone_1',
+    'telefone_2',
+    'email',
+    'cep',
+    'estado',
+    'cidade_id',
+    'bairro',
+    'rua',
+    'numero',
+    'complemento',
+    'estadocivil',
+    'conjuge',
   ]
   return editableFields.includes(field)
 }
@@ -888,11 +978,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
 }
 
-.toast-enter-active, .toast-leave-active {
+.toast-enter-active,
+.toast-leave-active {
   transition: all 0.3s ease;
 }
 

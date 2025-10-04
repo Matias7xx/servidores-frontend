@@ -3,10 +3,10 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: '/',
   headers: {
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest'
+    Accept: 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
   },
-  withCredentials: true
+  withCredentials: true,
 })
 
 // Interceptor para adicionar token CSRF
@@ -53,7 +53,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 
 export default api

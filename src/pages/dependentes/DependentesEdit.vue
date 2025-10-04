@@ -8,7 +8,9 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"></div>
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
+      ></div>
     </div>
 
     <!-- Erro -->
@@ -20,10 +22,11 @@
     <!-- Formulário -->
     <div v-else>
       <form @submit.prevent="atualizarDependente" class="space-y-5">
-
         <!-- Card: Dados do Dependente -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Dados do Dependente</h2>
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Dados do Dependente
+          </h2>
 
           <div class="grid gap-5 md:grid-cols-2 mb-5">
             <div>
@@ -37,11 +40,13 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.nome
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
                 ]"
                 required
               />
-              <span v-if="errors.nome" class="text-red-600 text-xs mt-1.5 block">{{ errors.nome[0] }}</span>
+              <span v-if="errors.nome" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.nome[0]
+              }}</span>
             </div>
 
             <div>
@@ -54,14 +59,16 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.sexo_dependente
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
                 ]"
                 required
               >
                 <option value="M">Masculino</option>
                 <option value="F">Feminino</option>
               </select>
-              <span v-if="errors.sexo_dependente" class="text-red-600 text-xs mt-1.5 block">{{ errors.sexo_dependente[0] }}</span>
+              <span v-if="errors.sexo_dependente" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.sexo_dependente[0]
+              }}</span>
             </div>
           </div>
 
@@ -76,7 +83,7 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.tipo_dependente
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
                 ]"
                 required
               >
@@ -85,7 +92,9 @@
                 <option value="Pai">Pai</option>
                 <option value="Mãe">Mãe</option>
               </select>
-              <span v-if="errors.tipo_dependente" class="text-red-600 text-xs mt-1.5 block">{{ errors.tipo_dependente[0] }}</span>
+              <span v-if="errors.tipo_dependente" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.tipo_dependente[0]
+              }}</span>
             </div>
 
             <div>
@@ -99,11 +108,13 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.data_nascimento
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
                 ]"
                 required
               />
-              <span v-if="errors.data_nascimento" class="text-red-600 text-xs mt-1.5 block">{{ errors.data_nascimento[0] }}</span>
+              <span v-if="errors.data_nascimento" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.data_nascimento[0]
+              }}</span>
             </div>
           </div>
 
@@ -122,11 +133,13 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 placeholder:text-neutral-400',
                   errors.cpf
                     ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
                 ]"
                 required
               />
-              <span v-if="errors.cpf" class="text-red-600 text-xs mt-1.5 block">{{ errors.cpf[0] }}</span>
+              <span v-if="errors.cpf" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.cpf[0]
+              }}</span>
             </div>
 
             <div>
@@ -141,10 +154,12 @@
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.anexo
                     ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 hover:border-neutral-400'
+                    : 'bg-white border-neutral-300 hover:border-neutral-400',
                 ]"
               />
-              <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{ errors.anexo[0] }}</span>
+              <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.anexo[0]
+              }}</span>
               <div v-if="dependente.documento" class="text-xs text-neutral-500 mt-1.5">
                 Arquivo atual: {{ dependente.documento }}
               </div>
@@ -176,27 +191,55 @@
 
     <!-- Toast -->
     <Transition name="toast">
-      <div v-if="showToast" :class="[
-        'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
-        toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500'
-      ]" role="alert">
-        <div :class="[
-          'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
-        ]">
-          <svg v-if="toastType === 'success'" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      <div
+        v-if="showToast"
+        :class="[
+          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
+        ]"
+        role="alert"
+      >
+        <div
+          :class="[
+            'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+            toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
+          ]"
+        >
+          <svg
+            v-if="toastType === 'success'"
+            class="w-4 h-4 text-white"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="flex-1">
           <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
         </div>
-        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors">
+        <button
+          type="button"
+          @click="hideToast"
+          class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
+        >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -229,7 +272,7 @@ const form = reactive({
   sexo_dependente: '',
   tipo_dependente: '',
   data_nascimento: '',
-  anexo: null
+  anexo: null,
 })
 
 const errors = reactive({})
@@ -263,7 +306,7 @@ const fetchData = async () => {
     } else {
       error.value = response.message
     }
-  } catch (err) {
+  } catch {
     error.value = 'Erro ao conectar com o servidor'
   } finally {
     loading.value = false
@@ -295,7 +338,7 @@ const onFileChange = (event) => {
 
 const atualizarDependente = async () => {
   try {
-    Object.keys(errors).forEach(key => delete errors[key])
+    Object.keys(errors).forEach((key) => delete errors[key])
 
     form.matricula = authStore.user?.matricula || ''
 
@@ -313,7 +356,7 @@ const atualizarDependente = async () => {
   } catch (err) {
     if (err.response && err.response.status === 422) {
       const validationErrors = err.response.data.errors
-      Object.keys(validationErrors).forEach(key => {
+      Object.keys(validationErrors).forEach((key) => {
         errors[key] = validationErrors[key]
       })
       showToastMessage('Verifique os campos do formulário', 'error')

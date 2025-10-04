@@ -27,7 +27,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         credentials: 'include',
-        bypass: function (req, res, options) {
+        bypass: function (req) {
           if (req.method === 'GET') {
             return req.url
           }

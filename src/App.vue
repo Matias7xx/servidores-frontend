@@ -4,8 +4,7 @@
   </div>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
 <style>
 /* estilos globais */
@@ -13,7 +12,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -54,7 +54,8 @@ html {
   outline: none;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
 }
 </style>

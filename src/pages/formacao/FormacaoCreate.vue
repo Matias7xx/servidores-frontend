@@ -8,7 +8,9 @@
 
     <!-- Loading -->
     <div v-if="formacaoStore.loading" class="flex justify-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"></div>
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
+      ></div>
     </div>
 
     <!-- Erro -->
@@ -19,10 +21,11 @@
 
     <!-- Formulário -->
     <form v-else @submit.prevent="submitForm" class="space-y-5">
-
       <!-- Card: Dados da Formação -->
       <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-        <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">Dados da Formação</h2>
+        <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+          Dados da Formação
+        </h2>
 
         <div class="grid gap-5 md:grid-cols-2 mb-5">
           <div>
@@ -36,7 +39,7 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.area_id
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                  : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             >
               <option value="">Selecione a área</option>
@@ -44,7 +47,9 @@
                 {{ area.area }}
               </option>
             </select>
-            <span v-if="errors.area_id" class="text-red-600 text-xs mt-1.5 block">{{ errors.area_id[0] }}</span>
+            <span v-if="errors.area_id" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.area_id[0]
+            }}</span>
           </div>
 
           <div>
@@ -59,17 +64,21 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.classe_id
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : (!form.area_id || loadingClasses)
+                  : !form.area_id || loadingClasses
                     ? 'bg-neutral-100 border-neutral-200 text-neutral-500 cursor-not-allowed'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             >
-              <option value="">{{ loadingClasses ? 'Carregando...' : 'Selecione a classe' }}</option>
+              <option value="">
+                {{ loadingClasses ? 'Carregando...' : 'Selecione a classe' }}
+              </option>
               <option v-for="classe in formacaoStore.classes" :key="classe.id" :value="classe.id">
                 {{ classe.classe }}
               </option>
             </select>
-            <span v-if="errors.classe_id" class="text-red-600 text-xs mt-1.5 block">{{ errors.classe_id[0] }}</span>
+            <span v-if="errors.classe_id" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.classe_id[0]
+            }}</span>
           </div>
         </div>
 
@@ -85,9 +94,9 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.curso_id
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : (!form.classe_id || loadingCursos)
+                  : !form.classe_id || loadingCursos
                     ? 'bg-neutral-100 border-neutral-200 text-neutral-500 cursor-not-allowed'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             >
               <option value="">{{ loadingCursos ? 'Carregando...' : 'Selecione o curso' }}</option>
@@ -95,11 +104,15 @@
                 {{ curso.curso }}
               </option>
             </select>
-            <span v-if="errors.curso_id" class="text-red-600 text-xs mt-1.5 block">{{ errors.curso_id[0] }}</span>
+            <span v-if="errors.curso_id" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.curso_id[0]
+            }}</span>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-neutral-700 mb-2">Data de Conclusão <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-neutral-700 mb-2"
+              >Data de Conclusão <span class="text-red-500">*</span></label
+            >
             <input
               type="date"
               v-model="form.dataconclusao"
@@ -107,10 +120,12 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.dataconclusao
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                  : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             />
-            <span v-if="errors.dataconclusao" class="text-red-600 text-xs mt-1.5 block">{{ errors.dataconclusao[0] }}</span>
+            <span v-if="errors.dataconclusao" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.dataconclusao[0]
+            }}</span>
           </div>
         </div>
 
@@ -124,10 +139,12 @@
               'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 placeholder:text-neutral-400',
               errors.obs
                 ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
             ]"
           />
-          <span v-if="errors.obs" class="text-red-600 text-xs mt-1.5 block">{{ errors.obs[0] }}</span>
+          <span v-if="errors.obs" class="text-red-600 text-xs mt-1.5 block">{{
+            errors.obs[0]
+          }}</span>
         </div>
 
         <div class="grid gap-5 md:grid-cols-2">
@@ -144,10 +161,12 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.anexo_frente
                   ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             />
-            <span v-if="errors.anexo_frente" class="text-red-600 text-xs mt-1.5 block">{{ errors.anexo_frente[0] }}</span>
+            <span v-if="errors.anexo_frente" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.anexo_frente[0]
+            }}</span>
           </div>
 
           <div>
@@ -163,10 +182,12 @@
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                 errors.anexo_verso
                   ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
             />
-            <span v-if="errors.anexo_verso" class="text-red-600 text-xs mt-1.5 block">{{ errors.anexo_verso[0] }}</span>
+            <span v-if="errors.anexo_verso" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.anexo_verso[0]
+            }}</span>
           </div>
         </div>
       </div>
@@ -193,27 +214,55 @@
 
     <!-- Toast -->
     <Transition name="toast">
-      <div v-if="showToast" :class="[
-        'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
-        toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500'
-      ]" role="alert">
-        <div :class="[
-          'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-          toastType === 'success' ? 'bg-green-500' : 'bg-red-500'
-        ]">
-          <svg v-if="toastType === 'success'" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+      <div
+        v-if="showToast"
+        :class="[
+          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
+        ]"
+        role="alert"
+      >
+        <div
+          :class="[
+            'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+            toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
+          ]"
+        >
+          <svg
+            v-if="toastType === 'success'"
+            class="w-4 h-4 text-white"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="flex-1">
           <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
         </div>
-        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors">
+        <button
+          type="button"
+          @click="hideToast"
+          class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
+        >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -243,7 +292,7 @@ const form = reactive({
   dataconclusao: '',
   obs: '',
   anexo_frente: null,
-  anexo_verso: null
+  anexo_verso: null,
 })
 
 const errors = reactive({})
@@ -258,7 +307,7 @@ const onAreaChange = async () => {
   try {
     loadingClasses.value = true
     await formacaoStore.carregarClasses(form.area_id)
-  } catch (err) {
+  } catch {
     showToastMessage('Erro ao carregar classes', 'error')
   } finally {
     loadingClasses.value = false
@@ -274,7 +323,7 @@ const onClasseChange = async () => {
   try {
     loadingCursos.value = true
     await formacaoStore.carregarCursos(form.classe_id)
-  } catch (err) {
+  } catch {
     showToastMessage('Erro ao carregar cursos', 'error')
   } finally {
     loadingCursos.value = false
@@ -289,7 +338,7 @@ const onFileChange = (event, fieldName) => {
 const submitForm = async () => {
   try {
     submitting.value = true
-    Object.keys(errors).forEach(key => delete errors[key])
+    Object.keys(errors).forEach((key) => delete errors[key])
 
     const formData = new FormData()
 
@@ -322,7 +371,7 @@ const submitForm = async () => {
       }
       showToastMessage(response.message, 'error')
     }
-  } catch (err) {
+  } catch {
     showToastMessage('Erro ao salvar formação', 'error')
   } finally {
     submitting.value = false
@@ -349,11 +398,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
 }
 
-.toast-enter-active, .toast-leave-active {
+.toast-enter-active,
+.toast-leave-active {
   transition: all 0.3s ease;
 }
 

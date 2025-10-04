@@ -88,7 +88,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
         return {
           success: false,
           message: response.message,
-          errors: response.errors
+          errors: response.errors,
         }
       }
     } catch (err) {
@@ -113,7 +113,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
         return {
           success: false,
           message: response.message,
-          errors: response.errors
+          errors: response.errors,
         }
       }
     } catch (err) {
@@ -155,7 +155,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
         return {
           success: true,
           data: response.data,
-          message: 'Formação carregada com sucesso'
+          message: 'Formação carregada com sucesso',
         }
       } else {
         error.value = response.message
@@ -198,6 +198,6 @@ export const useFormacaoStore = defineStore('formacao', () => {
     inativarFormacao,
     obterFormacao,
     limparCaches,
-    limparErros
+    limparErros,
   }
 })

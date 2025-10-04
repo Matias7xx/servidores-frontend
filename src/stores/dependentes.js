@@ -64,7 +64,7 @@ export const useDependentesStore = defineStore('dependentes', () => {
       return {
         success: false,
         error: err,
-        message: err.response?.data?.message || 'Erro ao criar dependente'
+        message: err.response?.data?.message || 'Erro ao criar dependente',
       }
     } finally {
       loading.value = false
@@ -89,7 +89,7 @@ export const useDependentesStore = defineStore('dependentes', () => {
       return {
         success: false,
         error: err,
-        message: err.response?.data?.message || 'Erro ao atualizar dependente'
+        message: err.response?.data?.message || 'Erro ao atualizar dependente',
       }
     } finally {
       loading.value = false
@@ -154,6 +154,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
     atualizarDependente,
     inativarDependente,
     reativarDependente,
-    limparErros
+    limparErros,
   }
 })

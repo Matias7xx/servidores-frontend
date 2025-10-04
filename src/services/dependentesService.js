@@ -99,7 +99,7 @@ export const dependentesService = {
   async inativarDependente(id, matricula) {
     const response = await api.post('/api/dependentes/inativar', {
       id_dependente: id,
-      matricula_servidor: matricula
+      matricula_servidor: matricula,
     })
     return response.data
   },
@@ -108,7 +108,7 @@ export const dependentesService = {
   async reativarDependente(id, matricula) {
     const response = await api.post('/api/dependentes/reativar', {
       id_dependente: id,
-      matricula_servidor: matricula
+      matricula_servidor: matricula,
     })
     return response.data
   },
@@ -117,5 +117,5 @@ export const dependentesService = {
   async reativarDependenteDireto(id) {
     const response = await api.get(`/api/dependentes/reativar/${id}`)
     return response.data
-  }
+  },
 }
