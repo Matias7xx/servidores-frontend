@@ -1,12 +1,12 @@
 <template>
-  <footer class="bg-white border-t border-gray-200 mt-auto" role="contentinfo">
+  <footer class="bg-neutral-50 border-t border-neutral-200 mt-auto" role="contentinfo">
     <div class="px-4 sm:px-6 py-4 max-w-7xl mx-auto">
       <div
-        class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 text-xs sm:text-sm text-gray-600"
+        class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 text-xs sm:text-sm text-neutral-600"
       >
         <!-- Copyright -->
         <div class="text-center sm:text-left">
-          <span class="font-medium">DITI/DG-PCPB</span>
+          <span class="font-medium">Diretoria de Tecnologia da Informação</span>
           <span aria-hidden="true"> © </span>
           <span class="sr-only">Copyright</span>
           <time :datetime="currentYear.toString()">{{ currentYear }}</time>
@@ -15,7 +15,7 @@
         <!-- Versão -->
         <div class="flex items-center gap-2 text-center sm:text-right">
           <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-100 text-neutral-800 rounded-full text-xs font-medium"
           >
             <svg
               class="w-3.5 h-3.5"

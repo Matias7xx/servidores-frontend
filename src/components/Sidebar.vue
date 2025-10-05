@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="[
-      'transition-all duration-300 bg-black min-h-screen flex-shrink-0',
+      'transition-all duration-300 bg-neutral-950 min-h-screen flex-shrink-0',
       isCollapsed ? 'w-16' : 'w-64',
     ]"
     :aria-label="isCollapsed ? 'Menu de navegação (recolhido)' : 'Menu de navegação'"
@@ -14,7 +14,7 @@
           <router-link
             to="/"
             :class="[
-              'w-full flex items-center px-4 py-3 text-gray-100 hover:text-white hover:bg-[#c1a85a] transition-all  mr-2',
+              'w-full flex items-center px-4 py-3 text-neutral-100 hover:text-white hover:bg-[#c1a85a] transition-all mr-2',
               $route.name === 'Home' ? 'bg-[#c1a85a] text-white shadow-lg' : '',
             ]"
             :aria-current="$route.name === 'Home' ? 'page' : undefined"
@@ -38,11 +38,12 @@
             <button
               @click="toggleInformacoesMenu"
               :class="[
-                'w-full flex items-center justify-between px-4 py-3 text-gray-100 hover:text-white hover:bg-[#c1a85a] transition-all text-left mr-2',
+                'w-full flex items-center justify-between px-4 py-3 text-neutral-100 hover:text-white hover:bg-[#c1a85a] transition-all text-left mr-2',
                 isInformacoesOpen ? 'text-white bg-[#c1a85a] shadow-lg' : '',
               ]"
-              :aria-expanded="isInformacoesOpen"
+              :aria-expanded="isInformacoesOpen ? 'true' : 'false'"
               aria-controls="submenu-informacoes"
+              aria-label="Expandir ou recolher menu de Informações"
             >
               <div class="flex items-center">
                 <svg
@@ -94,12 +95,12 @@
               <div
                 v-show="isInformacoesOpen && !isCollapsed"
                 id="submenu-informacoes"
-                class="bg-gray-900 rounded-r-sm mr-2 overflow-hidden"
+                class="bg-neutral-900 rounded-r-sm mr-2 overflow-hidden border-l-2 border-[#c1a85a]"
               >
                 <router-link
                   to="/info_pessoal"
                   :class="[
-                    'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
+                    'flex items-center px-8 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
                     $route.name === 'info_pessoal' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'info_pessoal' ? 'page' : undefined"
@@ -124,7 +125,7 @@
                 <router-link
                   to="/dependentes"
                   :class="[
-                    'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
+                    'flex items-center px-8 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
                     $route.name === 'dependentes' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'dependentes' ? 'page' : undefined"
@@ -149,7 +150,7 @@
                 <router-link
                   to="/formacao"
                   :class="[
-                    'flex items-center px-8 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
+                    'flex items-center px-8 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-[#c1a85a] transition-colors',
                     $route.name === 'formacao' ? 'text-white bg-[#c1a85a]' : '',
                   ]"
                   :aria-current="$route.name === 'formacao' ? 'page' : undefined"
@@ -177,7 +178,7 @@
           <!-- Logout -->
           <button
             @click="handleLogout"
-            class="w-full flex items-center px-4 py-3 text-gray-100 hover:text-red-400 hover:bg-gray-900 transition-all text-left mr-2 mt-4"
+            class="w-full flex items-center px-4 py-3 text-neutral-100 hover:text-red-400 hover:bg-neutral-900 transition-all text-left mr-2 mt-4"
             :disabled="isLoggingOut"
           >
             <svg
@@ -270,11 +271,14 @@ watch(
   () => route.path,
   (newPath) => {
     if (
-      newPath.startsWith('/info-') ||
+      newPath.startsWith('/info_pessoal') ||
       newPath.startsWith('/dependentes') ||
       newPath.startsWith('/formacao')
     ) {
       isInformacoesOpen.value = true
+    } else {
+      // Fecha o dropdown se navegar para outra rota
+      isInformacoesOpen.value = false
     }
   },
   { immediate: true },
@@ -292,20 +296,10 @@ watch(
 </script>
 
 <style scoped>
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
 /* Scroll */
 nav {
   scrollbar-width: thin;
-  scrollbar-color: #c1a85a #1a1a1a;
+  scrollbar-color: #c1a85a #171717;
 }
 
 nav::-webkit-scrollbar {
@@ -313,7 +307,7 @@ nav::-webkit-scrollbar {
 }
 
 nav::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #171717;
 }
 
 nav::-webkit-scrollbar-thumb {

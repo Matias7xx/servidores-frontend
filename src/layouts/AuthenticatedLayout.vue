@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col">
+  <div class="min-h-screen bg-neutral-50 flex flex-col">
     <!-- Navbar -->
     <Navbar @toggle-sidebar="toggleSidebar" />
 
@@ -10,7 +10,7 @@
 
       <!-- Main Content -->
       <div class="flex-1 flex flex-col min-h-0">
-        <main class="flex-1 p-2 sm:p-4 overflow-auto">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
           <!-- Conteúdo dinâmico das páginas -->
           <router-view />
         </main>
@@ -37,6 +37,4 @@ const toggleSidebar = () => {
 }
 </script>
 
-<style scoped>
-/* Estilos específicos se necessário */
-</style>
+<style scoped></style>

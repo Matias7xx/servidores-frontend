@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-black border-b border-gray-950 px-4 py-3"
+    class="bg-neutral-950 border-b border-neutral-800 px-4 py-3"
     role="navigation"
     aria-label="Navegação principal"
   >
@@ -9,7 +9,7 @@
       <div class="flex items-center">
         <router-link
           to="/"
-          class="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none rounded"
+          class="flex items-center text-white hover:text-neutral-300 transition-colors focus:outline-none"
           aria-label="Página inicial do sistema"
         >
           <img src="/img/logo-pc.png" alt="" class="w-12 h-12 mr-3" role="presentation" />
@@ -22,7 +22,7 @@
               </span>
             </div>
             <div class="logo-tagline hidden md:block">
-              <small class="text-gray-400 text-sm">Polícia Civil da Paraíba</small>
+              <small class="text-neutral-400 text-sm">Polícia Civil da Paraíba</small>
             </div>
           </div>
         </router-link>
@@ -30,7 +30,7 @@
         <!-- Botão Toggle Sidebar -->
         <button
           @click="$emit('toggle-sidebar')"
-          class="ml-4 lg:ml-6 bg-black text-white hover:text-gray-300 hover:bg-gray-900 transition-colors p-2 rounded focus:outline-none"
+          class="ml-4 lg:ml-6 bg-neutral-950 text-white hover:text-neutral-300 hover:bg-neutral-900 transition-colors p-2 rounded focus:outline-none"
           type="button"
           aria-label="Alternar menu lateral"
           aria-expanded="false"
@@ -60,9 +60,9 @@
           <button
             @click="toggleDropdown"
             @keydown.escape="closeDropdown"
-            class="flex items-center text-white hover:text-gray-300 transition-colors p-2 rounded focus:outline-none group"
+            class="flex items-center text-white hover:text-neutral-300 transition-colors p-2 rounded focus:outline-none group"
             type="button"
-            :aria-expanded="isDropdownOpen"
+            :aria-expanded="isDropdownOpen ? 'true' : 'false'"
             aria-haspopup="true"
             aria-label="Menu do usuário"
           >
@@ -77,17 +77,17 @@
                 v-if="authStore.user?.foto"
                 :src="authStore.user.foto"
                 alt="Foto do servidor"
-                class="w-14 h-14 rounded-full object-cover border-2 border-gray-600 group-hover:border-gray-400 transition-all shadow-lg"
+                class="w-14 h-14 rounded-full object-cover border-2 border-neutral-600 group-hover:border-neutral-400 transition-all shadow-lg"
                 @error="handleImageError"
               />
 
               <!-- ÍCONE DE USER COMO FALLBACK -->
               <div
                 v-else
-                class="w-12 h-12 rounded-full bg-gray-700 border-2 border-gray-600 group-hover:border-gray-400 flex items-center justify-center transition-all shadow-lg"
+                class="w-12 h-12 rounded-full bg-neutral-800 border-2 border-neutral-600 group-hover:border-neutral-400 flex items-center justify-center transition-all shadow-lg"
               >
                 <svg
-                  class="w-6 h-6 text-gray-300"
+                  class="w-6 h-6 text-neutral-300"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   aria-hidden="true"
@@ -125,7 +125,7 @@
           <div
             v-show="isDropdownOpen"
             @click="closeDropdown"
-            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
+            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-neutral-200"
             role="menu"
             aria-orientation="vertical"
           >
@@ -241,14 +241,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-</style>
+<style scoped></style>

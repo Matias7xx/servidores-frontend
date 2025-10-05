@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen flex flex-col sm:justify-center items-center pt-4 sm:pt-0 px-4 sm:px-6 bg-gradient-to-b from-gray-50 to-gray-200"
+    class="min-h-screen flex flex-col sm:justify-center items-center pt-4 sm:pt-0 px-4 sm:px-6 bg-gradient-to-b from-neutral-50 to-neutral-100"
   >
     <!-- Logo e título -->
     <div class="relative z-10 mb-6 sm:mb-8 flex flex-col items-center">
@@ -11,24 +11,39 @@
       />
 
       <div class="mt-2 sm:mt-3 text-center">
-        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
+        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800">
           Recursos Humanos | Servidor
         </h1>
-        <p class="text-sm text-gray-600">Polícia Civil da Paraíba</p>
+        <p class="text-sm text-neutral-600">Polícia Civil da Paraíba</p>
       </div>
     </div>
 
     <!-- Card de Login -->
     <div
-      class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-gray-200"
+      class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-neutral-200"
     >
       <!-- Mensagens de erro gerais -->
       <div
         v-if="errors.general || authStore.error"
         class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md"
       >
-        <div class="text-sm text-red-600">
-          {{ errors.general?.[0] || authStore.error }}
+        <div class="flex items-start">
+          <svg
+            class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div class="text-sm text-red-600">
+            {{ errors.general?.[0] || authStore.error }}
+          </div>
         </div>
       </div>
 
@@ -43,13 +58,13 @@
       <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
         <!-- Matrícula -->
         <div class="relative">
-          <label for="matricula" class="block text-sm font-medium text-gray-700 mb-2">
+          <label for="matricula" class="block text-sm font-medium text-neutral-700 mb-2">
             Matrícula
           </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
-                class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400"
+                class="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -67,19 +82,19 @@
               ref="matriculaInput"
               v-model="form.matricula"
               type="text"
+              inputmode="numeric"
               :class="[
                 'pl-10 pr-4 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
                 errors.matricula
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:border-[#c1a85a] focus:ring-[#c1a85a]',
+                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                  : 'border-neutral-300 focus:border-[#c1a85a] focus:ring-2 focus:ring-[#c1a85a]/25',
               ]"
               required
               autofocus
-              placeholder="Informe sua Matrícula"
+              placeholder="0000000"
               maxlength="7"
-              minlength="7"
               :disabled="authStore.loading"
-              @input="clearFieldError('matricula')"
+              @input="handleMatriculaInput"
             />
           </div>
           <div v-if="errors.matricula" class="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
@@ -89,11 +104,13 @@
 
         <!-- Senha -->
         <div class="relative">
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2"> Senha </label>
+          <label for="password" class="block text-sm font-medium text-neutral-700 mb-2">
+            Senha
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
-                class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400"
+                class="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -114,8 +131,8 @@
               :class="[
                 'pl-10 pr-10 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
                 errors.password
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:border-[#c1a85a] focus:ring-[#c1a85a]',
+                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                  : 'border-neutral-300 focus:border-[#c1a85a] focus:ring-2 focus:ring-[#c1a85a]/25',
               ]"
               required
               placeholder="••••••••"
@@ -130,7 +147,8 @@
             <button
               type="button"
               @click="togglePasswordVisibility"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 focus:outline-none transition-colors"
+              tabindex="-1"
             >
               <svg
                 v-if="showPassword"
@@ -201,14 +219,13 @@
             id="remember"
             v-model="form.remember"
             type="checkbox"
-            class="rounded border-gray-300 h-4 w-4 text-[#c1a85a] focus:ring-[#c1a85a]"
+            class="rounded border-neutral-300 h-4 w-4 text-[#c1a85a]"
           />
-          <label for="remember" class="ml-2 text-sm text-gray-600">Lembrar-me</label>
+          <label for="remember" class="ml-2 text-sm text-neutral-600">Lembrar-me</label>
         </div>
 
-        <!-- Botões de ação -->
+        <!-- Botão de Login -->
         <div class="flex flex-col space-y-3 sm:space-y-4">
-          <!-- Botão de Login -->
           <button
             type="submit"
             :class="[
@@ -248,7 +265,7 @@
 
     <!-- Rodapé -->
     <div class="mt-4 sm:mt-8 text-center px-4">
-      <div class="text-xs sm:text-sm text-gray-600">
+      <div class="text-xs sm:text-sm text-neutral-600">
         © {{ currentYear }} Polícia Civil da Paraíba - Todos os direitos reservados
       </div>
     </div>
@@ -276,6 +293,7 @@ const errors = ref({})
 const status = ref('')
 const showPassword = ref(false)
 const capsLockOn = ref(false)
+const loginSuccess = ref(false)
 const currentYear = new Date().getFullYear()
 
 // Refs dos elementos
@@ -293,6 +311,13 @@ const clearFieldError = (field) => {
   authStore.clearError()
 }
 
+const handleMatriculaInput = (event) => {
+  // Aceitar apenas números
+  const value = event.target.value.replace(/\D/g, '').slice(0, 7)
+  form.matricula = value
+  clearFieldError('matricula')
+}
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
@@ -307,7 +332,7 @@ const validateForm = () => {
   const newErrors = {}
 
   if (!form.matricula || form.matricula.length !== 7) {
-    newErrors.matricula = 'A matrícula deve ter exatamente 7 caracteres'
+    newErrors.matricula = 'A matrícula deve ter exatamente 7 dígitos'
   }
 
   if (!form.password || form.password.length < 6) {
@@ -323,6 +348,7 @@ const handleSubmit = async () => {
 
   status.value = ''
   errors.value = {}
+  loginSuccess.value = false
 
   try {
     await authStore.login({
@@ -330,6 +356,8 @@ const handleSubmit = async () => {
       password: form.password,
       remember: form.remember,
     })
+
+    loginSuccess.value = true
 
     setTimeout(() => {
       const redirectTo = route.query.redirect || '/'
@@ -340,7 +368,10 @@ const handleSubmit = async () => {
       errors.value = err.response.data.errors
     } else {
       errors.value = {
-        general: [authStore.error || 'Erro ao fazer login. Tente novamente.'],
+        general: [
+          authStore.error ||
+            'Não foi possível realizar o login. Verifique sua conexão e tente novamente.',
+        ],
       }
     }
 
@@ -360,27 +391,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Animação de loading */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
 /* Efeitos de hover nos elementos */
 button,
 a {
   transition: all 0.2s ease-in-out;
-}
-
-/* Visual para campos de formulário */
-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(193, 168, 90, 0.25);
 }
 
 /* Responsividade */
@@ -395,10 +409,6 @@ input:focus {
   button,
   a {
     transition-duration: 0.01ms !important;
-  }
-
-  .animate-spin {
-    animation: none;
   }
 }
 </style>
