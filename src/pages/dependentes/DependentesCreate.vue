@@ -271,36 +271,29 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuthStore } from '@/stores/auth'
-import { dependentesService } from '@/services/dependentesService'
+import { useAuth } from '@websanova/vue-auth'
 
 const router = useRouter()
 const dependentesStore = useDependentesStore()
-const authStore = useAuthStore()
-
-const loadingData = ref(false)
+const auth = useAuth()
 
 const form = reactive({
-  matricula: '',
+  servidor_matricula: '',
   nome: '',
   cpf: '',
   sexo_dependente: '',
   tipo_dependente: '',
   data_nascimento: '',
   anexo: null,
-  historico: '',
-  documento: '',
-  status: 'A',
 })
 
 const errors = reactive({})
-
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
-
 const showReactiveModal = ref(false)
 const dependenteParaReativar = ref(null)
+const loadingData = ref(false)
 
 const formatarCPF = (event) => {
   form.cpf = event.target.value.replace(/[^0-9]/g, '')
@@ -327,34 +320,51 @@ const onFileChange = (event) => {
 
 const salvarDependente = async () => {
   try {
+    // Limpa erros anteriores
     Object.keys(errors).forEach((key) => delete errors[key])
 
-    if (!form.matricula) {
-      form.matricula = authStore.user?.matricula || ''
-    }
+    // Pega a matrícula do usuário logado
+    const matricula = auth.user()?.matricula
 
-    if (!form.matricula) {
+    if (!matricula) {
       showToastMessage('Erro: Matrícula do usuário não encontrada. Faça login novamente.', 'error')
       return
     }
+
+    // Validação manual da data antes de enviar
+    if (!form.data_nascimento || form.data_nascimento.trim() === '') {
+      errors.data_nascimento = ['A data de nascimento é obrigatória']
+      showToastMessage('Por favor, preencha a data de nascimento', 'error')
+      return
+    }
+
+    // Define a matrícula no formulário
+    form.servidor_matricula = matricula
+
+    console.log('📝 Dados do formulário antes de enviar:', {
+      ...form,
+      data_nascimento: form.data_nascimento,
+      data_nascimento_length: form.data_nascimento?.length,
+      data_nascimento_type: typeof form.data_nascimento,
+    })
 
     const result = await dependentesStore.criarDependente(form)
 
     if (result.success) {
       showToastMessage(result.message || 'Dependente cadastrado com sucesso!', 'success')
 
+      // Limpa o formulário
       Object.keys(form).forEach((key) => {
         if (key === 'anexo') {
           form[key] = null
-        } else if (key === 'status') {
-          form[key] = 'A'
-        } else if (key === 'matricula') {
-          form[key] = authStore.user?.matricula || ''
+        } else if (key === 'servidor_matricula') {
+          form[key] = matricula
         } else {
           form[key] = ''
         }
       })
 
+      // Limpa o input de arquivo
       const fileInput = document.querySelector('input[type="file"]')
       if (fileInput) fileInput.value = ''
 
@@ -362,9 +372,19 @@ const salvarDependente = async () => {
         router.push('/dependentes')
       }, 1500)
     } else {
-      showToastMessage(result.message || 'Erro ao cadastrar dependente', 'error')
+      // Verifica se há erros de validação
+      if (result.errors && Object.keys(result.errors).length > 0) {
+        Object.assign(errors, result.errors)
+        console.log('Erros de validação:', result.errors)
+        showToastMessage('Verifique os campos do formulário', 'error')
+      } else {
+        showToastMessage(result.message || 'Erro ao cadastrar dependente', 'error')
+      }
     }
   } catch (err) {
+    console.error('Erro capturado:', err)
+    console.log('Response completa:', err.response)
+
     if (err.response && err.response.status === 409) {
       const responseData = err.response.data
 
@@ -375,20 +395,31 @@ const salvarDependente = async () => {
         showToastMessage(responseData.message, 'error')
       }
     } else if (err.response && err.response.status === 422) {
-      const validationErrors = err.response.data.errors
+      const validationErrors = err.response.data.errors || {}
+      console.log('Erros 422:', validationErrors)
       Object.keys(validationErrors).forEach((key) => {
         errors[key] = validationErrors[key]
       })
       showToastMessage('Verifique os campos do formulário', 'error')
     } else {
-      showToastMessage('Erro ao cadastrar dependente', 'error')
+      showToastMessage(err.response?.data?.message || 'Erro ao cadastrar dependente', 'error')
     }
   }
 }
 
 const confirmarReativacao = async () => {
   try {
-    const response = await dependentesService.reativarDependenteDireto(dependenteParaReativar.value)
+    const matricula = auth.user()?.matricula
+
+    if (!matricula) {
+      showToastMessage('Erro: Matrícula não encontrada', 'error')
+      return
+    }
+
+    const response = await dependentesStore.reativarDependente(
+      dependenteParaReativar.value,
+      matricula,
+    )
 
     if (response.success) {
       showToastMessage('Dependente reativado com sucesso!', 'success')
@@ -400,7 +431,8 @@ const confirmarReativacao = async () => {
     } else {
       showToastMessage(response.message, 'error')
     }
-  } catch {
+  } catch (err) {
+    console.error('Erro ao reativar:', err)
     showToastMessage('Erro ao reativar dependente', 'error')
   }
 }
@@ -425,8 +457,12 @@ const hideToast = () => {
 }
 
 onMounted(() => {
-  if (authStore.user && authStore.user.matricula) {
-    form.matricula = authStore.user.matricula
+  const matricula = auth.user()?.matricula
+  if (matricula) {
+    form.servidor_matricula = matricula
+    console.log('Matrícula carregada:', matricula)
+  } else {
+    console.warn('Matrícula não encontrada no auth')
   }
 })
 </script>

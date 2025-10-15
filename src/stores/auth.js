@@ -10,21 +10,48 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLoggedIn = computed(() => isAuthenticated.value && user.value)
 
+  // Atualizar getMatricula
+  const getMatricula = () => {
+    // Tentar pegar do user
+    if (user.value?.matricula) {
+      return user.value.matricula
+    }
+
+    // Tentar pegar do token
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        return payload.matricula || payload.sub || null
+      } catch (e) {
+        console.error('Erro ao decodificar token:', e)
+      }
+    }
+
+    return null
+  }
+
   const initAuth = async () => {
     try {
       console.log('Inicializando autenticação...')
 
-      // Tentar verificar via API
+      const token = localStorage.getItem('auth_token')
+      if (!token) {
+        console.log('Sem token')
+        isAuthenticated.value = false
+        user.value = null
+        return false
+      }
+
+      // Decodificar token
       try {
-        const response = await api.get('/api/user')
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        user.value = payload
         isAuthenticated.value = true
-        user.value = response.data
-        console.log('✅ Usuário autenticado:', response.data)
+        console.log('Usuário autenticado:', payload.nome || payload.matricula)
         return true
       } catch (error) {
-        if (error.response?.status === 401) {
-          console.log('ℹ️ Não autenticado')
-        }
+        console.error('Erro ao decodificar token:', error)
         isAuthenticated.value = false
         user.value = null
         return false
@@ -44,22 +71,17 @@ export const useAuthStore = defineStore('auth', () => {
 
       console.log('Fazendo login...')
 
-      // Obter CSRF cookie
-      await api.get('/sanctum/csrf-cookie')
-
-      // Fazer login
       const formData = new FormData()
       formData.append('matricula', credentials.matricula)
       formData.append('password', credentials.password)
-      if (credentials.remember) {
-        formData.append('remember', '1')
-      }
 
-      const response = await api.post('/login', formData)
+      const response = await api.post('/api/login', formData)
 
-      if (response.data.success) {
-        await initAuth() // Busca o User com todos os dados, incluindo foto
-        console.log('✅ Login bem-sucedido')
+      if (response.data.success && response.data.token) {
+        localStorage.setItem('auth_token', response.data.token)
+
+        await initAuth()
+        console.log('Login bem-sucedido')
         return { success: true }
       }
     } catch (err) {
@@ -82,25 +104,20 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       loading.value = true
-
       console.log('Fazendo logout...')
 
-      // Fazer logout no backend
-      await api.post('/logout')
-
-      console.log('✅ Logout realizado no backend')
+      await api.post('/api/logout')
+      console.log('Logout realizado no backend')
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
     } finally {
-      // Limpar estado local
+      localStorage.removeItem('auth_token')
+
       isAuthenticated.value = false
       user.value = null
       loading.value = false
 
-      // Resetar flag de inicialização do router
-      window.__authInitialized = false
-
-      console.log('✅ Estado local limpo')
+      console.log('Estado local limpo')
     }
   }
 
@@ -114,6 +131,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isLoggedIn,
+    getMatricula,
     initAuth,
     login,
     logout,

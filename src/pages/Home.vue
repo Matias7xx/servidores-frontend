@@ -3,22 +3,15 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-semibold text-neutral-900">
-        {{ greeting }}, {{ authStore.user?.name || 'Usuário' }}!
+        {{ greeting }}, {{ auth.user()?.nome || 'Usuário' }}!
       </h1>
       <p class="text-sm text-neutral-500 mt-2">
         {{ currentDate }} • Gerencie suas informações pessoais e profissionais
       </p>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="flex justify-center py-20">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
-      ></div>
-    </div>
-
     <!-- Conteúdo -->
-    <div v-else class="space-y-6">
+    <div class="space-y-6">
       <!-- Ações Rápidas -->
       <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -144,23 +137,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useServidorStore } from '../stores/servidor'
-import { useAuthStore } from '../stores/auth'
+import { computed } from 'vue'
+import { useAuth } from '@websanova/vue-auth'
 
-const servidorStore = useServidorStore()
-const authStore = useAuthStore()
-
-const loading = ref(true)
-const dependentesCount = ref(0)
-const formacoesCount = ref(0)
+const auth = useAuth()
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
-  if (hour >= 0 && hour < 5) return 'Boa madrugada' // 0h-4h
-  if (hour >= 5 && hour < 12) return 'Bom dia' // 5h-11h
-  if (hour >= 12 && hour < 18) return 'Boa tarde' // 12h-17h
-  return 'Boa noite' // 18h-23h
+  if (hour >= 0 && hour < 5) return 'Boa madrugada'
+  if (hour >= 5 && hour < 12) return 'Bom dia'
+  if (hour >= 12 && hour < 18) return 'Boa tarde'
+  return 'Boa noite'
 })
 
 const currentDate = computed(() => {
@@ -172,27 +159,9 @@ const currentDate = computed(() => {
     day: 'numeric',
   })
 })
-
-onMounted(async () => {
-  try {
-    loading.value = true
-
-    await servidorStore.carregarServidor()
-
-    if (servidorStore.servidor) {
-      dependentesCount.value = servidorStore.servidor.dependentesCount || 0
-      formacoesCount.value = servidorStore.servidor.formacoesCount || 0
-    }
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error)
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <style scoped>
-/* Animação para os cards */
 @keyframes fadeInUp {
   from {
     opacity: 0;

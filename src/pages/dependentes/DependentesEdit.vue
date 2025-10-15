@@ -39,8 +39,8 @@
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.nome
-                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
+                    ? 'border-red-400 bg-red-50 text-red-900'
+                    : 'bg-white border-neutral-300 text-neutral-900',
                 ]"
                 required
               />
@@ -58,8 +58,8 @@
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.sexo_dependente
-                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
+                    ? 'border-red-400 bg-red-50 text-red-900'
+                    : 'bg-white border-neutral-300 text-neutral-900',
                 ]"
                 required
               >
@@ -82,8 +82,8 @@
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.tipo_dependente
-                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
+                    ? 'border-red-400 bg-red-50 text-red-900'
+                    : 'bg-white border-neutral-300 text-neutral-900',
                 ]"
                 required
               >
@@ -107,8 +107,8 @@
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.data_nascimento
-                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
+                    ? 'border-red-400 bg-red-50 text-red-900'
+                    : 'bg-white border-neutral-300 text-neutral-900',
                 ]"
                 required
               />
@@ -132,8 +132,8 @@
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 placeholder:text-neutral-400',
                   errors.cpf
-                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400',
+                    ? 'border-red-400 bg-red-50 text-red-900'
+                    : 'bg-white border-neutral-300 text-neutral-900',
                 ]"
                 required
               />
@@ -152,16 +152,65 @@
                 accept=".pdf"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                  errors.anexo
-                    ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                    : 'bg-white border-neutral-300 hover:border-neutral-400',
+                  errors.anexo ? 'border-red-400 bg-red-50' : 'bg-white border-neutral-300',
                 ]"
               />
               <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
                 errors.anexo[0]
               }}</span>
-              <div v-if="dependente.documento" class="text-xs text-neutral-500 mt-1.5">
-                Arquivo atual: {{ dependente.documento }}
+
+              <!-- Mostrar documento atual -->
+              <div v-if="dependente.documento" class="mt-2 flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 text-green-600"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p class="text-xs text-neutral-600">
+                  Arquivo atual:
+                  <button
+                    type="button"
+                    @click="abrirAnexo(dependente.id)"
+                    class="text-blue-600 hover:text-blue-700 underline font-medium"
+                  >
+                    Ver PDF
+                  </button>
+                </p>
+              </div>
+
+              <!-- Mostrar novo arquivo selecionado -->
+              <div v-if="form.anexo" class="mt-2 flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 text-blue-600"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                  />
+                </svg>
+                <p class="text-xs text-blue-600 font-medium">
+                  ✓ Novo arquivo: {{ form.anexo.name }}
+                </p>
+              </div>
+
+              <!-- Informação se não houver documento -->
+              <div v-if="!dependente.documento && !form.anexo" class="mt-2">
+                <p class="text-xs text-neutral-400">Nenhum arquivo anexado</p>
               </div>
             </div>
           </div>
@@ -172,7 +221,7 @@
           <button
             type="button"
             @click="$router.push('/dependentes')"
-            class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+            class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 transition-all duration-200"
           >
             Cancelar
           </button>
@@ -180,7 +229,7 @@
           <button
             type="submit"
             :disabled="dependentesStore.loading"
-            class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+            class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50"
           >
             <span v-if="dependentesStore.loading">Atualizando...</span>
             <span v-else>Salvar Alterações</span>
@@ -194,10 +243,9 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
-          toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
+          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50',
+          toastType === 'success' ? 'bg-white border-green-500' : 'bg-white border-red-500',
         ]"
-        role="alert"
       >
         <div
           :class="[
@@ -228,11 +276,7 @@
         <div class="flex-1">
           <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
         </div>
-        <button
-          type="button"
-          @click="hideToast"
-          class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
-        >
+        <button type="button" @click="hideToast" class="shrink-0 text-neutral-400">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -251,14 +295,13 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@websanova/vue-auth'
 import { dependentesService } from '@/services/dependentesService'
 
 const router = useRouter()
 const route = useRoute()
-
 const dependentesStore = useDependentesStore()
-const authStore = useAuthStore()
+const auth = useAuth()
 
 const loading = ref(true)
 const error = ref(null)
@@ -266,7 +309,7 @@ const dependente = ref({})
 
 const form = reactive({
   id: '',
-  matricula: '',
+  servidor_matricula: '',
   nome: '',
   cpf: '',
   sexo_dependente: '',
@@ -276,13 +319,45 @@ const form = reactive({
 })
 
 const errors = reactive({})
-
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-const convertSexoFromDatabase = (sexo) => {
-  return sexo === 'M' ? 'M' : 'F'
+const formatarDataParaInput = (data) => {
+  if (!data) return ''
+
+  console.log('Data recebida para formatar:', data)
+
+  // Se já está no formato YYYY-MM-DD, retorna direto
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return data
+  }
+
+  // Se está no formato DD/MM/YYYY
+  if (data.includes('/')) {
+    const [dia, mes, ano] = data.split('/')
+    return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
+  }
+
+  // Se está no formato ISO (YYYY-MM-DDTHH:mm:ss.000000Z)
+  if (data.includes('T')) {
+    return data.split('T')[0]
+  }
+
+  // Tenta criar uma data e formatar
+  try {
+    const date = new Date(data)
+    if (!isNaN(date.getTime())) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+  } catch (e) {
+    console.error('Erro ao formatar data:', e)
+  }
+
+  return ''
 }
 
 const fetchData = async () => {
@@ -291,22 +366,41 @@ const fetchData = async () => {
     error.value = null
 
     const dependenteId = route.params.id
-    const response = await dependentesService.getDependenteEdit(dependenteId)
 
-    if (response.success) {
-      dependente.value = response.data.servidorDependente
+    await dependentesStore.carregarDependentes()
 
-      form.id = dependente.value.id
-      form.matricula = authStore.user?.matricula || ''
-      form.nome = dependente.value.nome || ''
-      form.cpf = dependente.value.cpf || ''
-      form.sexo_dependente = convertSexoFromDatabase(dependente.value.sexo_dependente || '')
-      form.tipo_dependente = dependente.value.tipo_dependente || ''
-      form.data_nascimento = dependente.value.data_nascimento || ''
-    } else {
-      error.value = response.message
+    const dep = dependentesStore.dependentes.find((d) => d.id == dependenteId)
+
+    if (!dep) {
+      error.value = 'Dependente não encontrado'
+      return
     }
-  } catch {
+
+    dependente.value = dep
+
+    // Preencher formulário
+    form.id = dep.id
+    form.servidor_matricula = auth.user()?.matricula || ''
+    form.nome = dep.nome || ''
+    form.cpf = dep.cpf || ''
+    form.sexo_dependente = dep.sexo_dependente || ''
+    form.tipo_dependente = dep.tipo_dependente || ''
+
+    // Formatar data corretamente
+    if (dep.data_nascimento) {
+      form.data_nascimento = formatarDataParaInput(dep.data_nascimento)
+    }
+
+    console.log('Dependente carregado:', {
+      id: form.id,
+      nome: form.nome,
+      data_original: dep.data_nascimento,
+      data_formatada: form.data_nascimento,
+      documento: dep.documento,
+      tem_documento: !!dep.documento,
+    })
+  } catch (err) {
+    console.error('Erro ao carregar dependente:', err)
     error.value = 'Erro ao conectar com o servidor'
   } finally {
     loading.value = false
@@ -333,35 +427,113 @@ const onFileChange = (event) => {
     }
 
     form.anexo = file
+    console.log('Novo arquivo selecionado:', file.name)
+  }
+}
+
+const abrirAnexo = async (idDependente) => {
+  try {
+    const response = await dependentesService.getDocumentoUrl(idDependente)
+    if (response.success && response.url) {
+      const janela = window.open(
+        response.url,
+        'anexo',
+        'width=600,height=600,scrollbars=yes,resizable=yes',
+      )
+      if (!janela) {
+        alert('Popup bloqueado! Permita popups para visualizar o anexo.')
+      }
+    } else {
+      showToastMessage('Erro ao abrir documento', 'error')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar URL do documento:', error)
+    showToastMessage('Erro ao abrir documento', 'error')
   }
 }
 
 const atualizarDependente = async () => {
   try {
+    // Limpa erros anteriores
     Object.keys(errors).forEach((key) => delete errors[key])
 
-    form.matricula = authStore.user?.matricula || ''
+    // Validação da data
+    if (!form.data_nascimento || form.data_nascimento.trim() === '') {
+      errors.data_nascimento = ['A data de nascimento é obrigatória']
+      showToastMessage('Por favor, preencha a data de nascimento', 'error')
+      return
+    }
 
-    const result = await dependentesStore.atualizarDependente(form)
+    // Garante que tem matrícula
+    form.servidor_matricula = auth.user()?.matricula || ''
+
+    if (!form.servidor_matricula) {
+      showToastMessage('Erro: Matrícula não encontrada', 'error')
+      return
+    }
+
+    // Criar FormData
+    const formData = new FormData()
+
+    // ID do dependente (OBRIGATÓRIO)
+    formData.append('id', form.id)
+
+    // Campos obrigatórios
+    formData.append('servidor_matricula', form.servidor_matricula)
+    formData.append('nome', form.nome)
+    formData.append('cpf', form.cpf)
+    formData.append('sexo_dependente', form.sexo_dependente)
+    formData.append('tipo_dependente', form.tipo_dependente)
+
+    // Data em ambos os formatos (para validação e para o controller)
+    formData.append('data_nascimento', form.data_nascimento)
+    formData.append('datanascimento', form.data_nascimento)
+
+    // Anexo (somente se houver novo arquivo)
+    if (form.anexo instanceof File) {
+      console.log('📎 Novo anexo sendo adicionado:', form.anexo.name)
+      formData.append('anexo', form.anexo)
+    }
+
+    // Log para debug
+    console.log('FormData completo:')
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`   ${key}: [FILE] ${value.name} (${value.size} bytes)`)
+      } else {
+        console.log(`   ${key}:`, value)
+      }
+    }
+
+    const result = await dependentesStore.atualizarDependente(formData)
 
     if (result.success) {
       showToastMessage(result.message || 'Dependente atualizado com sucesso!', 'success')
 
       setTimeout(() => {
         router.push('/dependentes')
-      }, 1000)
+      }, 1500)
     } else {
-      showToastMessage(result.message || 'Erro ao atualizar dependente', 'error')
+      if (result.errors && Object.keys(result.errors).length > 0) {
+        Object.assign(errors, result.errors)
+        console.log('Erros de validação:', result.errors)
+        showToastMessage('Verifique os campos do formulário', 'error')
+      } else {
+        showToastMessage(result.message || 'Erro ao atualizar dependente', 'error')
+      }
     }
   } catch (err) {
+    console.error('Erro ao atualizar:', err)
+
     if (err.response && err.response.status === 422) {
-      const validationErrors = err.response.data.errors
+      const validationErrors = err.response.data.errors || {}
+      console.log('Erros 422:', validationErrors)
       Object.keys(validationErrors).forEach((key) => {
         errors[key] = validationErrors[key]
       })
       showToastMessage('Verifique os campos do formulário', 'error')
     } else {
-      showToastMessage('Erro ao atualizar dependente', 'error')
+      showToastMessage(err.response?.data?.message || 'Erro ao atualizar dependente', 'error')
     }
   }
 }
@@ -371,9 +543,7 @@ const showToastMessage = (message, type = 'success') => {
   toastType.value = type
   showToast.value = true
 
-  setTimeout(() => {
-    hideToast()
-  }, 5000)
+  setTimeout(() => hideToast(), 5000)
 }
 
 const hideToast = () => {
@@ -384,3 +554,20 @@ onMounted(() => {
   fetchData()
 })
 </script>
+
+<style scoped>
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>

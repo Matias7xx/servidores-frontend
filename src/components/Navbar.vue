@@ -66,16 +66,17 @@
             aria-haspopup="true"
             aria-label="Menu do usuário"
           >
-            <span class="mr-3 hidden sm:inline font-medium" v-if="authStore.user?.name">
-              {{ authStore.user.name }}
+            <!--  auth.user()?.name → auth.user()?.nome -->
+            <span class="mr-3 hidden sm:inline font-medium" v-if="auth.user()?.nome">
+              {{ auth.user().nome }}
             </span>
             <span v-else class="mr-3 hidden sm:inline font-medium">Usuário</span>
 
             <!-- FOTO DO SERVIDOR -->
             <div class="relative">
               <img
-                v-if="authStore.user?.foto"
-                :src="authStore.user.foto"
+                v-if="auth.user()?.foto"
+                :src="auth.user().foto"
                 alt="Foto do servidor"
                 class="w-14 h-14 rounded-full object-cover border-2 border-neutral-600 group-hover:border-neutral-400 transition-all shadow-lg"
                 @error="handleImageError"
@@ -183,13 +184,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+import { useAuth } from '@websanova/vue-auth'
 
 defineEmits(['toggle-sidebar'])
 
-const authStore = useAuthStore()
-const router = useRouter()
+const auth = useAuth()
 
 const isDropdownOpen = ref(false)
 const isLoggingOut = ref(false)
@@ -204,23 +203,36 @@ const closeDropdown = () => {
 
 const handleImageError = () => {
   console.warn('Erro ao carregar foto do servidor')
-  // Remove a foto para exibir o ícone padrão
-  if (authStore.user) {
-    authStore.user.foto = null
-  }
 }
 
+// Usar auth.logout()
 const handleLogout = async () => {
   if (isLoggingOut.value) return
 
   try {
     isLoggingOut.value = true
     closeDropdown()
-    await authStore.logout()
-    await router.push({ name: 'Login' })
+
+    console.log('[Logout] Iniciando...')
+
+    // método do Websanova
+    await auth.logout({
+      makeRequest: false, // Não fazer requisição automática
+      redirect: '/login',
+    })
+
+    // Limpar localStorage
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+
+    console.log('Logout concluído')
+
+    // Forçar reload
+    window.location.href = '/login'
   } catch (error) {
-    console.error('Erro ao fazer logout:', error)
-    await router.push({ name: 'Login' })
+    console.error('Erro no logout:', error)
+    localStorage.clear()
+    window.location.href = '/login'
   } finally {
     isLoggingOut.value = false
   }

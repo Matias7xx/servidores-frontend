@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { formacaoService } from '../services/formacaoService'
+import { useAuthStore } from './auth'
 
 export const useFormacaoStore = defineStore('formacao', () => {
   const formacoes = ref([])
@@ -10,12 +11,21 @@ export const useFormacaoStore = defineStore('formacao', () => {
   const loading = ref(false)
   const error = ref(null)
 
+  const authStore = useAuthStore()
+
   const carregarFormacoes = async () => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await formacaoService.getFormacoes()
+      const matricula = authStore.getMatricula()
+
+      if (!matricula) {
+        throw new Error('Matrícula não encontrada. Faça login novamente.')
+      }
+
+      const response = await formacaoService.getFormacoes(matricula)
+
       if (response.success) {
         formacoes.value = response.data
       } else {
@@ -33,9 +43,10 @@ export const useFormacaoStore = defineStore('formacao', () => {
     error.value = null
 
     try {
-      const response = await formacaoService.getFormacaoCreate()
+      const response = await formacaoService.getAreas()
+
       if (response.success) {
-        areas.value = response.data.areas
+        areas.value = response.data
       } else {
         error.value = response.message
       }
@@ -79,12 +90,21 @@ export const useFormacaoStore = defineStore('formacao', () => {
     error.value = null
 
     try {
-      const response = await formacaoService.createFormacao(formData)
+      const matricula = authStore.getMatricula()
+
+      if (!matricula) {
+        throw new Error('Matrícula não encontrada. Faça login novamente.')
+      }
+
+      const response = await formacaoService.createFormacao(matricula, formData)
+
       if (response.success) {
-        await carregarFormacoes() // Recarregar lista
+        await carregarFormacoes()
         return { success: true, message: response.message }
       } else {
-        error.value = response.message
+        if (!response.errors) {
+          error.value = response.message
+        }
         return {
           success: false,
           message: response.message,
@@ -105,11 +125,14 @@ export const useFormacaoStore = defineStore('formacao', () => {
 
     try {
       const response = await formacaoService.updateFormacao(formData)
+
       if (response.success) {
-        await carregarFormacoes() // Recarregar lista
+        await carregarFormacoes()
         return { success: true, message: response.message }
       } else {
-        error.value = response.message
+        if (!response.errors) {
+          error.value = response.message
+        }
         return {
           success: false,
           message: response.message,
@@ -130,8 +153,9 @@ export const useFormacaoStore = defineStore('formacao', () => {
 
     try {
       const response = await formacaoService.inativarFormacao(id)
+
       if (response.success) {
-        await carregarFormacoes() // Recarregar lista
+        await carregarFormacoes()
         return { success: true, message: response.message }
       } else {
         error.value = response.message
@@ -151,6 +175,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
 
     try {
       const response = await formacaoService.getFormacaoEdit(id)
+
       if (response.success) {
         return {
           success: true,

@@ -247,10 +247,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@websanova/vue-auth'
 
 const dependentesStore = useDependentesStore()
-const authStore = useAuthStore()
+const auth = useAuth()
 
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -262,22 +262,27 @@ const convertSexoFromDatabase = (sexo) => {
 }
 
 const fetchDependentesInativos = async () => {
+  console.log('Carregando dependentes inativos...')
   await dependentesStore.carregarDependentesInativos()
 
   if (dependentesStore.error) {
     showToastMessage(dependentesStore.error, 'error')
+  } else {
+    console.log('Inativos carregados:', dependentesStore.dependentesInativos.length)
   }
 }
 
 const confirmarReativacao = async (dependente) => {
   if (confirm(`Tem certeza que deseja reativar o dependente "${dependente.nome}"?`)) {
     try {
-      const matricula = authStore.user?.matricula || ''
+      const matricula = auth.user()?.matricula
 
       if (!matricula) {
         showToastMessage('Erro: Matrícula do usuário não encontrada', 'error')
         return
       }
+
+      console.log('Reativando dependente:', dependente.id)
 
       const result = await dependentesStore.reativarDependente(dependente.id, matricula)
 
@@ -286,7 +291,8 @@ const confirmarReativacao = async (dependente) => {
       } else {
         showToastMessage(result.message || 'Erro ao reativar dependente', 'error')
       }
-    } catch {
+    } catch (err) {
+      console.error('Erro ao reativar:', err)
       showToastMessage('Erro ao reativar dependente', 'error')
     }
   }
@@ -306,8 +312,12 @@ const abrirAnexo = (documento) => {
 
 const formatarData = (data) => {
   if (!data) return ''
-  const date = new Date(data)
-  return date.toLocaleDateString('pt-BR')
+  try {
+    const date = new Date(data)
+    return date.toLocaleDateString('pt-BR')
+  } catch {
+    return data
+  }
 }
 
 const formatarCPF = (cpf) => {
@@ -331,6 +341,7 @@ const hideToast = () => {
 }
 
 onMounted(() => {
+  console.log('Componente de inativos montado')
   fetchDependentesInativos()
 })
 </script>

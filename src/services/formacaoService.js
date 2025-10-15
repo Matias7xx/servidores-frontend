@@ -1,14 +1,30 @@
 import api from './api'
 
+function convertErrorKeys(errors) {
+  if (!errors) return {}
+
+  const converted = {}
+  for (const [key, value] of Object.entries(errors)) {
+    // Converte data_conclusao → dataconclusao
+    const newKey = key === 'data_conclusao' ? 'dataconclusao' : key
+    converted[newKey] = value
+  }
+  return converted
+}
+
 class FormacaoService {
-  // Listar formações
-  async getFormacoes() {
+  async getFormacoes(matricula) {
     try {
-      const response = await api.get('/api/servidor_formacao_list')
+      if (!matricula) {
+        throw new Error('Matrícula do servidor é obrigatória')
+      }
+
+      console.log('Buscando formações:', matricula)
+      const response = await api.get(`/formacao_servidor_list/${matricula}`)
 
       return {
         success: true,
-        data: response.data.data,
+        data: response.data.data || response.data,
         message: 'Formações carregadas com sucesso',
       }
     } catch (error) {
@@ -21,59 +37,38 @@ class FormacaoService {
     }
   }
 
-  // Buscar dados para criar formação
-  async getFormacaoCreate() {
+  async getAreas() {
     try {
-      const response = await api.get('/api/servidor_formacao_create')
+      console.log('Buscando áreas')
+      const response = await api.get('/formacao_areas')
 
       return {
         success: true,
-        data: response.data.data,
-        message: 'Dados carregados com sucesso',
+        data: response.data,
+        message: 'Áreas carregadas com sucesso',
       }
     } catch (error) {
-      console.error('Erro ao carregar dados:', error)
+      console.error('Erro ao carregar áreas:', error)
       return {
         success: false,
-        message: error.response?.data?.message || 'Erro ao carregar dados',
+        message: error.response?.data?.message || 'Erro ao carregar áreas',
         error: error.response?.data,
       }
     }
   }
 
-  // Criar formação
-  async createFormacao(formData) {
-    try {
-      const response = await api.post('/api/servidor_formacao_store', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      return {
-        success: true,
-        data: response.data.data,
-        message: response.data.message || 'Formação cadastrada com sucesso',
-      }
-    } catch (error) {
-      console.error('Erro ao criar formação:', error)
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Erro ao cadastrar formação',
-        errors: error.response?.data?.errors,
-        error: error.response?.data,
-      }
-    }
-  }
-
-  // Buscar dados para editar formação
   async getFormacaoEdit(id) {
     try {
-      const response = await api.get(`/api/servidor_formacao_edit/${id}`)
+      if (!id) {
+        throw new Error('ID da formação é obrigatório')
+      }
+
+      console.log('Buscando formação para edição:', id)
+      const response = await api.get(`/formacao_servidor_edit/${id}`)
 
       return {
-        success: true,
-        data: response.data.data,
+        success: response.data.success || true,
+        data: response.data.servidorFormacao,
         message: 'Dados carregados com sucesso',
       }
     } catch (error) {
@@ -86,10 +81,15 @@ class FormacaoService {
     }
   }
 
-  // Atualizar formação
-  async updateFormacao(formData) {
+  async createFormacao(matricula, formData) {
     try {
-      const response = await api.post('/api/servidor_formacao_update', formData, {
+      if (!matricula) {
+        throw new Error('Matrícula do servidor é obrigatória')
+      }
+
+      console.log('Criando formação:', matricula)
+
+      const response = await api.post(`/formacao_servidor_store/${matricula}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -97,7 +97,41 @@ class FormacaoService {
 
       return {
         success: true,
-        data: response.data.data,
+        data: response.data.data || response.data,
+        message: response.data.message || 'Formação cadastrada com sucesso',
+      }
+    } catch (error) {
+      console.error('Erro ao criar formação:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao cadastrar formação',
+        errors: convertErrorKeys(error.response?.data?.errors),
+        error: error.response?.data,
+      }
+    }
+  }
+
+  async updateFormacao(formData) {
+    try {
+      const id = formData.get('id')
+
+      if (!id) {
+        throw new Error('ID da formação é obrigatório')
+      }
+
+      console.log('Atualizando formação:', id)
+
+      formData.append('_method', 'PUT')
+
+      const response = await api.post(`/formacao_servidor_update/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      return {
+        success: true,
+        data: response.data.data || response.data,
         message: response.data.message || 'Formação atualizada com sucesso',
       }
     } catch (error) {
@@ -105,36 +139,20 @@ class FormacaoService {
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao atualizar formação',
-        errors: error.response?.data?.errors,
+        errors: convertErrorKeys(error.response?.data?.errors),
         error: error.response?.data,
       }
     }
   }
 
-  // Inativar formação
-  async inativarFormacao(id) {
-    try {
-      const response = await api.post('/api/servidor_formacao_inativar', { id })
-
-      return {
-        success: true,
-        data: response.data.data,
-        message: response.data.message || 'Formação inativada com sucesso',
-      }
-    } catch (error) {
-      console.error('Erro ao inativar formação:', error)
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Erro ao inativar formação',
-        error: error.response?.data,
-      }
-    }
-  }
-
-  // Buscar classes por área
   async getClassesByArea(areaId) {
     try {
-      const response = await api.get(`/api/formacao/classes/${areaId}`)
+      if (!areaId) {
+        throw new Error('ID da área é obrigatório')
+      }
+
+      console.log('Buscando classes da área:', areaId)
+      const response = await api.get(`/formacao_classe_area/${areaId}`)
       return response.data
     } catch (error) {
       console.error('Erro ao carregar classes:', error)
@@ -142,14 +160,52 @@ class FormacaoService {
     }
   }
 
-  // Buscar cursos por classe
   async getCursosByClasse(classeId) {
     try {
-      const response = await api.get(`/api/formacao/cursos/${classeId}`)
+      if (!classeId) {
+        throw new Error('ID da classe é obrigatório')
+      }
+
+      console.log('Buscando cursos da classe:', classeId)
+      const response = await api.get(`/formacao_curso_classe/${classeId}`)
       return response.data
     } catch (error) {
       console.error('Erro ao carregar cursos:', error)
       throw error
+    }
+  }
+
+  async getAnexoFrenteUrl(id) {
+    try {
+      console.log('Buscando URL do anexo frente:', id)
+      const response = await api.get(`/formacao_anexo_frente/${id}`)
+      return {
+        success: response.data.success || true,
+        url: response.data.url,
+      }
+    } catch (error) {
+      console.error('Erro ao buscar URL do anexo frente:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao buscar anexo',
+      }
+    }
+  }
+
+  async getAnexoVersoUrl(id) {
+    try {
+      console.log('Buscando URL do anexo verso:', id)
+      const response = await api.get(`/formacao_anexo_verso/${id}`)
+      return {
+        success: response.data.success || true,
+        url: response.data.url,
+      }
+    } catch (error) {
+      console.error('Erro ao buscar URL do anexo verso:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao buscar anexo',
+      }
     }
   }
 }

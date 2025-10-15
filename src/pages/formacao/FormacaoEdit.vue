@@ -14,13 +14,16 @@
     </div>
 
     <!-- Erro -->
-    <div v-else-if="formacaoStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+    <div
+      v-if="formacaoStore.error && !formacaoStore.loading"
+      class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+    >
       <p class="font-medium text-red-900">Erro ao carregar dados</p>
       <p class="text-sm text-red-700 mt-1">{{ formacaoStore.error }}</p>
     </div>
 
-    <!-- Formulário -->
-    <form v-else @submit.prevent="submitForm" class="space-y-5">
+    <!-- Formulário (sempre visível, exceto em loading) -->
+    <form v-if="!formacaoStore.loading" @submit.prevent="submitForm" class="space-y-5">
       <!-- Card: Dados da Formação -->
       <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
         <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
@@ -285,13 +288,12 @@ const toastMessage = ref('')
 const toastType = ref('success')
 const loadingClasses = ref(false)
 const loadingCursos = ref(false)
-const formacao = ref(null)
 
 const form = reactive({
-  id: '',
-  area_id: '',
-  classe_id: '',
-  curso_id: '',
+  id: null,
+  area_id: null,
+  classe_id: null,
+  curso_id: null,
   dataconclusao: '',
   obs: '',
   anexo_frente: null,
@@ -300,37 +302,11 @@ const form = reactive({
 
 const errors = reactive({})
 
-const fetchData = async () => {
-  try {
-    const response = await formacaoStore.obterFormacao(route.params.id)
-
-    if (response.success) {
-      formacao.value = response.data.formacao
-
-      form.id = formacao.value.id
-      form.curso_id = formacao.value.curso_id
-      form.dataconclusao = formacao.value.data_conclusao
-      form.obs = formacao.value.obs || ''
-
-      if (formacao.value.formacaoServidorCurso) {
-        const curso = formacao.value.formacaoServidorCurso
-        if (curso.formacaoClasse && curso.formacaoClasse.formacaoArea) {
-          form.area_id = curso.formacaoClasse.formacaoArea.id
-          form.classe_id = curso.formacaoClasse.id
-
-          await onAreaChange()
-          await onClasseChange()
-        }
-      }
-    }
-  } catch {
-    showToastMessage('Erro ao carregar formação', 'error')
-  }
-}
-
 const onAreaChange = async () => {
   if (!form.area_id) {
     formacaoStore.limparCaches()
+    form.classe_id = ''
+    form.curso_id = ''
     return
   }
 
@@ -347,6 +323,7 @@ const onAreaChange = async () => {
 const onClasseChange = async () => {
   if (!form.classe_id) {
     formacaoStore.cursos = []
+    form.curso_id = ''
     return
   }
 
@@ -376,7 +353,7 @@ const submitForm = async () => {
     formData.append('area_id', form.area_id)
     formData.append('classe_id', form.classe_id)
     formData.append('curso_id', form.curso_id)
-    formData.append('dataconclusao', form.dataconclusao)
+    formData.append('data_conclusao', form.dataconclusao)
 
     if (form.obs) {
       formData.append('obs', form.obs)
@@ -424,7 +401,37 @@ const hideToast = () => {
 }
 
 onMounted(async () => {
-  await fetchData()
+  // 1. Carregar lista de Áreas primeiro (para que o primeiro select tenha opções)
+  await formacaoStore.carregarAreas()
+
+  // 2. Obter os dados da formação
+  const response = await formacaoStore.obterFormacao(route.params.id)
+
+  if (response.success && response.data) {
+    const dadosFormacao = response.data
+
+    // Mapear dados do servidor para o formulário local
+    form.id = dadosFormacao.id
+    form.dataconclusao = dadosFormacao.data_conclusao // data_conclusao do JSON
+    form.obs = dadosFormacao.obs || ''
+
+    // IDs
+    form.curso_id = dadosFormacao.curso_id
+
+    form.classe_id = dadosFormacao.formacao_servidor_curso?.classe_id
+    form.area_id = dadosFormacao.formacao_servidor_curso?.formacao_classe?.area_id
+
+    if (form.area_id) {
+      await formacaoStore.carregarClasses(form.area_id)
+    }
+
+    if (form.classe_id) {
+      await formacaoStore.carregarCursos(form.classe_id)
+    }
+  } else {
+    // Tratamento de erro ao buscar a formação
+    // showToastMessage(response.message, 'error')
+  }
 })
 </script>
 

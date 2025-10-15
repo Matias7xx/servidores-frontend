@@ -23,10 +23,7 @@
       class="w-full max-w-sm sm:max-w-md px-4 sm:px-6 py-6 sm:py-8 bg-white shadow-xl sm:rounded-lg relative z-10 border border-neutral-200"
     >
       <!-- Mensagens de erro gerais -->
-      <div
-        v-if="errors.general || authStore.error"
-        class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md"
-      >
+      <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
         <div class="flex items-start">
           <svg
             class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5"
@@ -42,7 +39,7 @@
             ></path>
           </svg>
           <div class="text-sm text-red-600">
-            {{ errors.general?.[0] || authStore.error }}
+            {{ errors.general?.[0] }}
           </div>
         </div>
       </div>
@@ -93,7 +90,7 @@
               autofocus
               placeholder="0000000"
               maxlength="7"
-              :disabled="authStore.loading"
+              :disabled="loading"
               @input="handleMatriculaInput"
             />
           </div>
@@ -136,7 +133,7 @@
               ]"
               required
               placeholder="••••••••"
-              :disabled="authStore.loading"
+              :disabled="loading"
               autocomplete="current-password"
               @input="clearFieldError('password')"
               @keydown="checkCapsLock"
@@ -230,15 +227,15 @@
             type="submit"
             :class="[
               'w-full flex items-center justify-center space-x-2 px-6 py-2 sm:py-3 bg-[#c1a85a] text-white font-medium rounded-md focus:outline-none transition-all duration-200 text-sm sm:text-base',
-              authStore.loading
+              loading
                 ? 'opacity-75 cursor-not-allowed'
                 : 'hover:bg-[#a8924e] hover:shadow-lg transform hover:-translate-y-0.5',
             ]"
-            :disabled="authStore.loading"
+            :disabled="loading"
           >
             <!-- Spinner de loading -->
             <svg
-              v-if="authStore.loading"
+              v-if="loading"
               class="animate-spin h-4 w-4 text-white"
               fill="none"
               viewBox="0 0 24 24"
@@ -257,7 +254,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span>{{ authStore.loading ? 'Entrando...' : 'Entrar' }}</span>
+            <span>{{ loading ? 'Entrando...' : 'Entrar' }}</span>
           </button>
         </div>
       </form>
@@ -273,14 +270,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuth } from '@websanova/vue-auth'
+import api from '../services/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const authStore = useAuthStore()
+const auth = useAuth()
 
 // Estado reativo
 const form = reactive({
@@ -294,6 +291,7 @@ const status = ref('')
 const showPassword = ref(false)
 const capsLockOn = ref(false)
 const loginSuccess = ref(false)
+const loading = ref(false)
 const currentYear = new Date().getFullYear()
 
 // Refs dos elementos
@@ -308,11 +306,9 @@ const clearFieldError = (field) => {
   if (errors.value.general) {
     delete errors.value.general
   }
-  authStore.clearError()
 }
 
 const handleMatriculaInput = (event) => {
-  // Aceitar apenas números
   const value = event.target.value.replace(/\D/g, '').slice(0, 7)
   form.matricula = value
   clearFieldError('matricula')
@@ -349,37 +345,76 @@ const handleSubmit = async () => {
   status.value = ''
   errors.value = {}
   loginSuccess.value = false
+  loading.value = true
 
   try {
-    await authStore.login({
+    console.log('[Login] Tentando fazer login...')
+
+    // Fazer requisição manual
+    const response = await api.post('/login', {
       matricula: form.matricula.trim(),
-      password: form.password,
-      remember: form.remember,
+      senha: form.password,
+      remember: form.remember ? '1' : '0',
     })
 
-    loginSuccess.value = true
+    console.log('[Login] Resposta da API:', response.data)
 
-    setTimeout(() => {
+    // Salvar token E usuário manualmente
+    if (response.data.access_token) {
+      console.log('[Login] Salvando token...')
+      localStorage.setItem('auth_token', response.data.access_token)
+      auth.token(null, response.data.access_token)
+    }
+
+    if (response.data.user) {
+      console.log('[Login] Salvando usuário...')
+      localStorage.setItem('auth_user', JSON.stringify(response.data.user))
+      auth.user(response.data.user)
+    }
+
+    await nextTick()
+
+    // Verificar
+    console.log('[Login] Verificação final:')
+    console.log('  - localStorage token:', localStorage.getItem('auth_token') ? 'OK' : 'ERRO')
+    console.log('  - localStorage user:', localStorage.getItem('auth_user') ? 'OK' : 'ERRO')
+    console.log('  - auth.check():', auth.check())
+    console.log('  - auth.user():', auth.user())
+
+    if (auth.check()) {
       const redirectTo = route.query.redirect || '/'
-      router.push(redirectTo)
-    }, 1000)
+      console.log('[Login] Redirecionando para:', redirectTo)
+
+      await router.replace(redirectTo)
+      loginSuccess.value = true
+    } else {
+      console.error('[Login] auth.check() = false!')
+    }
   } catch (err) {
+    console.error('[Login] Erro:', err)
+
     if (err.response?.status === 422 && err.response?.data?.errors) {
-      errors.value = err.response.data.errors
+      const apiErrors = err.response.data.errors
+      if (apiErrors.senha) {
+        errors.value.password = apiErrors.senha
+      } else {
+        errors.value = apiErrors
+      }
     } else {
       errors.value = {
         general: [
-          authStore.error ||
+          err.response?.data?.message ||
             'Não foi possível realizar o login. Verifique sua conexão e tente novamente.',
         ],
       }
     }
 
     form.password = ''
-
     if (passwordInput.value) {
       passwordInput.value.focus()
     }
+  } finally {
+    loading.value = false
   }
 }
 

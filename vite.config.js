@@ -10,45 +10,31 @@ export default defineConfig({
     }
   },
   server: {
-    host: '0.0.0.0', // Permite acesso externo ao container
+    host: '0.0.0.0',
     port: 5173,
     strictPort: true,
     cors: true,
     watch: {
-      usePolling: true, // Hot reload no Docker
+      usePolling: true,
     },
     hmr: {
-      clientPort: 5173 // Porta para Hot Module Replacement
+      clientPort: 5173
     },
     proxy: {
-      // Login e Logout
-      '^/(login|logout)': {
-        target: 'http://host.docker.internal:8092', // Acessa o host da máquina
+      '/api': {
+        target: 'http://172.16.30.6:8095',
         changeOrigin: true,
         secure: false,
-        credentials: 'include',
-        bypass: function (req) {
-          if (req.method === 'GET') {
-            return req.url
-          }
+        configure: (proxy) => {
+          proxy.on('proxyReq', (req) => {
+            console.log('Proxy Request:', req.method, req.url)
+          })
         }
       },
-      '/api': {
-        target: 'http://host.docker.internal:8092',
-        changeOrigin: true,
-        secure: false,
-        credentials: 'include'
-      },
-      '/sanctum': {
-        target: 'http://host.docker.internal:8092',
-        changeOrigin: true,
-        secure: false,
-        credentials: 'include'
-      },
       '/storage': {
-        target: 'http://host.docker.internal:8092',
+        target: 'http://172.16.30.6:8095',
         changeOrigin: true,
-        secure: false
+        secure: false,
       }
     }
   }

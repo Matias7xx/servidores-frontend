@@ -1,55 +1,61 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/',
+  // Deve ter /api no final
+  baseURL: 'http://172.16.30.6:8095/api',
   headers: {
     Accept: 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
+    'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: false,
 })
 
-// Interceptor para adicionar token CSRF
-api.interceptors.request.use(async (config) => {
-  if (['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase())) {
-    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+//Interceptor para incluir token JWT
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token')
 
-    if (!csrfToken) {
-      // Buscar cookie CSRF
-      try {
-        await axios.get('/sanctum/csrf-cookie', { withCredentials: true })
-        csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-      } catch (error) {
-        console.error('Erro ao obter CSRF token:', error)
-      }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+      console.log('Token JWT adicionado:', config.url)
+    } else {
+      console.warn('Nenhum token encontrado para:', config.url)
     }
 
-    if (csrfToken) {
-      config.headers['X-CSRF-TOKEN'] = csrfToken
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
     }
-  }
 
-  if (config.data instanceof FormData) {
-    delete config.headers['Content-Type']
-  } else {
-    config.headers['Content-Type'] = 'application/json'
-  }
-
-  return config
-})
-
-// Interceptor para tratar erros
-api.interceptors.response.use(
-  (response) => response,
+    console.log('Request:', config.method.toUpperCase(), config.baseURL + config.url)
+    return config
+  },
   (error) => {
-    if (error.response?.status === 419) {
-      console.warn('Token CSRF expirado, recarregando...')
-      window.location.reload()
-      return
-    }
+    console.error('Request Error:', error)
+    return Promise.reject(error)
+  },
+)
+
+// Interceptor de resposta para tratar erros
+api.interceptors.response.use(
+  (response) => {
+    console.log('Response:', response.config.url, response.status)
+    return response
+  },
+  (error) => {
+    console.error('Response Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.response?.data?.message,
+      fullUrl: error.config?.baseURL + error.config?.url,
+    })
 
     if (error.response?.status === 401) {
-      console.warn('Não autenticado')
+      console.warn('Token inválido ou expirado - Redirecionando para login')
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      window.location.href = '/login'
+    } else if (error.response?.status === 500) {
+      console.error('Erro no servidor:', error.response?.data)
     }
 
     return Promise.reject(error)

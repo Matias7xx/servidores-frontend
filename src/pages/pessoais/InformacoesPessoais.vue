@@ -58,7 +58,7 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">Cargo</label>
               <input
                 type="text"
-                :value="servidorStore.servidor?.cargo_nome?.nome"
+                :value="form.cargo"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
               />
@@ -68,7 +68,7 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">Matrícula</label>
               <input
                 type="text"
-                :value="servidorStore.servidor?.matricula"
+                :value="form.matricula"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
               />
@@ -401,7 +401,7 @@
             Dados Eleitorais e Uniformes
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-5 mb-5">
+          <div class="grid gap-5 md:grid-cols-4 mb-5">
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2"
                 >Título de Eleitor</label
@@ -517,9 +517,44 @@
                 ]"
                 :readonly="!canEdit('telefone_1')"
               />
-              <span v-if="errors.email" class="text-red-600 text-xs mt-1.5 block">{{
-                errors.email[0]
-              }}</span>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Telefone 2 <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                v-model="form.telefone_2"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.telefone_2
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : canEdit('telefone_2')
+                      ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                      : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :readonly="!canEdit('telefone_2')"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                E-mail <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                v-model="form.email"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  errors.email
+                    ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
+                    : canEdit('email')
+                      ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                      : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :readonly="!canEdit('email')"
+              />
             </div>
           </div>
         </div>
@@ -784,10 +819,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useAuth } from '@websanova/vue-auth'
 import { useServidorStore } from '@/stores/servidor'
 
-// Stores
+const auth = useAuth()
 const servidorStore = useServidorStore()
 
 // Toast
@@ -797,7 +833,10 @@ const toastType = ref('success')
 
 // Formulário
 const form = reactive({
+  id: null,
   nome: '',
+  matricula: '',
+  cargo: '',
   cpf: '',
   sexo: '',
   orientacao: '',
@@ -837,84 +876,196 @@ const form = reactive({
 
 const errors = reactive({})
 
-// Métodos
-const fetchData = async () => {
-  try {
-    await servidorStore.carregarServidor()
-
-    if (servidorStore.servidor) {
-      Object.keys(form).forEach((key) => {
-        if (key === 'estado') {
-          const estadoSalvo = servidorStore.servidor.estado
-          if (estadoSalvo && estadoSalvo.length === 2) {
-            form[key] = estadoSalvo
-          } else if (estadoSalvo) {
-            const estadoEncontrado = servidorStore.estados.find(
-              (e) => e.codigo == estadoSalvo || e.id == estadoSalvo,
-            )
-            form[key] = estadoEncontrado ? estadoEncontrado.nome : estadoSalvo
-          } else {
-            form[key] = ''
-          }
-        } else if (key === 'cidade_id') {
-          form[key] = servidorStore.servidor.cidade || ''
-        } else {
-          form[key] = servidorStore.servidor[key] || ''
-        }
-      })
+// Watch para carregar cidades quando o estado mudar
+watch(
+  () => form.estado,
+  (novoEstado) => {
+    if (novoEstado) {
+      console.log('Estado selecionado:', novoEstado)
     }
-  } catch (err) {
-    console.error('Erro ao carregar dados:', err)
-    showToastMessage('Erro ao carregar dados do servidor', 'error')
+  },
+)
+
+// Carregar dados do servidor
+const carregarDados = async () => {
+  const matricula = auth.user()?.matricula
+
+  if (!matricula) {
+    showToastMessage('Erro: Matrícula não encontrada. Faça login novamente.', 'error')
+    return
   }
+
+  console.log('Carregando dados para matrícula:', matricula)
+  const result = await servidorStore.carregarServidor(matricula)
+
+  if (result.success && result.data) {
+    console.log('Dados recebidos com sucesso:', result.data)
+    preencherForm(result.data)
+  } else {
+    console.error('Erro ao carregar dados:', result.message)
+    showToastMessage(result.message || 'Erro ao carregar dados', 'error')
+  }
+}
+
+// Preencher formulário com dados do servidor
+const preencherForm = (dados) => {
+  console.log('Preenchendo formulário com dados:', dados)
+
+  // Limpa o formulário primeiro
+  Object.keys(form).forEach((key) => {
+    form[key] = ''
+  })
+
+  // Preenche com os novos dados
+  Object.keys(form).forEach((key) => {
+    if (dados[key] !== undefined && dados[key] !== null) {
+      form[key] = dados[key]
+    }
+  })
+
+  // ID do servidor
+  if (dados.id) {
+    form.id = dados.id
+  }
+
+  // Cargo
+  if (dados.cargo_nome?.nome) {
+    form.cargo = dados.cargo_nome.nome
+  } else if (dados.cargo) {
+    form.cargo = dados.cargo
+  }
+
+  // Estado
+  if (dados.estado) {
+    // Busca o estado pelo código
+    const estadoEncontrado = servidorStore.estados.find(
+      (est) => est.codigo == dados.estado || est.codigo === parseInt(dados.estado),
+    )
+    if (estadoEncontrado) {
+      form.estado = estadoEncontrado.nome
+      console.log('Estado encontrado:', estadoEncontrado.nome, 'para código:', dados.estado)
+    } else {
+      console.warn('Estado não encontrado para código:', dados.estado)
+    }
+  }
+
+  // Cidade
+  if (dados.cidade_nome?.codigo) {
+    form.cidade_id = dados.cidade_nome.codigo
+  } else if (dados.cidade) {
+    form.cidade_id = dados.cidade
+  }
+
+  // Data de nascimento
+  if (dados.datanascimento) {
+    form.datanascimento = formatarDataParaInput(dados.datanascimento)
+  }
+
+  console.log('Formulário preenchido com sucesso:', {
+    id: form.id,
+    nome: form.nome,
+    matricula: form.matricula,
+    cargo: form.cargo,
+    cidade_id: form.cidade_id,
+    datanascimento: form.datanascimento,
+  })
+}
+
+// Formatar data para input type="date"
+const formatarDataParaInput = (data) => {
+  if (!data) return ''
+
+  console.log('Formatando data:', data)
+
+  // Se já está no formato YYYY-MM-DD, retorna direto
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return data
+  }
+
+  // Se está no formato DD/MM/YYYY
+  if (data.includes('/')) {
+    const [dia, mes, ano] = data.split('/')
+    const dataFormatada = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
+    console.log('Data formatada de DD/MM/YYYY:', dataFormatada)
+    return dataFormatada
+  }
+
+  // Se está no formato YYYY-MM-DD HH:mm:ss (datetime)
+  if (data.includes('-') && data.includes(' ')) {
+    const dataFormatada = data.split(' ')[0]
+    console.log('Data formatada de datetime:', dataFormatada)
+    return dataFormatada
+  }
+
+  // Tenta criar uma data e formatar
+  try {
+    const date = new Date(data)
+    if (!isNaN(date.getTime())) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const dataFormatada = `${year}-${month}-${day}`
+      console.log('Data formatada de Date object:', dataFormatada)
+      return dataFormatada
+    }
+  } catch (e) {
+    console.error('Erro ao formatar data:', e)
+  }
+
+  console.warn('Não foi possível formatar a data, retornando original:', data)
+  return data
 }
 
 const updateDados = async () => {
   try {
+    console.log('Iniciando atualização de dados...')
+
+    // Limpa erros anteriores
     Object.keys(errors).forEach((key) => delete errors[key])
 
-    const result = await servidorStore.atualizarServidor({
-      id: servidorStore.servidor.id,
+    const matricula = auth.user()?.matricula
+
+    if (!matricula) {
+      showToastMessage('Erro: Matrícula não encontrada. Faça login novamente.', 'error')
+      return
+    }
+
+    // Prepara os dados para envio
+    const dadosParaEnviar = {
+      matricula: matricula,
       ...form,
-    })
+    }
+
+    console.log('Dados que serão enviados:', dadosParaEnviar)
+
+    const result = await servidorStore.atualizarServidor(dadosParaEnviar)
 
     if (result.success) {
+      console.log('Dados atualizados com sucesso!')
       showToastMessage(result.message || 'Dados atualizados com sucesso!', 'success')
-      await fetchData()
     } else {
+      console.error('Erro ao atualizar:', result.message, result.errors)
       if (result.errors) {
         Object.assign(errors, result.errors)
+        console.log('Erros de validação:', errors)
       }
       showToastMessage(result.message || 'Erro ao atualizar dados', 'error')
     }
   } catch (err) {
-    console.error('Erro ao atualizar:', err)
+    console.error('Erro capturado ao atualizar:', err)
     showToastMessage('Erro ao atualizar dados', 'error')
   }
 }
 
 const resetForm = () => {
+  console.log('Resetando formulário...')
+
+  // Reseta com dados originais do servidor
   if (servidorStore.servidor) {
-    Object.keys(form).forEach((key) => {
-      if (key === 'estado') {
-        const estadoSalvo = servidorStore.servidor.estado
-        if (estadoSalvo && estadoSalvo.length === 2) {
-          form[key] = estadoSalvo
-        } else if (estadoSalvo) {
-          const estadoEncontrado = servidorStore.estados.find(
-            (e) => e.codigo == estadoSalvo || e.id == estadoSalvo,
-          )
-          form[key] = estadoEncontrado ? estadoEncontrado.nome : estadoSalvo
-        } else {
-          form[key] = ''
-        }
-      } else if (key === 'cidade_id') {
-        form[key] = servidorStore.servidor.cidade || ''
-      } else {
-        form[key] = servidorStore.servidor[key] || ''
-      }
-    })
+    preencherForm(servidorStore.servidor)
   }
+
+  // Limpa erros
   Object.keys(errors).forEach((key) => delete errors[key])
   showToastMessage('Alterações canceladas', 'success')
 }
@@ -972,8 +1123,10 @@ const hideToast = () => {
   showToast.value = false
 }
 
+// Carregar dados ao montar componente
 onMounted(() => {
-  fetchData()
+  console.log('Componente montado, iniciando carregamento de dados...')
+  carregarDados()
 })
 </script>
 

@@ -231,8 +231,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useRoute } from 'vue-router'
+import { useAuth } from '@websanova/vue-auth'
 
 const props = defineProps({
   isCollapsed: {
@@ -241,9 +241,8 @@ const props = defineProps({
   },
 })
 
-const authStore = useAuthStore()
+const auth = useAuth()
 const route = useRoute()
-const router = useRouter()
 
 const isInformacoesOpen = ref(false)
 const isLoggingOut = ref(false)
@@ -252,16 +251,31 @@ const toggleInformacoesMenu = () => {
   isInformacoesOpen.value = !isInformacoesOpen.value
 }
 
+//  Logout
 const handleLogout = async () => {
   if (isLoggingOut.value) return
 
   try {
     isLoggingOut.value = true
-    await authStore.logout()
-    await router.push({ name: 'Login' })
+
+    console.log('[Sidebar Logout] Iniciando...')
+
+    // Usar auth.logout()
+    await auth.logout({
+      makeRequest: false,
+      redirect: '/login',
+    })
+
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+
+    console.log('[Sidebar Logout] Concluído')
+
+    window.location.href = '/login'
   } catch (error) {
-    console.error('Erro ao fazer logout:', error)
-    await router.push({ name: 'Login' })
+    console.error('[Sidebar Logout] Erro:', error)
+    localStorage.clear()
+    window.location.href = '/login'
   } finally {
     isLoggingOut.value = false
   }
@@ -277,14 +291,12 @@ watch(
     ) {
       isInformacoesOpen.value = true
     } else {
-      // Fecha o dropdown se navegar para outra rota
       isInformacoesOpen.value = false
     }
   },
   { immediate: true },
 )
 
-// Fechar submenu quando sidebar colapsa
 watch(
   () => props.isCollapsed,
   (newVal) => {

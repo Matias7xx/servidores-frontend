@@ -10,23 +10,45 @@ export const useServidorStore = defineStore('servidor', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const carregarServidor = async () => {
+  // Carregar dados do servidor
+  const carregarServidor = async (matricula) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await servidorService.getServidorEdit()
+      const response = await servidorService.getServidor(matricula)
+
       if (response.success) {
+        // Atribui os dados do servidor
         servidor.value = response.data.servidor
-        cidades.value = response.data.cidades || []
+
+        // Atribui estados e cidades
         estados.value = response.data.estados || []
+        cidades.value = response.data.cidades || []
         servidorConfig.value = response.data.servidor_config || []
+
+        console.log('Dados carregados:', {
+          servidor: servidor.value,
+          totalEstados: estados.value.length,
+          totalCidades: cidades.value.length,
+        })
+
+        return {
+          success: true,
+          data: servidor.value,
+          message: 'Dados carregados com sucesso',
+        }
       } else {
         error.value = response.message
+        return { success: false, message: response.message }
       }
     } catch (err) {
-      error.value = err.message || 'Erro ao carregar servidor'
-      console.error('Erro ao carregar servidor:', err)
+      console.error('Erro na store ao carregar servidor:', err)
+      error.value = err.message || 'Erro ao carregar dados'
+      return {
+        success: false,
+        message: err.message || 'Erro ao carregar dados',
+      }
     } finally {
       loading.value = false
     }
@@ -37,15 +59,32 @@ export const useServidorStore = defineStore('servidor', () => {
     error.value = null
 
     try {
-      const response = await servidorService.updateServidor(dados)
+      // Adiciona o ID do servidor aos dados
+      const dadosCompletos = {
+        ...dados,
+        id: servidor.value?.id,
+      }
+
+      const response = await servidorService.updateServidor(dadosCompletos)
+
       if (response.success) {
-        servidor.value = response.data.servidor
-        return { success: true, message: response.message }
+        // Recarrega os dados após atualização
+        await carregarServidor(dados.matricula)
+
+        return {
+          success: true,
+          message: response.message || 'Dados atualizados com sucesso',
+        }
       } else {
         error.value = response.message
-        return { success: false, message: response.message, errors: response.errors }
+        return {
+          success: false,
+          message: response.message,
+          errors: response.errors,
+        }
       }
     } catch (err) {
+      console.error('Erro na store ao atualizar servidor:', err)
       error.value = err.message || 'Erro ao atualizar servidor'
       return {
         success: false,
@@ -61,6 +100,14 @@ export const useServidorStore = defineStore('servidor', () => {
     error.value = null
   }
 
+  const limparDados = () => {
+    servidor.value = null
+    cidades.value = []
+    estados.value = []
+    servidorConfig.value = []
+    error.value = null
+  }
+
   return {
     servidor,
     cidades,
@@ -71,5 +118,6 @@ export const useServidorStore = defineStore('servidor', () => {
     carregarServidor,
     atualizarServidor,
     limparErros,
+    limparDados,
   }
 })

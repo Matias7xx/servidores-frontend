@@ -8,15 +8,6 @@
           <p class="text-sm text-neutral-500 mt-1.5">Gerencie seus dependentes cadastrados</p>
         </div>
         <div class="flex gap-3">
-          <!-- <button
-            @click="fetchDependentes"
-            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline mr-1.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
-            Recarregar
-          </button> -->
           <router-link
             to="/dependentes/inativos"
             class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
@@ -170,7 +161,7 @@
               <td class="px-6 py-4">
                 <button
                   v-if="dependente.documento"
-                  @click="abrirAnexo(dependente.documento)"
+                  @click="abrirAnexo(dependente.id)"
                   class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
                   <svg
@@ -187,7 +178,7 @@
                       d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                     />
                   </svg>
-                  Ver
+                  Ver PDF
                 </button>
                 <span v-else class="text-xs text-neutral-400">Sem anexo</span>
               </td>
@@ -229,7 +220,7 @@
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                        d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                       />
                     </svg>
                   </button>
@@ -303,12 +294,12 @@
 import { ref, onMounted, watch, onActivated } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuthStore } from '@/stores/auth'
+import { dependentesService } from '@/services/dependentesService'
+import { useAuth } from '@websanova/vue-auth'
 
 const route = useRoute()
-
 const dependentesStore = useDependentesStore()
-const authStore = useAuthStore()
+const auth = useAuth()
 
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -329,12 +320,11 @@ const fetchDependentes = async () => {
 const confirmarExclusao = async (dependente) => {
   if (confirm(`Tem certeza que deseja inativar o dependente "${dependente.nome}"?`)) {
     try {
-      const matricula = authStore.user?.matricula || ''
+      const matricula = auth.user()?.matricula
       if (!matricula) {
         showToastMessage('Erro: Matrícula do usuário não encontrada', 'error')
         return
       }
-
       const result = await dependentesStore.inativarDependente(dependente.id, matricula)
       if (result.success) {
         showToastMessage(result.message || 'Dependente inativado com sucesso!', 'success')
@@ -347,15 +337,45 @@ const confirmarExclusao = async (dependente) => {
   }
 }
 
-const abrirAnexo = (documento) => {
-  const url = `/storage/doc_dependentes/${documento}`
-  window.open(url, 'anexo', 'width=600,height=600')
+const abrirAnexo = async (idDependente) => {
+  try {
+    const response = await dependentesService.getDocumentoUrl(idDependente)
+    if (response.success && response.url) {
+      const janela = window.open(
+        response.url,
+        'anexo',
+        'width=600,height=600,scrollbars=yes,resizable=yes',
+      )
+      if (!janela) {
+        alert('Popup bloqueado! Permita popups para visualizar o anexo.')
+      }
+    } else {
+      showToastMessage('Erro ao abrir documento', 'error')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar URL do documento:', error)
+    showToastMessage('Erro ao abrir documento', 'error')
+  }
 }
 
 const formatarData = (data) => {
   if (!data) return ''
-  const date = new Date(data)
-  return date.toLocaleDateString('pt-BR')
+  try {
+    if (typeof data === 'string' && data.includes('T')) {
+      return new Date(data).toLocaleDateString('pt-BR')
+    }
+    if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data)) {
+      const [ano, mes, dia] = data.split('-')
+      return `${dia}/${mes}/${ano}`
+    }
+    const date = new Date(data)
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString('pt-BR')
+    }
+    return data
+  } catch {
+    return data
+  }
 }
 
 const formatarCPF = (cpf) => {
@@ -378,19 +398,12 @@ const hideToast = () => {
 watch(
   () => route.fullPath,
   (newPath) => {
-    if (newPath === '/dependentes') {
-      fetchDependentes()
-    }
+    if (newPath === '/dependentes') fetchDependentes()
   },
 )
 
-onActivated(() => {
-  fetchDependentes()
-})
-
-onMounted(() => {
-  fetchDependentes()
-})
+onActivated(() => fetchDependentes())
+onMounted(() => fetchDependentes())
 </script>
 
 <style scoped>
@@ -398,12 +411,10 @@ onMounted(() => {
 .toast-leave-active {
   transition: all 0.3s ease;
 }
-
 .toast-enter-from {
   opacity: 0;
   transform: translateX(100%);
 }
-
 .toast-leave-to {
   opacity: 0;
   transform: translateY(-20px);

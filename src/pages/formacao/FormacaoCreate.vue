@@ -14,13 +14,16 @@
     </div>
 
     <!-- Erro -->
-    <div v-else-if="formacaoStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+    <div
+      v-if="formacaoStore.error && !formacaoStore.loading"
+      class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+    >
       <p class="font-medium text-red-900">Erro ao carregar dados</p>
       <p class="text-sm text-red-700 mt-1">{{ formacaoStore.error }}</p>
     </div>
 
-    <!-- Formulário -->
-    <form v-else @submit.prevent="submitForm" class="space-y-5">
+    <!-- Formulário (sempre visível, exceto em loading) -->
+    <form v-if="!formacaoStore.loading" @submit.prevent="submitForm" class="space-y-5">
       <!-- Card: Dados da Formação -->
       <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
         <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
@@ -345,7 +348,7 @@ const submitForm = async () => {
     formData.append('area_id', form.area_id)
     formData.append('classe_id', form.classe_id)
     formData.append('curso_id', form.curso_id)
-    formData.append('dataconclusao', form.dataconclusao)
+    formData.append('data_conclusao', form.dataconclusao)
 
     if (form.obs) {
       formData.append('obs', form.obs)

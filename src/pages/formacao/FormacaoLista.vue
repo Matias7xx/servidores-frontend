@@ -134,13 +134,16 @@
             >
               <td class="px-6 py-4 text-sm text-neutral-500">{{ index + 1 }}</td>
               <td class="px-6 py-4 text-sm text-neutral-900">
-                {{ formacao.area_nome || '-' }} / {{ formacao.classe_nome || '-' }}
+                {{ formacao.formacao_servidor_curso?.formacao_classe?.formacao_area?.area || '-' }}
+                /
+                {{ formacao.formacao_servidor_curso?.formacao_classe?.classe || '-' }}
               </td>
               <td class="px-6 py-4 text-sm text-neutral-700">
-                {{ formacao.categoria_nome || '-' }} / {{ formacao.subcategoria_nome || '-' }}
+                {{ formacao.formacao_servidor_curso?.subcategoria?.categoria?.nome || '-' }} /
+                {{ formacao.formacao_servidor_curso?.subcategoria?.nome || '-' }}
               </td>
               <td class="px-6 py-4 text-sm font-medium text-neutral-900">
-                {{ formacao.curso_nome || '-' }}
+                {{ formacao.formacao_servidor_curso?.curso || '-' }}
               </td>
               <td class="px-6 py-4 text-sm text-neutral-700">
                 {{ formatDate(formacao.data_conclusao) }}
@@ -149,7 +152,7 @@
                 <div class="flex gap-1.5">
                   <button
                     v-if="formacao.anexo_frente"
-                    @click="abrirAnexo(formacao.anexo_frente)"
+                    @click="abrirAnexo(formacao.id, 'frente')"
                     class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
                     Frente
@@ -161,7 +164,7 @@
                   >
                   <button
                     v-if="formacao.anexo_verso"
-                    @click="abrirAnexo(formacao.anexo_verso)"
+                    @click="abrirAnexo(formacao.id, 'verso')"
                     class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
                     Verso
@@ -289,6 +292,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useFormacaoStore } from '../../stores/formacao'
+import { formacaoService } from '../../services/formacaoService'
 
 const formacaoStore = useFormacaoStore()
 
@@ -298,13 +302,30 @@ const toastType = ref('success')
 
 const formatDate = (dateString) => {
   if (!dateString) return '-'
-  const date = new Date(dateString)
+
+  const [year, month, day] = dateString.split('T')[0].split('-')
+  const date = new Date(year, month - 1, day)
+
   return date.toLocaleDateString('pt-BR')
 }
 
-const abrirAnexo = (nomeArquivo) => {
-  const url = `/storage/diplomas/${nomeArquivo}`
-  window.open(url, '_blank', 'width=800,height=600')
+const abrirAnexo = async (formacaoId, tipo) => {
+  try {
+    console.log(`Buscando URL do anexo ${tipo}:`, formacaoId)
+
+    const response =
+      tipo === 'frente'
+        ? await formacaoService.getAnexoFrenteUrl(formacaoId)
+        : await formacaoService.getAnexoVersoUrl(formacaoId)
+
+    if (response.success && response.url) {
+      window.open(response.url, '_blank', 'width=800,height=600')
+    } else {
+      console.error('Erro ao obter URL do anexo')
+    }
+  } catch (error) {
+    console.error('Erro ao abrir anexo:', error)
+  }
 }
 
 /* const showToastMessage = (message, type) => {
