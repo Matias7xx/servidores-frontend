@@ -607,14 +607,14 @@
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Cidade</label>
               <select
-                v-model="form.cidade_id"
+                v-model="form.cidade"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                  canEdit('cidade_id')
+                  canEdit('cidade')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
-                :disabled="!canEdit('cidade_id')"
+                :disabled="!canEdit('cidade')"
               >
                 <option value="">Selecione</option>
                 <option
@@ -865,7 +865,7 @@ const form = reactive({
   email: '',
   cep: '',
   estado: '',
-  cidade_id: '',
+  cidade: '',
   bairro: '',
   rua: '',
   numero: '',
@@ -951,9 +951,9 @@ const preencherForm = (dados) => {
 
   // Cidade
   if (dados.cidade_nome?.codigo) {
-    form.cidade_id = dados.cidade_nome.codigo
+    form.cidade = dados.cidade_nome.codigo
   } else if (dados.cidade) {
-    form.cidade_id = dados.cidade
+    form.cidade = dados.cidade
   }
 
   // Data de nascimento
@@ -966,7 +966,7 @@ const preencherForm = (dados) => {
     nome: form.nome,
     matricula: form.matricula,
     cargo: form.cargo,
-    cidade_id: form.cidade_id,
+    cidade: form.cidade,
     datanascimento: form.datanascimento,
   })
 }
@@ -1098,7 +1098,7 @@ const canEdit = (field) => {
     'email',
     'cep',
     'estado',
-    'cidade_id',
+    'cidade',
     'bairro',
     'rua',
     'numero',
