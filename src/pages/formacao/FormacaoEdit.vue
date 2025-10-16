@@ -44,6 +44,7 @@
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
                   : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
+              required
             >
               <option value="">Selecione a área</option>
               <option v-for="area in formacaoStore.areas" :key="area.id" :value="area.id">
@@ -71,6 +72,7 @@
                     ? 'bg-neutral-100 border-neutral-200 text-neutral-500 cursor-not-allowed'
                     : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
+              required
             >
               <option value="">
                 {{ loadingClasses ? 'Carregando...' : 'Selecione a classe' }}
@@ -101,6 +103,7 @@
                     ? 'bg-neutral-100 border-neutral-200 text-neutral-500 cursor-not-allowed'
                     : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
+              required
             >
               <option value="">{{ loadingCursos ? 'Carregando...' : 'Selecione o curso' }}</option>
               <option v-for="curso in formacaoStore.cursos" :key="curso.id" :value="curso.id">
@@ -125,6 +128,7 @@
                   ? 'border-red-400 bg-red-50 text-red-900 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
                   : 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
               ]"
+              required
             />
             <span v-if="errors.dataconclusao" class="text-red-600 text-xs mt-1.5 block">{{
               errors.dataconclusao[0]
@@ -160,13 +164,31 @@
               ref="anexoFrenteInput"
               @change="onFileChange($event, 'anexo_frente')"
               accept=".pdf"
-              :class="[
-                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                errors.anexo_frente
-                  ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
-              ]"
+              class="hidden"
             />
+            <div
+              @click="$refs.anexoFrenteInput.click()"
+              :class="[
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                errors.anexo_frente
+                  ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                  : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+              ]"
+            >
+              <span class="truncate">
+                {{ nomeArquivoFrente || 'Nenhum arquivo escolhido' }}
+              </span>
+              <span
+                :class="[
+                  'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                  errors.anexo_frente
+                    ? 'bg-red-200 text-red-800'
+                    : 'bg-neutral-200 text-neutral-700',
+                ]"
+              >
+                Escolher arquivo
+              </span>
+            </div>
             <span v-if="errors.anexo_frente" class="text-red-600 text-xs mt-1.5 block">{{
               errors.anexo_frente[0]
             }}</span>
@@ -176,18 +198,37 @@
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Substituir Certificado Verso <span class="text-red-500">(.pdf)</span>
             </label>
+            <!-- Input file escondido -->
             <input
               type="file"
               ref="anexoVersoInput"
               @change="onFileChange($event, 'anexo_verso')"
               accept=".pdf"
-              :class="[
-                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                errors.anexo_verso
-                  ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:ring-opacity-20'
-                  : 'bg-white border-neutral-300 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20',
-              ]"
+              class="hidden"
             />
+            <div
+              @click="$refs.anexoVersoInput.click()"
+              :class="[
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                errors.anexo_verso
+                  ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                  : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+              ]"
+            >
+              <span class="truncate">
+                {{ nomeArquivoVerso || 'Nenhum arquivo escolhido' }}
+              </span>
+              <span
+                :class="[
+                  'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                  errors.anexo_verso
+                    ? 'bg-red-200 text-red-800'
+                    : 'bg-neutral-200 text-neutral-700',
+                ]"
+              >
+                Escolher arquivo
+              </span>
+            </div>
             <span v-if="errors.anexo_verso" class="text-red-600 text-xs mt-1.5 block">{{
               errors.anexo_verso[0]
             }}</span>
@@ -288,6 +329,8 @@ const toastMessage = ref('')
 const toastType = ref('success')
 const loadingClasses = ref(false)
 const loadingCursos = ref(false)
+const nomeArquivoFrente = ref('')
+const nomeArquivoVerso = ref('')
 
 const form = reactive({
   id: null,
@@ -340,6 +383,13 @@ const onClasseChange = async () => {
 const onFileChange = (event, fieldName) => {
   const file = event.target.files[0]
   form[fieldName] = file || null
+
+  // Atualiza o nome do arquivo para exibição
+  if (fieldName === 'anexo_frente') {
+    nomeArquivoFrente.value = file ? file.name : ''
+  } else if (fieldName === 'anexo_verso') {
+    nomeArquivoVerso.value = file ? file.name : ''
+  }
 }
 
 const submitForm = async () => {

@@ -137,7 +137,7 @@
               <td class="px-6 py-4">
                 <button
                   v-if="dependente.documento"
-                  @click="abrirAnexo(dependente.documento)"
+                  @click="abrirAnexo(dependente.id)"
                   class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                 >
                   <svg
@@ -248,6 +248,7 @@
 import { ref, onMounted } from 'vue'
 import { useDependentesStore } from '@/stores/dependentes'
 import { useAuth } from '@websanova/vue-auth'
+import { dependentesService } from '@/services/dependentesService'
 
 const dependentesStore = useDependentesStore()
 const auth = useAuth()
@@ -298,15 +299,24 @@ const confirmarReativacao = async (dependente) => {
   }
 }
 
-const abrirAnexo = (documento) => {
-  const url = `/storage/doc_dependentes/${documento}`
-  const janela = window.open(
-    url,
-    'anexo',
-    'width=600,height=600,scrollbars=yes,status=no,toolbar=no,location=no,menubar=no,resizable=yes',
-  )
-  if (!janela) {
-    alert('Popup bloqueado! Permita popups para visualizar o anexo.')
+const abrirAnexo = async (idDependente) => {
+  try {
+    const response = await dependentesService.getDocumentoUrl(idDependente)
+    if (response.success && response.url) {
+      const janela = window.open(
+        response.url,
+        'anexo',
+        'width=600,height=600,scrollbars=yes,resizable=yes',
+      )
+      if (!janela) {
+        alert('Popup bloqueado! Permita popups para visualizar o anexo.')
+      }
+    } else {
+      showToastMessage('Erro ao abrir documento', 'error')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar URL do documento:', error)
+    showToastMessage('Erro ao abrir documento', 'error')
   }
 }
 

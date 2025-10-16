@@ -56,6 +56,8 @@ api.interceptors.response.use(
       window.location.href = '/login'
     } else if (error.response?.status === 500) {
       console.error('Erro no servidor:', error.response?.data)
+      error.message =
+        'Ocorreu um erro interno no servidor. Por favor, entre em contato com a Diretoria de Tecnologia da Informação.'
     }
 
     return Promise.reject(error)

@@ -68,7 +68,8 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">Matrícula</label>
               <input
                 type="text"
-                :value="form.matricula"
+                v-model="matriculaFormatada"
+                maxlength="9"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
               />
@@ -80,7 +81,8 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">CPF</label>
               <input
                 type="text"
-                v-model="form.cpf"
+                v-model="cpfFormatado"
+                maxlength="14"
                 class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
                 readonly
               />
@@ -100,7 +102,7 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2"
                 >Data de Nascimento</label
               >
-              <input
+              <!-- <input
                 type="date"
                 v-model="form.datanascimento"
                 :class="[
@@ -110,6 +112,12 @@
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('datanascimento')"
+              /> -->
+              <input
+                type="date"
+                v-model="form.datanascimento"
+                class="w-full bg-neutral-100 border border-neutral-200 rounded-lg py-2.5 px-3.5 text-neutral-500 text-sm font-medium cursor-not-allowed"
+                readonly
               />
             </div>
 
@@ -180,7 +188,10 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">PASEP</label>
               <input
                 type="text"
-                v-model="form.pasep"
+                v-model="pasepFormatado"
+                @input="formatarPASEP"
+                maxlength="15"
+                placeholder="000.00000.00-0"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('pasep')
@@ -210,7 +221,10 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">CNH</label>
               <input
                 type="text"
-                v-model="form.numerocnh"
+                v-model="cnhFormatada"
+                @input="formatarCNH"
+                maxlength="14"
+                placeholder="000.000.000-00"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('numerocnh')
@@ -408,7 +422,10 @@
               >
               <input
                 type="text"
-                v-model="form.titulonumero"
+                v-model="tituloFormatado"
+                @input="formatarTitulo"
+                maxlength="14"
+                placeholder="0000 0000 0000"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('titulonumero')
@@ -502,11 +519,15 @@
           <div class="grid gap-5 md:grid-cols-3">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                Telefone 1 <span class="text-red-500">*</span>
+                Telefone 1
+                <!-- <span class="text-red-500">*</span> -->
               </label>
               <input
                 type="text"
-                v-model="form.telefone_1"
+                v-model="telefone1Formatado"
+                @input="formatarTelefone($event, 'telefone_1')"
+                maxlength="15"
+                placeholder="(00) 00000-0000"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.telefone_1
@@ -521,11 +542,15 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                Telefone 2 <span class="text-red-500">*</span>
+                Telefone 2
+                <!-- <span class="text-red-500">*</span> -->
               </label>
               <input
                 type="text"
-                v-model="form.telefone_2"
+                v-model="telefone2Formatado"
+                @input="formatarTelefone($event, 'telefone_2')"
+                maxlength="15"
+                placeholder="(00) 00000-0000"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   errors.telefone_2
@@ -540,10 +565,11 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                E-mail <span class="text-red-500">*</span>
+                E-mail
+                <!-- <span class="text-red-500">*</span> -->
               </label>
               <input
-                type="text"
+                type="email"
                 v-model="form.email"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
@@ -570,7 +596,10 @@
               <label class="block text-sm font-medium text-neutral-700 mb-2">CEP</label>
               <input
                 type="text"
-                v-model="form.cep"
+                v-model="cepFormatado"
+                @input="formatarCEP"
+                maxlength="9"
+                placeholder="00000-000"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
                   canEdit('cep')
@@ -876,6 +905,128 @@ const form = reactive({
 
 const errors = reactive({})
 
+// Variáveis para valores formatados (apenas exibição)
+const cpfFormatado = ref('')
+const matriculaFormatada = ref('')
+const telefone1Formatado = ref('')
+const telefone2Formatado = ref('')
+const cepFormatado = ref('')
+const pasepFormatado = ref('')
+const cnhFormatada = ref('')
+const tituloFormatado = ref('')
+
+// Função para formatar CPF: 000.000.000-00
+const formatarCPF = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 11)
+
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+  }
+
+  cpfFormatado.value = valor
+  form.cpf = valor.replace(/\D/g, '')
+}
+
+// Função para formatar Matrícula: 000.000-0
+const formatarMatricula = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 7)
+
+  if (valor.length <= 7) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d{1})$/, '$1-$2')
+  }
+
+  matriculaFormatada.value = valor
+  form.matricula = valor.replace(/\D/g, '')
+}
+
+// Função para formatar Telefone: (00) 00000-0000 ou (00) 0000-0000
+const formatarTelefone = (event, campo) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 11)
+
+  if (valor.length <= 11) {
+    if (valor.length <= 10) {
+      // Telefone fixo: (00) 0000-0000
+      valor = valor.replace(/(\d{2})(\d)/, '($1) $2')
+      valor = valor.replace(/(\d{4})(\d{1,4})$/, '$1-$2')
+    } else {
+      // Celular: (00) 00000-0000
+      valor = valor.replace(/(\d{2})(\d)/, '($1) $2')
+      valor = valor.replace(/(\d{5})(\d{1,4})$/, '$1-$2')
+    }
+  }
+
+  if (campo === 'telefone_1') {
+    telefone1Formatado.value = valor
+    form.telefone_1 = valor.replace(/\D/g, '')
+  } else if (campo === 'telefone_2') {
+    telefone2Formatado.value = valor
+    form.telefone_2 = valor.replace(/\D/g, '')
+  }
+}
+
+// Função para formatar CEP: 00000-000
+const formatarCEP = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 8)
+
+  if (valor.length <= 8) {
+    valor = valor.replace(/(\d{5})(\d{1,3})$/, '$1-$2')
+  }
+
+  cepFormatado.value = valor
+  form.cep = valor.replace(/\D/g, '')
+}
+
+// Função para formatar PASEP: 000.00000.00-0
+const formatarPASEP = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 11)
+
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})\.(\d{5})(\d)/, '$1.$2.$3')
+    valor = valor.replace(/(\d{3})\.(\d{5})\.(\d{2})(\d{1})$/, '$1.$2.$3-$4')
+  }
+
+  pasepFormatado.value = valor
+  form.pasep = valor.replace(/\D/g, '')
+}
+
+// Função para formatar CNH: 000.000.000-00
+const formatarCNH = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 11)
+
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    valor = valor.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, '$1.$2.$3-$4')
+  }
+
+  cnhFormatada.value = valor
+  form.numerocnh = valor.replace(/\D/g, '')
+}
+
+// Função para formatar Título de Eleitor: 0000 0000 0000
+const formatarTitulo = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 12)
+
+  if (valor.length <= 12) {
+    valor = valor.replace(/(\d{4})(\d)/, '$1 $2')
+    valor = valor.replace(/(\d{4}) (\d{4})(\d)/, '$1 $2 $3')
+  }
+
+  tituloFormatado.value = valor
+  form.titulonumero = valor.replace(/\D/g, '')
+}
+
 // Watch para carregar cidades quando o estado mudar
 watch(
   () => form.estado,
@@ -959,6 +1110,84 @@ const preencherForm = (dados) => {
   // Data de nascimento
   if (dados.datanascimento) {
     form.datanascimento = formatarDataParaInput(dados.datanascimento)
+  }
+
+  // Formatar campos com máscara (apenas exibição)
+  if (dados.cpf) {
+    let cpf = dados.cpf.replace(/\D/g, '')
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2')
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2')
+    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+    cpfFormatado.value = cpf
+  }
+
+  if (dados.matricula) {
+    let matricula = dados.matricula.toString().replace(/\D/g, '')
+
+    // Garantir que tem no máximo 7 dígitos, 000.000-0
+    matricula = matricula.substring(0, 7)
+
+    if (matricula.length === 7) {
+      matricula = matricula.replace(/^(\d{3})(\d{3})(\d{1})$/, '$1.$2-$3')
+    } else if (matricula.length > 3) {
+      // Caso a matrícula carregada não tenha 7 dígitos (ex: apenas 5), mostra 123.45
+      matricula = matricula.replace(/^(\d{3})(\d+)$/, '$1.$2')
+    }
+
+    matriculaFormatada.value = matricula
+  }
+
+  if (dados.telefone_1) {
+    let tel = dados.telefone_1.replace(/\D/g, '')
+    if (tel.length <= 10) {
+      tel = tel.replace(/(\d{2})(\d)/, '($1) $2')
+      tel = tel.replace(/(\d{4})(\d{1,4})$/, '$1-$2')
+    } else {
+      tel = tel.replace(/(\d{2})(\d)/, '($1) $2')
+      tel = tel.replace(/(\d{5})(\d{1,4})$/, '$1-$2')
+    }
+    telefone1Formatado.value = tel
+  }
+
+  if (dados.telefone_2) {
+    let tel = dados.telefone_2.replace(/\D/g, '')
+    if (tel.length <= 10) {
+      tel = tel.replace(/(\d{2})(\d)/, '($1) $2')
+      tel = tel.replace(/(\d{4})(\d{1,4})$/, '$1-$2')
+    } else {
+      tel = tel.replace(/(\d{2})(\d)/, '($1) $2')
+      tel = tel.replace(/(\d{5})(\d{1,4})$/, '$1-$2')
+    }
+    telefone2Formatado.value = tel
+  }
+
+  if (dados.cep) {
+    let cep = dados.cep.replace(/\D/g, '')
+    cep = cep.replace(/(\d{5})(\d{1,3})$/, '$1-$2')
+    cepFormatado.value = cep
+  }
+
+  if (dados.pasep) {
+    let pasep = dados.pasep.replace(/\D/g, '')
+    pasep = pasep.replace(/(\d{3})(\d)/, '$1.$2')
+    pasep = pasep.replace(/(\d{3})\.(\d{5})(\d)/, '$1.$2.$3')
+    pasep = pasep.replace(/(\d{3})\.(\d{5})\.(\d{2})(\d{1})$/, '$1.$2.$3-$4')
+    pasepFormatado.value = pasep
+  }
+
+  if (dados.numerocnh) {
+    let cnh = dados.numerocnh.replace(/\D/g, '')
+    cnh = cnh.replace(/(\d{3})(\d)/, '$1.$2')
+    cnh = cnh.replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    cnh = cnh.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, '$1.$2.$3-$4')
+    cnhFormatada.value = cnh
+  }
+
+  if (dados.titulonumero) {
+    let titulo = dados.titulonumero.replace(/\D/g, '')
+    titulo = titulo.replace(/(\d{4})(\d)/, '$1 $2')
+    titulo = titulo.replace(/(\d{4}) (\d{4})(\d)/, '$1 $2 $3')
+    tituloFormatado.value = titulo
   }
 
   console.log('Formulário preenchido com sucesso:', {

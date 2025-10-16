@@ -125,10 +125,10 @@
               </label>
               <input
                 type="text"
-                v-model="form.cpf"
+                v-model="cpfFormatado"
                 @input="formatarCPF"
-                maxlength="11"
-                placeholder="Somente números"
+                maxlength="14"
+                placeholder="000.000.000-00"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 placeholder:text-neutral-400',
                   errors.cpf
@@ -143,18 +143,37 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-2">
+              <label class="block text-sm font-medium text-neutral-700 mb-1.5">
                 Anexo <span class="text-red-500">(.pdf)</span>
               </label>
               <input
                 type="file"
+                ref="anexoInput"
                 @change="onFileChange"
                 accept=".pdf"
-                :class="[
-                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                  errors.anexo ? 'border-red-400 bg-red-50' : 'bg-white border-neutral-300',
-                ]"
+                class="hidden"
               />
+              <div
+                @click="$refs.anexoInput.click()"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  errors.anexo
+                    ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                    : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+                ]"
+              >
+                <span class="truncate">
+                  {{ nomeArquivoAnexo || 'Nenhum arquivo escolhido' }}
+                </span>
+                <span
+                  :class="[
+                    'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                    errors.anexo ? 'bg-red-200 text-red-800' : 'bg-neutral-200 text-neutral-700',
+                  ]"
+                >
+                  Escolher arquivo
+                </span>
+              </div>
               <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
                 errors.anexo[0]
               }}</span>
@@ -318,6 +337,8 @@ const form = reactive({
   anexo: null,
 })
 
+const cpfFormatado = ref('')
+const nomeArquivoAnexo = ref('')
 const errors = reactive({})
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -386,6 +407,15 @@ const fetchData = async () => {
     form.sexo_dependente = dep.sexo_dependente || ''
     form.tipo_dependente = dep.tipo_dependente || ''
 
+    // Formatar CPF para exibição
+    if (dep.cpf) {
+      let cpf = dep.cpf.replace(/\D/g, '')
+      cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2')
+      cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2')
+      cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+      cpfFormatado.value = cpf
+    }
+
     // Formatar data corretamente
     if (dep.data_nascimento) {
       form.data_nascimento = formatarDataParaInput(dep.data_nascimento)
@@ -407,8 +437,65 @@ const fetchData = async () => {
   }
 }
 
+//Verificar se o CPF é válido
+const validarCPF = (cpf) => {
+  // Remove caracteres não numéricos
+  cpf = cpf.replace(/\D/g, '')
+
+  // Verifica se tem 11 dígitos
+  if (cpf.length !== 11) {
+    return false
+  }
+
+  // Verifica se todos os dígitos são iguais
+  if (/^(\d)\1{10}$/.test(cpf)) {
+    return false
+  }
+
+  // Validação do primeiro dígito verificador
+  let soma = 0
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpf.charAt(i)) * (10 - i)
+  }
+  let resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(9))) {
+    return false
+  }
+
+  // Validação do segundo dígito verificador
+  soma = 0
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpf.charAt(i)) * (11 - i)
+  }
+  resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(10))) {
+    return false
+  }
+
+  return true
+}
+
 const formatarCPF = (event) => {
-  form.cpf = event.target.value.replace(/[^0-9]/g, '')
+  // Remove tudo que não é número
+  let valor = event.target.value.replace(/\D/g, '')
+
+  // Limita a 11 dígitos
+  valor = valor.substring(0, 11)
+
+  // Aplica a máscara visual
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+  }
+
+  // Atualiza o valor formatado (exibido no input)
+  cpfFormatado.value = valor
+
+  // Atualiza o valor sem formatação (enviado para o backend)
+  form.cpf = valor.replace(/\D/g, '')
 }
 
 const onFileChange = (event) => {
@@ -417,17 +504,22 @@ const onFileChange = (event) => {
     if (file.type !== 'application/pdf') {
       showToastMessage('Apenas arquivos PDF são permitidos', 'error')
       event.target.value = ''
+      nomeArquivoAnexo.value = ''
       return
     }
 
     if (file.size > 2 * 1024 * 1024) {
       showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
       event.target.value = ''
+      nomeArquivoAnexo.value = ''
       return
     }
 
     form.anexo = file
+    nomeArquivoAnexo.value = file.name
     console.log('Novo arquivo selecionado:', file.name)
+  } else {
+    nomeArquivoAnexo.value = ''
   }
 }
 
@@ -461,6 +553,19 @@ const atualizarDependente = async () => {
     if (!form.data_nascimento || form.data_nascimento.trim() === '') {
       errors.data_nascimento = ['A data de nascimento é obrigatória']
       showToastMessage('Por favor, preencha a data de nascimento', 'error')
+      return
+    }
+
+    // Validação do CPF
+    if (!form.cpf || form.cpf.trim() === '') {
+      errors.cpf = ['O CPF é obrigatório']
+      showToastMessage('Por favor, preencha o CPF', 'error')
+      return
+    }
+
+    if (!validarCPF(form.cpf)) {
+      errors.cpf = ['CPF inválido']
+      showToastMessage('CPF inválido. Por favor, verifique o número digitado', 'error')
       return
     }
 
