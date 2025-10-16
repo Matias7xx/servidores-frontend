@@ -31,8 +31,8 @@
     <div v-else>
       <!-- Header -->
       <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-neutral-900">Informações Pessoais</h1>
-        <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados cadastrais</p>
+        <h1 class="text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
+        <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
       </div>
 
       <!-- Form -->
@@ -749,7 +749,7 @@
               </select>
             </div>
 
-            <div>
+            <div v-if="temConjuge()">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Nome do Cônjuge</label>
               <input
                 type="text"
@@ -762,6 +762,28 @@
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :readonly="!canEdit('conjuge')"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2 mt-5" v-if="temConjuge()">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">CPF do Cônjuge</label>
+              <input
+                type="text"
+                v-model="conjugeCpfFormatado"
+                @input="formatarCpfConjuge"
+                maxlength="14"
+                placeholder="000.000.000-00"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  canEdit('conjuge_cpf')
+                    ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20 placeholder:text-neutral-400'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :readonly="!canEdit('conjuge_cpf')"
+                required
               />
             </div>
           </div>
@@ -901,6 +923,7 @@ const form = reactive({
   complemento: '',
   estadocivil: '',
   conjuge: '',
+  conjuge_cpf: '',
 })
 
 const errors = reactive({})
@@ -914,6 +937,7 @@ const cepFormatado = ref('')
 const pasepFormatado = ref('')
 const cnhFormatada = ref('')
 const tituloFormatado = ref('')
+const conjugeCpfFormatado = ref('')
 
 // Função para formatar CPF: 000.000.000-00
 const formatarCPF = (event) => {
@@ -928,6 +952,21 @@ const formatarCPF = (event) => {
 
   cpfFormatado.value = valor
   form.cpf = valor.replace(/\D/g, '')
+}
+
+// Função para formatar CPF do Cônjuge: 000.000.000-00
+const formatarCpfConjuge = (event) => {
+  let valor = event.target.value.replace(/\D/g, '')
+  valor = valor.substring(0, 11)
+
+  if (valor.length <= 11) {
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
+    valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+  }
+
+  conjugeCpfFormatado.value = valor
+  form.conjuge_cpf = valor.replace(/\D/g, '')
 }
 
 // Função para formatar Matrícula: 000.000-0
@@ -1190,6 +1229,14 @@ const preencherForm = (dados) => {
     tituloFormatado.value = titulo
   }
 
+  if (dados.conjuge_cpf) {
+    let conjuge_cpf = dados.conjuge_cpf.replace(/\D/g, '')
+    conjuge_cpf = conjuge_cpf.replace(/(\d{3})(\d)/, '$1.$2')
+    conjuge_cpf = conjuge_cpf.replace(/(\d{3})(\d)/, '$1.$2')
+    conjuge_cpf = conjuge_cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+    conjugeCpfFormatado.value = conjuge_cpf
+  }
+
   console.log('Formulário preenchido com sucesso:', {
     id: form.id,
     nome: form.nome,
@@ -1245,6 +1292,45 @@ const formatarDataParaInput = (data) => {
   return data
 }
 
+const validarCPF = (cpf) => {
+  // Remove caracteres não numéricos
+  cpf = cpf.replace(/\D/g, '')
+
+  // Verifica se tem 11 dígitos
+  if (cpf.length !== 11) {
+    return false
+  }
+
+  // Verifica se todos os dígitos são iguais
+  if (/^(\d)\1{10}$/.test(cpf)) {
+    return false
+  }
+
+  // Validação do primeiro dígito verificador
+  let soma = 0
+  for (let i = 0; i < 9; i++) {
+    soma += parseInt(cpf.charAt(i)) * (10 - i)
+  }
+  let resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(9))) {
+    return false
+  }
+
+  // Validação do segundo dígito verificador
+  soma = 0
+  for (let i = 0; i < 10; i++) {
+    soma += parseInt(cpf.charAt(i)) * (11 - i)
+  }
+  resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.charAt(10))) {
+    return false
+  }
+
+  return true
+}
+
 const updateDados = async () => {
   try {
     console.log('Iniciando atualização de dados...')
@@ -1257,6 +1343,23 @@ const updateDados = async () => {
     if (!matricula) {
       showToastMessage('Erro: Matrícula não encontrada. Faça login novamente.', 'error')
       return
+    }
+
+    if (temConjuge()) {
+      const cpf = form.conjuge_cpf
+      // Se o campo for preenchido (ou seja, não for vazio), ele deve ser válido
+      if (cpf && cpf.trim() !== '') {
+        // Usa a função validarCPF copiada
+        if (!validarCPF(cpf)) {
+          // Se inválido, adiciona o erro ao objeto errors e para o envio
+          errors.conjuge_cpf = ['CPF do Cônjuge inválido. Por favor, verifique o número digitado.']
+          showToastMessage(
+            'CPF do Cônjuge inválido. Por favor, verifique o número digitado.',
+            'error',
+          )
+          return
+        }
+      }
     }
 
     // Prepara os dados para envio
@@ -1334,8 +1437,15 @@ const canEdit = (field) => {
     'complemento',
     'estadocivil',
     'conjuge',
+    'conjuge_cpf',
   ]
   return editableFields.includes(field)
+}
+
+// Função para verificar se o estado civil implica ter um cônjuge
+const temConjuge = () => {
+  const estadosComConjuge = ['C', 'U'] // C: Casado(a), U: União Estável
+  return estadosComConjuge.includes(form.estadocivil)
 }
 
 const showToastMessage = (message, type = 'success') => {

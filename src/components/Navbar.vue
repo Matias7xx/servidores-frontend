@@ -15,11 +15,7 @@
           <img src="/img/logo-pc.png" alt="" class="w-12 h-12 mr-3" role="presentation" />
           <div class="logo-container">
             <div class="logo-text">
-              <span class="text-lg font-semibold">
-                Recursos Humanos
-                <span class="text-[#c1a85a]" aria-hidden="true">|</span>
-                Servidor
-              </span>
+              <span class="text-xl font-semibold"> Ficha Funcional </span>
             </div>
             <div class="logo-tagline hidden md:block">
               <small class="text-neutral-400 text-sm">Polícia Civil da Paraíba</small>

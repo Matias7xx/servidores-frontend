@@ -194,6 +194,27 @@ export const useFormacaoStore = defineStore('formacao', () => {
     }
   }
 
+  const getCertificadoUrl = async (formacaoId, tipo) => {
+    try {
+      const response =
+        tipo === 'frente'
+          ? await formacaoService.getAnexoFrenteUrl(formacaoId)
+          : await formacaoService.getAnexoVersoUrl(formacaoId)
+
+      return {
+        success: response.success || true,
+        url: response.url,
+      }
+    } catch (error) {
+      console.error('Erro ao buscar URL do certificado:', error)
+
+      return {
+        success: false,
+        message: error.message || 'Erro ao buscar certificado',
+      }
+    }
+  }
+
   // Função para limpar caches quando necessário
   const limparCaches = () => {
     classes.value = []
@@ -224,5 +245,6 @@ export const useFormacaoStore = defineStore('formacao', () => {
     obterFormacao,
     limparCaches,
     limparErros,
+    getCertificadoUrl,
   }
 })

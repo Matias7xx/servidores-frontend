@@ -11,10 +11,10 @@
       />
 
       <div class="mt-2 sm:mt-3 text-center">
-        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800">
-          Recursos Humanos | Servidor
+        <h1 class="text-lg sm:text-xl lg:text-3xl font-semibold text-neutral-800 uppercase">
+          Ficha Funcional
         </h1>
-        <p class="text-sm text-neutral-600">Polícia Civil da Paraíba</p>
+        <!-- <p class="text-md text-neutral-600">Polícia Civil da Paraíba</p> -->
       </div>
     </div>
 

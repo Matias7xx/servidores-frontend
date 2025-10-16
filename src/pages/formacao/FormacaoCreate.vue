@@ -113,6 +113,11 @@
             <span v-if="errors.curso_id" class="text-red-600 text-xs mt-1.5 block">{{
               errors.curso_id[0]
             }}</span>
+
+            <p class="text-xs text-neutral-500 mt-2">
+              Caso sua Área, Classe ou Curso não conste na lista, solicite atendimento à Diretoria
+              de Tecnologia da Informação por meio de um chamado.
+            </p>
           </div>
 
           <div>

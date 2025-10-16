@@ -173,6 +173,16 @@
               <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
                 errors.anexo[0]
               }}</span>
+
+              <div
+                v-if="mensagemAnexo"
+                class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+              >
+                <p
+                  class="text-sm text-blue-700 font-medium whitespace-pre-wrap"
+                  v-html="mensagemAnexo"
+                ></p>
+              </div>
             </div>
           </div>
         </div>
@@ -285,7 +295,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
 import { useAuth } from '@websanova/vue-auth'
@@ -373,6 +383,34 @@ const formatarCPF = (event) => {
   // Atualiza o valor sem formatação (enviado para o backend)
   form.cpf = valor.replace(/\D/g, '')
 }
+
+const calcularIdade = (dataNasc) => {
+  if (!dataNasc) return null
+  const hoje = new Date()
+  const nasc = new Date(dataNasc)
+  let idade = hoje.getFullYear() - nasc.getFullYear()
+  const mes = hoje.getMonth() - nasc.getMonth()
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+    idade--
+  }
+  return idade
+}
+
+const idadeDependente = computed(() => {
+  return calcularIdade(form.data_nascimento)
+})
+
+const mensagemAnexo = computed(() => {
+  if (form.tipo_dependente === 'Filho(a)') {
+    const idade = idadeDependente.value
+    if (idade >= 21 && idade <= 24) {
+      return 'Para filhos(as) com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.'
+    } else if (idade > 24) {
+      return 'Para filhos(as) com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).'
+    }
+  }
+  return ''
+})
 
 const onFileChange = (event) => {
   const file = event.target.files[0]

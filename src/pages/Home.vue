@@ -37,7 +37,7 @@
                 />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">Atualizar Dados</h3>
+            <h3 class="text-base font-semibold text-neutral-900 mb-2">Atualizar Dados Pessoais</h3>
             <p class="text-sm text-neutral-600">Mantenha suas informações pessoais atualizadas</p>
           </router-link>
 
@@ -95,8 +95,10 @@
                 />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">Registrar Formação</h3>
-            <p class="text-sm text-neutral-600">Adicione cursos e qualificações profissionais</p>
+            <h3 class="text-base font-semibold text-neutral-900 mb-2">
+              Registrar Formação Acadêmica
+            </h3>
+            <p class="text-sm text-neutral-600">Adicione suas formações e certificados</p>
           </router-link>
         </div>
       </div>

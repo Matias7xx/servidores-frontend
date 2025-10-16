@@ -22,7 +22,7 @@ const routes = [
     component: Login,
     meta: {
       auth: false,
-      title: 'Login - PCPB',
+      title: 'Login',
     },
   },
 
@@ -39,7 +39,7 @@ const routes = [
         component: Home,
         meta: {
           auth: true,
-          title: 'Início - PCPB',
+          title: 'Início',
         },
       },
       {
@@ -48,7 +48,7 @@ const routes = [
         component: InformacoesPessoais,
         meta: {
           auth: true,
-          title: 'Informações Pessoais - PCPB',
+          title: 'Dados Pessoais',
         },
       },
       {
@@ -57,7 +57,7 @@ const routes = [
         component: DependentesLista,
         meta: {
           auth: true,
-          title: 'Dependentes - PCPB',
+          title: 'Dependentes',
         },
       },
       {
@@ -66,7 +66,7 @@ const routes = [
         component: DependentesCreate,
         meta: {
           auth: true,
-          title: 'Cadastrar Dependente - PCPB',
+          title: 'Cadastrar Dependente',
         },
       },
       {
@@ -75,7 +75,7 @@ const routes = [
         component: DependentesEdit,
         meta: {
           auth: true,
-          title: 'Editar Dependente - PCPB',
+          title: 'Editar Dependente',
         },
       },
       {
@@ -84,7 +84,7 @@ const routes = [
         component: DependentesInativos,
         meta: {
           auth: true,
-          title: 'Dependentes Inativos - PCPB',
+          title: 'Dependentes Inativos',
         },
       },
       {
@@ -93,7 +93,7 @@ const routes = [
         component: FormacaoLista,
         meta: {
           auth: true,
-          title: 'Formação Acadêmica - PCPB',
+          title: 'Formação Acadêmica',
         },
       },
       {
@@ -102,7 +102,7 @@ const routes = [
         component: FormacaoCreate,
         meta: {
           auth: true,
-          title: 'Cadastrar Formação - PCPB',
+          title: 'Cadastrar Formação',
         },
       },
       {
@@ -111,7 +111,7 @@ const routes = [
         component: FormacaoEdit,
         meta: {
           auth: true,
-          title: 'Editar Formação - PCPB',
+          title: 'Editar Formação',
         },
       },
     ],

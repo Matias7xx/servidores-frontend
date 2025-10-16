@@ -113,6 +113,11 @@
             <span v-if="errors.curso_id" class="text-red-600 text-xs mt-1.5 block">{{
               errors.curso_id[0]
             }}</span>
+
+            <p class="text-xs text-neutral-500 mt-2">
+              Caso sua Área, Classe ou Curso não conste na lista, solicite atendimento à Diretoria
+              de Tecnologia da Informação por meio de um chamado.
+            </p>
           </div>
 
           <div>
@@ -176,7 +181,7 @@
               ]"
             >
               <span class="truncate">
-                {{ nomeArquivoFrente || 'Nenhum arquivo escolhido' }}
+                {{ nomeArquivoFrente || 'O novo arquivo irá sobrescrever o atual' }}
               </span>
               <span
                 :class="[
@@ -192,6 +197,55 @@
             <span v-if="errors.anexo_frente" class="text-red-600 text-xs mt-1.5 block">{{
               errors.anexo_frente[0]
             }}</span>
+
+            <!-- Mostrar certificado atual -->
+            <div v-if="formacaoAtual?.anexo_frente" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirCertificadoFrente"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
+                >
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
+
+            <!-- Mostrar novo arquivo selecionado -->
+            <div v-if="form.anexo_frente" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.anexo_frente.name }}
+              </p>
+            </div>
           </div>
 
           <div>
@@ -216,7 +270,7 @@
               ]"
             >
               <span class="truncate">
-                {{ nomeArquivoVerso || 'Nenhum arquivo escolhido' }}
+                {{ nomeArquivoVerso || 'O novo arquivo irá sobrescrever o atual' }}
               </span>
               <span
                 :class="[
@@ -232,6 +286,55 @@
             <span v-if="errors.anexo_verso" class="text-red-600 text-xs mt-1.5 block">{{
               errors.anexo_verso[0]
             }}</span>
+
+            <!-- Mostrar certificado atual -->
+            <div v-if="formacaoAtual?.anexo_verso" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirCertificadoVerso"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
+                >
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
+
+            <!-- Mostrar novo arquivo selecionado -->
+            <div v-if="form.anexo_verso" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.anexo_verso.name }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -331,6 +434,7 @@ const loadingClasses = ref(false)
 const loadingCursos = ref(false)
 const nomeArquivoFrente = ref('')
 const nomeArquivoVerso = ref('')
+const formacaoAtual = ref(null)
 
 const form = reactive({
   id: null,
@@ -389,6 +493,50 @@ const onFileChange = (event, fieldName) => {
     nomeArquivoFrente.value = file ? file.name : ''
   } else if (fieldName === 'anexo_verso') {
     nomeArquivoVerso.value = file ? file.name : ''
+  }
+}
+
+// Função para abrir certificado frente
+const abrirCertificadoFrente = async () => {
+  try {
+    const response = await formacaoStore.getCertificadoUrl(form.id, 'frente')
+    if (response.success && response.url) {
+      const janela = window.open(
+        response.url,
+        'certificado_frente',
+        'width=600,height=600,scrollbars=yes,resizable=yes',
+      )
+      if (!janela) {
+        alert('Popup bloqueado! Permita popups para visualizar o certificado.')
+      }
+    } else {
+      showToastMessage('Erro ao abrir certificado', 'error')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar URL do certificado:', error)
+    showToastMessage('Erro ao abrir certificado', 'error')
+  }
+}
+
+// Função para abrir certificado verso
+const abrirCertificadoVerso = async () => {
+  try {
+    const response = await formacaoStore.getCertificadoUrl(form.id, 'verso')
+    if (response.success && response.url) {
+      const janela = window.open(
+        response.url,
+        'certificado_verso',
+        'width=600,height=600,scrollbars=yes,resizable=yes',
+      )
+      if (!janela) {
+        alert('Popup bloqueado! Permita popups para visualizar o certificado.')
+      }
+    } else {
+      showToastMessage('Erro ao abrir certificado', 'error')
+    }
+  } catch (error) {
+    console.error('Erro ao buscar URL do certificado:', error)
+    showToastMessage('Erro ao abrir certificado', 'error')
   }
 }
 
@@ -459,6 +607,9 @@ onMounted(async () => {
 
   if (response.success && response.data) {
     const dadosFormacao = response.data
+
+    //Salvar dados completos da formação
+    formacaoAtual.value = dadosFormacao
 
     // Mapear dados do servidor para o formulário local
     form.id = dadosFormacao.id

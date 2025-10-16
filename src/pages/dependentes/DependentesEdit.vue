@@ -163,7 +163,7 @@
                 ]"
               >
                 <span class="truncate">
-                  {{ nomeArquivoAnexo || 'Nenhum arquivo escolhido' }}
+                  {{ nomeArquivoAnexo || 'O novo arquivo irá sobrescrever o atual' }}
                 </span>
                 <span
                   :class="[
@@ -177,6 +177,17 @@
               <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
                 errors.anexo[0]
               }}</span>
+
+              <div
+                v-if="mensagemAnexo"
+                class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+              >
+                <p
+                  class="text-sm text-blue-700 font-medium whitespace-pre-wrap"
+                  v-html="mensagemAnexo"
+                ></p>
+              </div>
+              <div v-if="dependente.documento" class="mt-2 flex items-center gap-2"></div>
 
               <!-- Mostrar documento atual -->
               <div v-if="dependente.documento" class="mt-2 flex items-center gap-2">
@@ -194,14 +205,14 @@
                     d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <p class="text-xs text-neutral-600">
+                <p class="text-sm text-neutral-600">
                   Arquivo atual:
                   <button
                     type="button"
                     @click="abrirAnexo(dependente.id)"
                     class="text-blue-600 hover:text-blue-700 underline font-medium"
                   >
-                    Ver PDF
+                    Abrir PDF
                   </button>
                 </p>
               </div>
@@ -222,7 +233,7 @@
                     d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
                   />
                 </svg>
-                <p class="text-xs text-blue-600 font-medium">
+                <p class="text-sm text-blue-600 font-medium">
                   ✓ Novo arquivo: {{ form.anexo.name }}
                 </p>
               </div>
@@ -311,7 +322,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
 import { useAuth } from '@websanova/vue-auth'
@@ -497,6 +508,47 @@ const formatarCPF = (event) => {
   // Atualiza o valor sem formatação (enviado para o backend)
   form.cpf = valor.replace(/\D/g, '')
 }
+
+const calcularIdade = (dataNasc) => {
+  if (!dataNasc) return null
+  const hoje = new Date()
+  const nasc = new Date(dataNasc)
+
+  // Se a data não for um objeto Date válido, tenta criar novamente
+  if (isNaN(nasc.getTime())) {
+    try {
+      const parts = dataNasc.split('-')
+      if (parts.length === 3) {
+        nasc.setFullYear(parts[0], parts[1] - 1, parts[2]) // YYYY-MM-DD
+      }
+    } catch (e) {
+      return null
+    }
+  }
+
+  let idade = hoje.getFullYear() - nasc.getFullYear()
+  const mes = hoje.getMonth() - nasc.getMonth()
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+    idade--
+  }
+  return idade
+}
+
+const idadeDependente = computed(() => {
+  return calcularIdade(form.data_nascimento)
+})
+
+const mensagemAnexo = computed(() => {
+  if (form.tipo_dependente === 'Filho(a)') {
+    const idade = idadeDependente.value
+    if (idade >= 21 && idade <= 24) {
+      return 'Para filhos(as) com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.'
+    } else if (idade > 24) {
+      return 'Para filhos(as) com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).'
+    }
+  }
+  return ''
+})
 
 const onFileChange = (event) => {
   const file = event.target.files[0]
