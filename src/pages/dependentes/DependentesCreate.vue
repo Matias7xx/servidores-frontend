@@ -85,6 +85,7 @@
                 <option value="">Selecione</option>
                 <option value="Cônjuge">Cônjuge</option>
                 <option value="Filho(a)">Filho(a)</option>
+                <option value="Enteado(a)">Enteado(a)</option>
                 <option value="Pai">Pai</option>
                 <option value="Mãe">Mãe</option>
               </select>
@@ -140,7 +141,7 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-1.5">
-                Anexo <span class="text-red-500">(.pdf)</span>
+                Anexo <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
               </label>
               <input
                 type="file"
@@ -386,14 +387,34 @@ const formatarCPF = (event) => {
 
 const calcularIdade = (dataNasc) => {
   if (!dataNasc) return null
+
+  const parts = dataNasc.split('-')
+  if (parts.length !== 3) {
+    return null
+  }
+
+  const nasc = new Date(parts[0], parts[1] - 1, parts[2])
+
+  if (isNaN(nasc.getTime())) {
+    return null
+  }
+
   const hoje = new Date()
-  const nasc = new Date(dataNasc)
+
   let idade = hoje.getFullYear() - nasc.getFullYear()
-  const mes = hoje.getMonth() - nasc.getMonth()
-  if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+
+  // Idade se o aniversário ainda não ocorreu este ano
+  const mesHoje = hoje.getMonth()
+  const diaHoje = hoje.getDate()
+  const mesNasc = nasc.getMonth()
+  const diaNasc = nasc.getDate()
+
+  if (mesHoje < mesNasc || (mesHoje === mesNasc && diaHoje < diaNasc)) {
     idade--
   }
-  return idade
+
+  // A idade não pode ser negativa
+  return Math.max(0, idade)
 }
 
 const idadeDependente = computed(() => {
@@ -401,14 +422,41 @@ const idadeDependente = computed(() => {
 })
 
 const mensagemAnexo = computed(() => {
-  if (form.tipo_dependente === 'Filho(a)') {
-    const idade = idadeDependente.value
-    if (idade >= 21 && idade <= 24) {
-      return 'Para filhos(as) com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.'
+  const tipo = form.tipo_dependente
+  const idade = idadeDependente.value
+
+  if (!tipo) {
+    return ''
+  }
+
+  // Lógica para FILHO(A) e ENTEADO(A)
+  if (tipo === 'Filho(a)' || tipo === 'Enteado(a)') {
+    if (idade === null) {
+      return 'Informe a Data de Nascimento para verificar a exigência do anexo.'
+    } else if (idade < 21) {
+      // (idade < 21)
+      // ATÉ 20 ANOS E 11 MESES: Certidão de Nascimento/Documento Comprobatório
+      return `Para ${tipo} com idade até 20 anos, o anexo deve conter a Certidão de Nascimento.`
+    } else if (idade >= 21 && idade <= 24) {
+      // (idade >= 21)
+      // ENTRE 21 e 24 ANOS: Comprovante Ensino Superior
+      return `Para ${tipo} com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.`
     } else if (idade > 24) {
-      return 'Para filhos(as) com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).'
+      // MAIOR DE 24 ANOS: Comprovante de Dependência
+      return `Para ${tipo} com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).`
     }
   }
+
+  // Lógica para CÔNJUGE
+  else if (tipo === 'Cônjuge') {
+    return 'O anexo deve conter Certidão de Casamento OU Declaração de União Estável (com firma reconhecida).'
+  }
+
+  // Lógica para PAI/MÃE
+  else if (tipo === 'Pai' || tipo === 'Mãe') {
+    return 'O anexo deve conter Certidão de Nascimento do Servidor (para comprovar parentesco).'
+  }
+
   return ''
 })
 
@@ -467,6 +515,14 @@ const salvarDependente = async () => {
       errors.cpf = ['CPF inválido']
       showToastMessage('CPF inválido. Por favor, verifique o número digitado', 'error')
       return
+    }
+
+    // BLOCO DE VALIDAÇÃO DO ANEXO
+    if (!form.anexo) {
+        errors.anexo = ['O anexo é obrigatório.']
+
+        showToastMessage('O anexo é obrigatório. Por favor, anexe o documento.', 'error')
+        return
     }
 
     // Define a matrícula no formulário

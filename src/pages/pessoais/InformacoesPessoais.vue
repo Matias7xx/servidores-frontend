@@ -123,7 +123,7 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2"
-                >Orientação Sexual</label
+                >Orientação Sexual / Identidade de Gênero</label
               >
               <select
                 v-model="form.orientacao"
@@ -139,7 +139,14 @@
                 <option value="HE">Heterossexual</option>
                 <option value="HO">Homossexual</option>
                 <option value="BI">Bissexual</option>
-                <option value="OU">Outros</option>
+                <option value="AS">Assexual</option>
+                <option value="PA">Pansexual</option>
+                <option value="QU">Queer</option>
+                <option value="CI">Cisgênero</option>
+                <option value="TR">Transgênero</option>
+                <option value="NB">Não binário</option>
+                <option value="IN">Intersexual</option>
+                <option value="OU">Outro / Prefiro não informar</option>
               </select>
             </div>
           </div>
@@ -323,6 +330,12 @@
                 <option value="MO">Mormonismo</option>
                 <option value="TE">Testemunhas de Jeová</option>
                 <option value="ES">Espiritismo</option>
+                <option value="JU">Judaísmo</option>
+                <option value="IS">Islamismo</option>
+                <option value="BU">Budismo</option>
+                <option value="HI">Hinduísmo</option>
+                <option value="MA">Religiões de matriz africana</option>
+                <option value="SR">Sem religião</option>
                 <option value="OU">Outra</option>
               </select>
             </div>
@@ -396,8 +409,8 @@
                 :disabled="!canEdit('grauinstrucao')"
               >
                 <option value="">Selecione</option>
-                <option value="FU">Fundamental Completo</option>
-                <option value="MI">Médio Incompleto</option>
+                <!-- <option value="FU">Fundamental Completo</option>
+                <option value="MI">Médio Incompleto</option> -->
                 <option value="MC">Médio Completo</option>
                 <option value="SI">Superior Incompleto</option>
                 <option value="SC">Superior Completo</option>
