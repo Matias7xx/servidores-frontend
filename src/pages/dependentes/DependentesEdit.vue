@@ -88,8 +88,8 @@
                 required
               >
                 <option value="Cônjuge">Cônjuge</option>
-                <option value="Filho(a)">Filho(a)</option>
-                <option value="Enteado(a)">Enteado(a)</option>
+                <option value="Filho">Filho(a)</option>
+                <option value="Enteado">Enteado(a)</option>
                 <option value="Pai">Pai</option>
                 <option value="Mãe">Mãe</option>
               </select>
@@ -142,107 +142,335 @@
                 errors.cpf[0]
               }}</span>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-1.5">
-                Anexo <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="file"
-                ref="anexoInput"
-                @change="onFileChange"
-                accept=".pdf"
-                class="hidden"
-              />
-              <div
-                @click="$refs.anexoInput.click()"
+        <!-- Card: Documentos -->
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Documentos Anexados
+          </h2>
+
+          <!-- Documento Principal -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-neutral-700 mb-1.5">
+              Documento Principal <span class="text-neutral-500 text-xs">(.pdf, máx 2MB)</span>
+              <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="file"
+              ref="anexoInput"
+              @change="onFileChange"
+              accept=".pdf"
+              class="hidden"
+            />
+            <div
+              @click="$refs.anexoInput.click()"
+              :class="[
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                errors.anexo
+                  ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                  : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+              ]"
+            >
+              <span class="truncate">
+                {{ nomeArquivoAnexo || 'Clique para alterar o documento principal' }}
+              </span>
+              <span
                 :class="[
-                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
-                  errors.anexo
-                    ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
-                    : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+                  'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                  errors.anexo ? 'bg-red-200 text-red-800' : 'bg-neutral-200 text-neutral-700',
                 ]"
               >
-                <span class="truncate">
-                  {{ nomeArquivoAnexo || 'O novo arquivo irá sobrescrever o atual' }}
-                </span>
-                <span
-                  :class="[
-                    'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
-                    errors.anexo ? 'bg-red-200 text-red-800' : 'bg-neutral-200 text-neutral-700',
-                  ]"
-                >
-                  Escolher arquivo
-                </span>
-              </div>
-              <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
-                errors.anexo[0]
-              }}</span>
+                Escolher arquivo
+              </span>
+            </div>
+            <span v-if="errors.anexo" class="text-red-600 text-xs mt-1.5 block">{{
+              errors.anexo[0]
+            }}</span>
 
-              <div
-                v-if="mensagemAnexo"
-                class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+            <div
+              v-if="mensagemAnexo"
+              class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+            >
+              <p
+                class="text-sm text-blue-700 font-medium whitespace-pre-wrap"
+                v-html="mensagemAnexo"
+              ></p>
+            </div>
+
+            <!-- Mostrar documento atual -->
+            <div v-if="dependente.documento" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
               >
-                <p
-                  class="text-sm text-blue-700 font-medium whitespace-pre-wrap"
-                  v-html="mensagemAnexo"
-                ></p>
-              </div>
-              <div v-if="dependente.documento" class="mt-2 flex items-center gap-2"></div>
-
-              <!-- Mostrar documento atual -->
-              <div v-if="dependente.documento" class="mt-2 flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-4 h-4 text-green-600"
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirDocumento(dependente.id, 'documento')"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <p class="text-sm text-neutral-600">
-                  Arquivo atual:
-                  <button
-                    type="button"
-                    @click="abrirAnexo(dependente.id)"
-                    class="text-blue-600 hover:text-blue-700 underline font-medium"
-                  >
-                    Abrir PDF
-                  </button>
-                </p>
-              </div>
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
 
-              <!-- Mostrar novo arquivo selecionado -->
-              <div v-if="form.anexo" class="mt-2 flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-4 h-4 text-blue-600"
+            <!-- Mostrar novo arquivo selecionado -->
+            <div v-if="form.anexo" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.anexo.name }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Documento de Dependência Financeira -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-neutral-700 mb-1.5">
+              Declaração de Dependência Financeira
+              <span class="text-neutral-500 text-xs">(.pdf, máx 2MB) - Opcional</span>
+            </label>
+            <input
+              type="file"
+              ref="docDepFinanceiraInput"
+              @change="onDocDepFinanceiraChange"
+              accept=".pdf"
+              class="hidden"
+            />
+            <div
+              @click="$refs.docDepFinanceiraInput.click()"
+              class="w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50"
+            >
+              <span class="truncate">
+                {{ nomeArquivoDepFinanceira || 'Clique para anexar ou alterar' }}
+              </span>
+              <span class="ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap bg-neutral-200 text-neutral-700">
+                Escolher arquivo
+              </span>
+            </div>
+
+            <!-- Documento atual -->
+            <div v-if="dependente.doc_dependencia_financeira" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirDocumento(dependente.id, 'doc_dependencia_financeira')"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-                <p class="text-sm text-blue-600 font-medium">
-                  ✓ Novo arquivo: {{ form.anexo.name }}
-                </p>
-              </div>
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
 
-              <!-- Informação se não houver documento -->
-              <div v-if="!dependente.documento && !form.anexo" class="mt-2">
-                <p class="text-xs text-neutral-400">Nenhum arquivo anexado</p>
-              </div>
+            <!-- Novo arquivo -->
+            <div v-if="form.doc_dependencia_financeira" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.doc_dependencia_financeira.name }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Documento de Laudo de Deficiência -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-neutral-700 mb-1.5">
+              Laudo Médico de Deficiência
+              <span class="text-neutral-500 text-xs">(.pdf, máx 2MB) - Opcional</span>
+            </label>
+            <input
+              type="file"
+              ref="docLaudoDeficienciaInput"
+              @change="onDocLaudoDeficienciaChange"
+              accept=".pdf"
+              class="hidden"
+            />
+            <div
+              @click="$refs.docLaudoDeficienciaInput.click()"
+              class="w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50"
+            >
+              <span class="truncate">
+                {{ nomeArquivoLaudoDeficiencia || 'Clique para anexar ou alterar' }}
+              </span>
+              <span class="ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap bg-neutral-200 text-neutral-700">
+                Escolher arquivo
+              </span>
+            </div>
+
+            <!-- Documento atual -->
+            <div v-if="dependente.doc_laudo_deficiencia" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirDocumento(dependente.id, 'doc_laudo_deficiencia')"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
+                >
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
+
+            <!-- Novo arquivo -->
+            <div v-if="form.doc_laudo_deficiencia" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.doc_laudo_deficiencia.name }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Documento de Curso Superior -->
+          <div>
+            <label class="block text-sm font-medium text-neutral-700 mb-1.5">
+              Comprovante de Matrícula em Curso Superior
+              <span class="text-neutral-500 text-xs">(.pdf, máx 2MB) - Opcional</span>
+            </label>
+            <input
+              type="file"
+              ref="docCursoSuperiorInput"
+              @change="onDocCursoSuperiorChange"
+              accept=".pdf"
+              class="hidden"
+            />
+            <div
+              @click="$refs.docCursoSuperiorInput.click()"
+              class="w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50"
+            >
+              <span class="truncate">
+                {{ nomeArquivoCursoSuperior || 'Clique para anexar ou alterar' }}
+              </span>
+              <span class="ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap bg-neutral-200 text-neutral-700">
+                Escolher arquivo
+              </span>
+            </div>
+
+            <!-- Documento atual -->
+            <div v-if="dependente.doc_curso_superior" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-green-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p class="text-sm text-neutral-600">
+                Arquivo atual:
+                <button
+                  type="button"
+                  @click="abrirDocumento(dependente.id, 'doc_curso_superior')"
+                  class="text-blue-600 hover:text-blue-700 underline font-medium"
+                >
+                  Abrir PDF
+                </button>
+              </p>
+            </div>
+
+            <!-- Novo arquivo -->
+            <div v-if="form.doc_curso_superior" class="mt-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4 text-blue-600"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+              <p class="text-sm text-blue-600 font-medium">
+                ✓ Novo arquivo: {{ form.doc_curso_superior.name }}
+              </p>
             </div>
           </div>
         </div>
@@ -347,10 +575,16 @@ const form = reactive({
   tipo_dependente: '',
   data_nascimento: '',
   anexo: null,
+  doc_dependencia_financeira: null,
+  doc_laudo_deficiencia: null,
+  doc_curso_superior: null,
 })
 
 const cpfFormatado = ref('')
 const nomeArquivoAnexo = ref('')
+const nomeArquivoDepFinanceira = ref('')
+const nomeArquivoLaudoDeficiencia = ref('')
+const nomeArquivoCursoSuperior = ref('')
 const errors = reactive({})
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -361,23 +595,19 @@ const formatarDataParaInput = (data) => {
 
   console.log('Data recebida para formatar:', data)
 
-  // Se já está no formato YYYY-MM-DD, retorna direto
   if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
     return data
   }
 
-  // Se está no formato DD/MM/YYYY
   if (data.includes('/')) {
     const [dia, mes, ano] = data.split('/')
     return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
   }
 
-  // Se está no formato ISO (YYYY-MM-DDTHH:mm:ss.000000Z)
   if (data.includes('T')) {
     return data.split('T')[0]
   }
 
-  // Tenta criar uma data e formatar
   try {
     const date = new Date(data)
     if (!isNaN(date.getTime())) {
@@ -411,7 +641,6 @@ const fetchData = async () => {
 
     dependente.value = dep
 
-    // Preencher formulário
     form.id = dep.id
     form.servidor_matricula = auth.user()?.matricula || ''
     form.nome = dep.nome || ''
@@ -419,7 +648,6 @@ const fetchData = async () => {
     form.sexo_dependente = dep.sexo_dependente || ''
     form.tipo_dependente = dep.tipo_dependente || ''
 
-    // Formatar CPF para exibição
     if (dep.cpf) {
       let cpf = dep.cpf.replace(/\D/g, '')
       cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2')
@@ -428,7 +656,6 @@ const fetchData = async () => {
       cpfFormatado.value = cpf
     }
 
-    // Formatar data corretamente
     if (dep.data_nascimento) {
       form.data_nascimento = formatarDataParaInput(dep.data_nascimento)
     }
@@ -440,6 +667,9 @@ const fetchData = async () => {
       data_formatada: form.data_nascimento,
       documento: dep.documento,
       tem_documento: !!dep.documento,
+      doc_dependencia_financeira: dep.doc_dependencia_financeira,
+      doc_laudo_deficiencia: dep.doc_laudo_deficiencia,
+      doc_curso_superior: dep.doc_curso_superior,
     })
   } catch (err) {
     console.error('Erro ao carregar dependente:', err)
@@ -449,22 +679,17 @@ const fetchData = async () => {
   }
 }
 
-//Verificar se o CPF é válido
 const validarCPF = (cpf) => {
-  // Remove caracteres não numéricos
   cpf = cpf.replace(/\D/g, '')
 
-  // Verifica se tem 11 dígitos
   if (cpf.length !== 11) {
     return false
   }
 
-  // Verifica se todos os dígitos são iguais
   if (/^(\d)\1{10}$/.test(cpf)) {
     return false
   }
 
-  // Validação do primeiro dígito verificador
   let soma = 0
   for (let i = 0; i < 9; i++) {
     soma += parseInt(cpf.charAt(i)) * (10 - i)
@@ -475,7 +700,6 @@ const validarCPF = (cpf) => {
     return false
   }
 
-  // Validação do segundo dígito verificador
   soma = 0
   for (let i = 0; i < 10; i++) {
     soma += parseInt(cpf.charAt(i)) * (11 - i)
@@ -490,23 +714,16 @@ const validarCPF = (cpf) => {
 }
 
 const formatarCPF = (event) => {
-  // Remove tudo que não é número
   let valor = event.target.value.replace(/\D/g, '')
-
-  // Limita a 11 dígitos
   valor = valor.substring(0, 11)
 
-  // Aplica a máscara visual
   if (valor.length <= 11) {
     valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
     valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
     valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
   }
 
-  // Atualiza o valor formatado (exibido no input)
   cpfFormatado.value = valor
-
-  // Atualiza o valor sem formatação (enviado para o backend)
   form.cpf = valor.replace(/\D/g, '')
 }
 
@@ -528,7 +745,6 @@ const calcularIdade = (dataNasc) => {
 
   let idade = hoje.getFullYear() - nasc.getFullYear()
 
-  // Idade se o aniversário ainda não ocorreu este ano
   const mesHoje = hoje.getMonth()
   const diaHoje = hoje.getDate()
   const mesNasc = nasc.getMonth()
@@ -538,7 +754,6 @@ const calcularIdade = (dataNasc) => {
     idade--
   }
 
-  // A idade não pode ser negativa
   return Math.max(0, idade)
 }
 
@@ -554,31 +769,19 @@ const mensagemAnexo = computed(() => {
     return ''
   }
 
-  // Lógica para FILHO(A) e ENTEADO(A)
-  if (tipo === 'Filho(a)' || tipo === 'Enteado(a)') {
+  if (tipo === 'Filho' || tipo === 'Enteado') {
     if (idade === null) {
       return 'Informe a Data de Nascimento para verificar a exigência do anexo.'
     } else if (idade < 21) {
-      // (idade < 21)
-      // ATÉ 20 ANOS E 11 MESES: Certidão de Nascimento/Documento Comprobatório
       return `Para ${tipo} com idade até 20 anos, o anexo deve conter a Certidão de Nascimento.`
     } else if (idade >= 21 && idade <= 24) {
-      // (idade >= 21)
-      // ENTRE 21 e 24 ANOS: Comprovante Ensino Superior
       return `Para ${tipo} com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.`
     } else if (idade > 24) {
-      // MAIOR DE 24 ANOS: Comprovante de Dependência
       return `Para ${tipo} com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).`
     }
-  }
-
-  // Lógica para CÔNJUGE
-  else if (tipo === 'Cônjuge') {
+  } else if (tipo === 'Cônjuge') {
     return 'O anexo deve conter Certidão de Casamento OU Declaração de União Estável (com firma reconhecida).'
-  }
-
-  // Lógica para PAI/MÃE
-  else if (tipo === 'Pai' || tipo === 'Mãe') {
+  } else if (tipo === 'Pai' || tipo === 'Mãe') {
     return 'O anexo deve conter Certidão de Nascimento do Servidor (para comprovar parentesco).'
   }
 
@@ -610,14 +813,89 @@ const onFileChange = (event) => {
   }
 }
 
-const abrirAnexo = async (idDependente) => {
+const onDocDepFinanceiraChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      showToastMessage('Apenas arquivos PDF são permitidos', 'error')
+      event.target.value = ''
+      nomeArquivoDepFinanceira.value = ''
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
+      event.target.value = ''
+      nomeArquivoDepFinanceira.value = ''
+      return
+    }
+
+    form.doc_dependencia_financeira = file
+    nomeArquivoDepFinanceira.value = file.name
+    console.log('Doc. Dep. Financeira selecionado:', file.name)
+  } else {
+    nomeArquivoDepFinanceira.value = ''
+  }
+}
+
+const onDocLaudoDeficienciaChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      showToastMessage('Apenas arquivos PDF são permitidos', 'error')
+      event.target.value = ''
+      nomeArquivoLaudoDeficiencia.value = ''
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
+      event.target.value = ''
+      nomeArquivoLaudoDeficiencia.value = ''
+      return
+    }
+
+    form.doc_laudo_deficiencia = file
+    nomeArquivoLaudoDeficiencia.value = file.name
+    console.log('Doc. Laudo Deficiência selecionado:', file.name)
+  } else {
+    nomeArquivoLaudoDeficiencia.value = ''
+  }
+}
+
+const onDocCursoSuperiorChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    if (file.type !== 'application/pdf') {
+      showToastMessage('Apenas arquivos PDF são permitidos', 'error')
+      event.target.value = ''
+      nomeArquivoCursoSuperior.value = ''
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
+      event.target.value = ''
+      nomeArquivoCursoSuperior.value = ''
+      return
+    }
+
+    form.doc_curso_superior = file
+    nomeArquivoCursoSuperior.value = file.name
+    console.log('Doc. Curso Superior selecionado:', file.name)
+  } else {
+    nomeArquivoCursoSuperior.value = ''
+  }
+}
+
+const abrirDocumento = async (idDependente, tipoDocumento) => {
   try {
-    const response = await dependentesService.getDocumentoUrl(idDependente)
+    const response = await dependentesService.getDocumentoUrl(idDependente, tipoDocumento)
     if (response.success && response.url) {
       const janela = window.open(
         response.url,
         'anexo',
-        'width=600,height=600,scrollbars=yes,resizable=yes',
+        'width=800,height=600,scrollbars=yes,resizable=yes',
       )
       if (!janela) {
         alert('Popup bloqueado! Permita popups para visualizar o anexo.')
@@ -633,17 +911,14 @@ const abrirAnexo = async (idDependente) => {
 
 const atualizarDependente = async () => {
   try {
-    // Limpa erros anteriores
     Object.keys(errors).forEach((key) => delete errors[key])
 
-    // Validação da data
     if (!form.data_nascimento || form.data_nascimento.trim() === '') {
       errors.data_nascimento = ['A data de nascimento é obrigatória']
       showToastMessage('Por favor, preencha a data de nascimento', 'error')
       return
     }
 
-    // Validação do CPF
     if (!form.cpf || form.cpf.trim() === '') {
       errors.cpf = ['O CPF é obrigatório']
       showToastMessage('Por favor, preencha o CPF', 'error')
@@ -656,15 +931,12 @@ const atualizarDependente = async () => {
       return
     }
 
-    // BLOCO DE VALIDAÇÃO DO ANEXO
     if (!form.anexo && !dependente.value.documento) {
-        errors.anexo = ['O anexo é obrigatório.']
-
-        showToastMessage('O anexo é obrigatório. Por favor, anexe o documento.', 'error')
-        return
+      errors.anexo = ['O anexo é obrigatório.']
+      showToastMessage('O anexo é obrigatório. Por favor, anexe o documento.', 'error')
+      return
     }
 
-    // Garante que tem matrícula
     form.servidor_matricula = auth.user()?.matricula || ''
 
     if (!form.servidor_matricula) {
@@ -672,30 +944,37 @@ const atualizarDependente = async () => {
       return
     }
 
-    // Criar FormData
     const formData = new FormData()
 
-    // ID do dependente (OBRIGATÓRIO)
     formData.append('id', form.id)
-
-    // Campos obrigatórios
     formData.append('servidor_matricula', form.servidor_matricula)
     formData.append('nome', form.nome)
     formData.append('cpf', form.cpf)
     formData.append('sexo_dependente', form.sexo_dependente)
     formData.append('tipo_dependente', form.tipo_dependente)
-
-    // Data em ambos os formatos (para validação e para o controller)
     formData.append('data_nascimento', form.data_nascimento)
     formData.append('datanascimento', form.data_nascimento)
 
-    // Anexo (somente se houver novo arquivo)
     if (form.anexo instanceof File) {
-      console.log('📎 Novo anexo sendo adicionado:', form.anexo.name)
+      console.log('Novo anexo sendo adicionado:', form.anexo.name)
       formData.append('anexo', form.anexo)
     }
 
-    // Log para debug
+    if (form.doc_dependencia_financeira instanceof File) {
+      console.log('Doc. Dep. Financeira sendo adicionado:', form.doc_dependencia_financeira.name)
+      formData.append('doc_dependencia_financeira', form.doc_dependencia_financeira)
+    }
+
+    if (form.doc_laudo_deficiencia instanceof File) {
+      console.log('Doc. Laudo Deficiência sendo adicionado:', form.doc_laudo_deficiencia.name)
+      formData.append('doc_laudo_deficiencia', form.doc_laudo_deficiencia)
+    }
+
+    if (form.doc_curso_superior instanceof File) {
+      console.log('Doc. Curso Superior sendo adicionado:', form.doc_curso_superior.name)
+      formData.append('doc_curso_superior', form.doc_curso_superior)
+    }
+
     console.log('FormData completo:')
     for (let [key, value] of formData.entries()) {
       if (value instanceof File) {

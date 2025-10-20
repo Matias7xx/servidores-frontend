@@ -66,10 +66,23 @@ export const dependentesService = {
       if (data.anexo && data.anexo instanceof File) {
         console.log('Anexo detectado:', data.anexo.name)
         formData.append('anexo', data.anexo)
-
-        // SOLUÇÃO: Criar um nome fictício para o campo documento
-        // O backend vai sobrescrever isso com o nome gerado, mas precisa existir
         formData.append('documento', data.anexo.name)
+      }
+
+      // Documentos adicionais opcionais
+      if (data.doc_dependencia_financeira && data.doc_dependencia_financeira instanceof File) {
+        console.log('Doc. Dependência Financeira detectado:', data.doc_dependencia_financeira.name)
+        formData.append('doc_dependencia_financeira', data.doc_dependencia_financeira)
+      }
+
+      if (data.doc_laudo_deficiencia && data.doc_laudo_deficiencia instanceof File) {
+        console.log('Doc. Laudo Deficiência detectado:', data.doc_laudo_deficiencia.name)
+        formData.append('doc_laudo_deficiencia', data.doc_laudo_deficiencia)
+      }
+
+      if (data.doc_curso_superior && data.doc_curso_superior instanceof File) {
+        console.log('Doc. Curso Superior detectado:', data.doc_curso_superior.name)
+        formData.append('doc_curso_superior', data.doc_curso_superior)
       }
 
       console.log('FormData completo:')
@@ -107,7 +120,6 @@ export const dependentesService = {
 
   async updateDependente(formData) {
     try {
-      // Pega o ID do FormData
       const id = formData.get('id')
 
       if (!id) {
@@ -191,15 +203,21 @@ export const dependentesService = {
   },
 
   // Buscar URL do documento no MinIO
-  async getDocumentoUrl(idDependente) {
+  // tipo de documento como parâmetro
+  async getDocumentoUrl(idDependente, tipoDocumento = 'documento') {
     try {
       if (!idDependente) {
         throw new Error('ID do dependente é obrigatório')
       }
 
-      console.log('Buscando URL do documento para dependente:', idDependente)
+      console.log('Buscando URL do documento:', {
+        idDependente,
+        tipoDocumento,
+      })
 
-      const response = await api.get(`/servidor_dependentes_documento/${idDependente}`)
+      const response = await api.get(
+        `/servidor_dependentes_documento/${idDependente}?tipo=${tipoDocumento}`,
+      )
 
       return {
         success: response.data.success || true,
@@ -209,5 +227,10 @@ export const dependentesService = {
       console.error('Erro ao buscar URL do documento:', error)
       throw error
     }
+  },
+
+  // Wrapper para chamadas de documentos adicionais
+  async getDocumentoAdicionalUrl(idDependente, tipoDocumento) {
+    return this.getDocumentoUrl(idDependente, tipoDocumento)
   },
 }

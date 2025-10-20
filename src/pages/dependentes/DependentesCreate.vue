@@ -84,8 +84,8 @@
               >
                 <option value="">Selecione</option>
                 <option value="Cônjuge">Cônjuge</option>
-                <option value="Filho(a)">Filho(a)</option>
-                <option value="Enteado(a)">Enteado(a)</option>
+                <option value="Filho">Filho(a)</option>
+                <option value="Enteado">Enteado(a)</option>
                 <option value="Pai">Pai</option>
                 <option value="Mãe">Mãe</option>
               </select>
@@ -146,7 +146,7 @@
               <input
                 type="file"
                 ref="anexoInput"
-                @change="onFileChange"
+                @change="onFileChange($event, 'anexo')"
                 accept=".pdf"
                 class="hidden"
               />
@@ -188,110 +188,249 @@
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="flex items-center justify-end gap-3">
-          <button
-            type="button"
-            @click="$router.push('/dependentes')"
-            class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+        <div
+          v-if="showDeficienciaOuFinanceiraInput"
+          class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6"
+        >
+          <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
+            Documentos de Comprovação Adicionais
+          </h2>
+
+          <div
+            v-if="showNewDocs21To24"
+            class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4"
+          >
+            <p class="text-sm text-yellow-800 font-medium">
+              ATENÇÃO: Para esta faixa etária você deve anexar pelo menos UM dos três documentos
+              abaixo.
+            </p>
+          </div>
+          <div
+            v-else-if="showNewDocsOver24"
+            class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4"
+          >
+            <p class="text-sm text-yellow-800 font-medium">
+              ATENÇÃO: Para esta faixa etária você deve anexar pelo menos UM dos documentos abaixo.
+            </p>
+          </div>
+
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Declaração de Dependência Financeira
+              </label>
+              <input
+                type="file"
+                ref="docDependenciaFinanceiraInput"
+                @change="onFileChange($event, 'doc_dependencia_financeira')"
+                accept=".pdf"
+                class="hidden"
+              />
+              <div
+                @click="$refs.docDependenciaFinanceiraInput.click()"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  errors.doc_dependencia_financeira
+                    ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                    : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+                ]"
+              >
+                <span class="truncate">
+                  {{ nomeArquivoDependenciaFinanceira || 'Nenhum arquivo escolhido' }}
+                </span>
+                <span
+                  :class="[
+                    'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                    errors.doc_dependencia_financeira
+                      ? 'bg-red-200 text-red-800'
+                      : 'bg-neutral-200 text-neutral-700',
+                  ]"
+                >
+                  Escolher arquivo
+                </span>
+              </div>
+              <span
+                v-if="errors.doc_dependencia_financeira"
+                class="text-red-600 text-xs mt-1.5 block"
+                >{{ errors.doc_dependencia_financeira[0] }}</span
+              >
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Laudo de Deficiência
+              </label>
+              <input
+                type="file"
+                ref="docLaudoDeficienciaInput"
+                @change="onFileChange($event, 'doc_laudo_deficiencia')"
+                accept=".pdf"
+                class="hidden"
+              />
+              <div
+                @click="$refs.docLaudoDeficienciaInput.click()"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  errors.doc_laudo_deficiencia
+                    ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                    : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+                ]"
+              >
+                <span class="truncate">
+                  {{ nomeArquivoLaudoDeficiencia || 'Nenhum arquivo escolhido' }}
+                </span>
+                <span
+                  :class="[
+                    'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                    errors.doc_laudo_deficiencia
+                      ? 'bg-red-200 text-red-800'
+                      : 'bg-neutral-200 text-neutral-700',
+                  ]"
+                >
+                  Escolher arquivo
+                </span>
+              </div>
+              <span v-if="errors.doc_laudo_deficiencia" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.doc_laudo_deficiencia[0]
+              }}</span>
+            </div>
+
+            <div v-if="showNewDocs21To24">
+              <label class="block text-sm font-medium text-neutral-700 mb-2">
+                Comprovante de Curso Superior
+              </label>
+              <input
+                type="file"
+                ref="docCursoSuperiorInput"
+                @change="onFileChange($event, 'doc_curso_superior')"
+                accept=".pdf"
+                class="hidden"
+              />
+              <div
+                @click="$refs.docCursoSuperiorInput.click()"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  errors.doc_curso_superior
+                    ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
+                    : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
+                ]"
+              >
+                <span class="truncate">
+                  {{ nomeArquivoCursoSuperior || 'Nenhum arquivo escolhido' }}
+                </span>
+                <span
+                  :class="[
+                    'ml-2 px-3 py-1 text-xs font-medium rounded whitespace-nowrap',
+                    errors.doc_curso_superior
+                      ? 'bg-red-200 text-red-800'
+                      : 'bg-neutral-200 text-neutral-700',
+                  ]"
+                >
+                  Escolher arquivo
+                </span>
+              </div>
+              <span v-if="errors.doc_curso_superior" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.doc_curso_superior[0]
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="flex items-center justify-end gap-3 pt-4">
+          <router-link
+            to="/dependentes"
+            class="px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg transition-all duration-200 hover:bg-neutral-50 hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
           >
             Cancelar
-          </button>
-
+          </router-link>
           <button
             type="submit"
-            :disabled="dependentesStore.loading"
-            class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+            class="px-5 py-2.5 text-sm font-medium text-white bg-neutral-900 border border-transparent rounded-lg transition-all duration-200 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="dependentesStore.loading">Cadastrando...</span>
-            <span v-else>Cadastrar Dependente</span>
+            Salvar
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Toast -->
-    <Transition name="toast">
-      <div
-        v-if="showToast"
-        :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
-          toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
-        ]"
-        role="alert"
-      >
-        <div
-          :class="[
-            'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-            toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
-          ]"
-        >
-          <svg
-            v-if="toastType === 'success'"
-            class="w-4 h-4 text-white"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </div>
-        <div class="flex-1">
-          <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
-        </div>
-        <button
-          type="button"
-          @click="hideToast"
-          class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-    </Transition>
-
-    <!-- Modal de Reativação -->
+    <!-- Modal de Confirmação -->
     <div
       v-if="showReactiveModal"
-      class="fixed inset-0 bg-neutral-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-        <h3 class="text-lg font-semibold text-neutral-900 mb-3">Dependente já cadastrado</h3>
+      <div class="bg-white rounded-lg p-6 max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-neutral-900 mb-4">Dependente já cadastrado</h3>
         <p class="text-sm text-neutral-600 mb-6">
-          Este dependente já está cadastrado, porém está inativo. Deseja reativá-lo?
+          Este dependente já foi cadastrado anteriormente e está inativo. Deseja reativá-lo?
         </p>
         <div class="flex justify-end gap-3">
           <button
             @click="cancelarReativacao"
-            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50"
           >
             Cancelar
           </button>
           <button
             @click="confirmarReativacao"
-            class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+            class="px-4 py-2 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800"
           >
             Reativar
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Toast de Notificação -->
+    <Transition name="slide-up">
+      <div
+        v-if="showToast"
+        :class="[
+          'fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-xl text-white text-sm font-medium max-w-sm z-50',
+          toastType === 'success'
+            ? 'bg-green-600'
+            : toastType === 'error'
+              ? 'bg-red-600'
+              : 'bg-blue-600',
+        ]"
+      >
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <svg
+              v-if="toastType === 'success'"
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="whitespace-pre-wrap break-words">{{ toastMessage }}</p>
+          </div>
+          <button @click="hideToast" class="flex-shrink-0 ml-2 text-white hover:text-neutral-200">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -305,182 +444,159 @@ const router = useRouter()
 const dependentesStore = useDependentesStore()
 const auth = useAuth()
 
-const form = reactive({
-  servidor_matricula: '',
-  nome: '',
-  cpf: '',
-  sexo_dependente: '',
-  tipo_dependente: '',
-  data_nascimento: '',
-  anexo: null,
-})
+// Estados
+const loadingData = ref(false)
+const showReactiveModal = ref(false)
+const dependenteParaReativar = ref(null)
 
-const cpfFormatado = ref('')
-const nomeArquivoAnexo = ref('')
-const errors = reactive({})
+// Toast
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
-const showReactiveModal = ref(false)
-const dependenteParaReativar = ref(null)
-const loadingData = ref(false)
 
-const validarCPF = (cpf) => {
-  // Remove caracteres não numéricos
-  cpf = cpf.replace(/\D/g, '')
+// Nomes dos arquivos
+const nomeArquivoAnexo = ref('')
+const nomeArquivoDependenciaFinanceira = ref('')
+const nomeArquivoLaudoDeficiencia = ref('')
+const nomeArquivoCursoSuperior = ref('')
 
-  // Verifica se tem 11 dígitos
-  if (cpf.length !== 11) {
-    return false
-  }
+// Formulário
+const form = reactive({
+  nome: '',
+  sexo_dependente: '',
+  tipo_dependente: '',
+  data_nascimento: '',
+  cpf: '',
+  anexo: null,
+  doc_dependencia_financeira: null,
+  doc_laudo_deficiencia: null,
+  doc_curso_superior: null,
+  servidor_matricula: '',
+})
 
-  // Verifica se todos os dígitos são iguais
-  if (/^(\d)\1{10}$/.test(cpf)) {
-    return false
-  }
+const errors = reactive({})
 
-  // Validação do primeiro dígito verificador
-  let soma = 0
-  for (let i = 0; i < 9; i++) {
-    soma += parseInt(cpf.charAt(i)) * (10 - i)
-  }
-  let resto = (soma * 10) % 11
-  if (resto === 10 || resto === 11) resto = 0
-  if (resto !== parseInt(cpf.charAt(9))) {
-    return false
-  }
-
-  // Validação do segundo dígito verificador
-  soma = 0
-  for (let i = 0; i < 10; i++) {
-    soma += parseInt(cpf.charAt(i)) * (11 - i)
-  }
-  resto = (soma * 10) % 11
-  if (resto === 10 || resto === 11) resto = 0
-  if (resto !== parseInt(cpf.charAt(10))) {
-    return false
-  }
-
-  return true
-}
+// CPF formatado
+const cpfFormatado = ref('')
 
 const formatarCPF = (event) => {
-  // Remove tudo que não é número
   let valor = event.target.value.replace(/\D/g, '')
 
-  // Limita a 11 dígitos
-  valor = valor.substring(0, 11)
-
-  // Aplica a máscara visual
   if (valor.length <= 11) {
     valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
     valor = valor.replace(/(\d{3})(\d)/, '$1.$2')
     valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
   }
 
-  // Atualiza o valor formatado (exibido no input)
   cpfFormatado.value = valor
-
-  // Atualiza o valor sem formatação (enviado para o backend)
   form.cpf = valor.replace(/\D/g, '')
 }
 
-const calcularIdade = (dataNasc) => {
-  if (!dataNasc) return null
+const validarCPF = (cpf) => {
+  cpf = cpf.replace(/\D/g, '')
 
-  const parts = dataNasc.split('-')
-  if (parts.length !== 3) {
-    return null
+  if (cpf.length !== 11) return false
+  if (/^(\d)\1+$/.test(cpf)) return false
+
+  let soma = 0
+  let resto
+
+  for (let i = 1; i <= 9; i++) {
+    soma += parseInt(cpf.substring(i - 1, i)) * (11 - i)
   }
 
-  const nasc = new Date(parts[0], parts[1] - 1, parts[2])
+  resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.substring(9, 10))) return false
 
-  if (isNaN(nasc.getTime())) {
-    return null
+  soma = 0
+  for (let i = 1; i <= 10; i++) {
+    soma += parseInt(cpf.substring(i - 1, i)) * (12 - i)
   }
+
+  resto = (soma * 10) % 11
+  if (resto === 10 || resto === 11) resto = 0
+  if (resto !== parseInt(cpf.substring(10, 11))) return false
+
+  return true
+}
+
+// Computed properties
+const idadeDependente = computed(() => {
+  if (!form.data_nascimento) return null
 
   const hoje = new Date()
+  const nascimento = new Date(form.data_nascimento)
+  let idade = hoje.getFullYear() - nascimento.getFullYear()
+  const mes = hoje.getMonth() - nascimento.getMonth()
 
-  let idade = hoje.getFullYear() - nasc.getFullYear()
-
-  // Idade se o aniversário ainda não ocorreu este ano
-  const mesHoje = hoje.getMonth()
-  const diaHoje = hoje.getDate()
-  const mesNasc = nasc.getMonth()
-  const diaNasc = nasc.getDate()
-
-  if (mesHoje < mesNasc || (mesHoje === mesNasc && diaHoje < diaNasc)) {
+  if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
     idade--
   }
 
-  // A idade não pode ser negativa
-  return Math.max(0, idade)
-}
+  return idade
+})
 
-const idadeDependente = computed(() => {
-  return calcularIdade(form.data_nascimento)
+const isFilhoOuEnteado = computed(() => {
+  return form.tipo_dependente === 'Filho' || form.tipo_dependente === 'Enteado'
+})
+
+const showDeficienciaOuFinanceiraInput = computed(() => {
+  if (!isFilhoOuEnteado.value) return false
+
+  const idade = idadeDependente.value
+  if (idade === null) return false
+
+  return idade >= 21
+})
+
+const showNewDocs21To24 = computed(() => {
+  if (!isFilhoOuEnteado.value) return false
+  const idade = idadeDependente.value
+  return idade !== null && idade >= 21 && idade <= 24
+})
+
+const showNewDocsOver24 = computed(() => {
+  if (!isFilhoOuEnteado.value) return false
+  const idade = idadeDependente.value
+  return idade !== null && idade > 24
 })
 
 const mensagemAnexo = computed(() => {
-  const tipo = form.tipo_dependente
-  const idade = idadeDependente.value
+  if (!form.tipo_dependente) return ''
 
-  if (!tipo) {
-    return ''
+  const mensagens = {
+    Cônjuge:
+      'Anexe aqui a <strong>Certidão de Casamento</strong> ou <strong>Declaração de União Estável</strong>.',
+    Filho: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do(a) filho(a).',
+    Enteado: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do(a) enteado(a).',
+    Pai: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do servidor.',
+    Mãe: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do servidor.',
   }
 
-  // Lógica para FILHO(A) e ENTEADO(A)
-  if (tipo === 'Filho(a)' || tipo === 'Enteado(a)') {
-    if (idade === null) {
-      return 'Informe a Data de Nascimento para verificar a exigência do anexo.'
-    } else if (idade < 21) {
-      // (idade < 21)
-      // ATÉ 20 ANOS E 11 MESES: Certidão de Nascimento/Documento Comprobatório
-      return `Para ${tipo} com idade até 20 anos, o anexo deve conter a Certidão de Nascimento.`
-    } else if (idade >= 21 && idade <= 24) {
-      // (idade >= 21)
-      // ENTRE 21 e 24 ANOS: Comprovante Ensino Superior
-      return `Para ${tipo} com idade entre 21 e 24 anos, o anexo deve conter o comprovante de matrícula em curso de nível superior.`
-    } else if (idade > 24) {
-      // MAIOR DE 24 ANOS: Comprovante de Dependência
-      return `Para ${tipo} com mais de 24 anos, o anexo deve conter documento que comprove a condição de dependência, como laudo médico ou outro comprovante equivalente (ex.: autismo, deficiência física, entre outros).`
-    }
-  }
-
-  // Lógica para CÔNJUGE
-  else if (tipo === 'Cônjuge') {
-    return 'O anexo deve conter Certidão de Casamento OU Declaração de União Estável (com firma reconhecida).'
-  }
-
-  // Lógica para PAI/MÃE
-  else if (tipo === 'Pai' || tipo === 'Mãe') {
-    return 'O anexo deve conter Certidão de Nascimento do Servidor (para comprovar parentesco).'
-  }
-
-  return ''
+  return mensagens[form.tipo_dependente] || ''
 })
 
-const onFileChange = (event) => {
+const onFileChange = (event, fieldName) => {
   const file = event.target.files[0]
-  if (file) {
-    if (file.type !== 'application/pdf') {
-      showToastMessage('Apenas arquivos PDF são permitidos', 'error')
-      event.target.value = ''
-      nomeArquivoAnexo.value = ''
-      return
-    }
+  if (!file) return
 
-    if (file.size > 2 * 1024 * 1024) {
-      showToastMessage('Arquivo deve ter no máximo 2MB', 'error')
-      event.target.value = ''
-      nomeArquivoAnexo.value = ''
-      return
-    }
+  if (file.type !== 'application/pdf') {
+    showToastMessage('Por favor, selecione apenas arquivos PDF', 'error')
+    event.target.value = ''
+    return
+  }
 
-    form.anexo = file
+  form[fieldName] = file
+
+  if (fieldName === 'anexo') {
     nomeArquivoAnexo.value = file.name
-  } else {
-    nomeArquivoAnexo.value = ''
+  } else if (fieldName === 'doc_dependencia_financeira') {
+    nomeArquivoDependenciaFinanceira.value = file.name
+  } else if (fieldName === 'doc_laudo_deficiencia') {
+    nomeArquivoLaudoDeficiencia.value = file.name
+  } else if (fieldName === 'doc_curso_superior') {
+    nomeArquivoCursoSuperior.value = file.name
   }
 }
 
@@ -519,10 +635,46 @@ const salvarDependente = async () => {
 
     // BLOCO DE VALIDAÇÃO DO ANEXO
     if (!form.anexo) {
-        errors.anexo = ['O anexo é obrigatório.']
+      errors.anexo = ['O anexo é obrigatório.']
 
-        showToastMessage('O anexo é obrigatório. Por favor, anexe o documento.', 'error')
-        return
+      showToastMessage('O anexo é obrigatório. Por favor, anexe o documento.', 'error')
+      return
+    }
+
+    if (isFilhoOuEnteado.value) {
+      const idade = idadeDependente.value
+
+      // Regra: Se 21 a 24 anos, um dos três é obrigatório
+      if (idade >= 21 && idade <= 24) {
+        if (
+          !form.doc_dependencia_financeira &&
+          !form.doc_laudo_deficiencia &&
+          !form.doc_curso_superior
+        ) {
+          errors.doc_dependencia_financeira = [
+            'É obrigatório anexar UM dos três documentos de comprovação.',
+          ]
+          showToastMessage(
+            'Para esta faixa etária, é obrigatório anexar a Dependência Financeira, o Laudo de Deficiência OU o Comprovante de Curso Superior.',
+            'error',
+          )
+          return
+        }
+      }
+
+      // Regra: Se > 24 anos, um dos dois é obrigatório (Curso Superior não é aceito)
+      if (idade > 24) {
+        if (!form.doc_dependencia_financeira && !form.doc_laudo_deficiencia) {
+          errors.doc_dependencia_financeira = [
+            'É obrigatório anexar UM dos dois documentos de comprovação.',
+          ]
+          showToastMessage(
+            'Para esta faixa etária, é obrigatório anexar a Dependência Financeira OU o Laudo de Deficiência.',
+            'error',
+          )
+          return
+        }
+      }
     }
 
     // Define a matrícula no formulário
@@ -653,3 +805,20 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-up-enter-from {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+</style>
