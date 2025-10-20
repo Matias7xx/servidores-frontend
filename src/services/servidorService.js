@@ -33,6 +33,44 @@ export const servidorService = {
     }
   },
 
+  async getEstados() {
+    try {
+      console.log('Buscando estados...')
+      const response = await api.get('/estados')
+      return {
+        success: true,
+        data: response.data,
+        message: 'Estados carregados com sucesso',
+      }
+    } catch (error) {
+      console.error('Erro ao buscar estados:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao carregar estados',
+        error: error.response?.data,
+      }
+    }
+  },
+
+  async getCidadesPorEstado(codigoEstado) {
+    try {
+      console.log('Buscando cidades do estado:', codigoEstado)
+      const response = await api.get(`/cidades/${codigoEstado}`)
+      return {
+        success: true,
+        data: response.data,
+        message: 'Cidades carregadas com sucesso',
+      }
+    } catch (error) {
+      console.error('Erro ao buscar cidades:', error)
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao carregar cidades',
+        error: error.response?.data,
+      }
+    }
+  },
+
   async updateServidor(data) {
     try {
       const { ...dadosEditaveis } = data

@@ -22,9 +22,16 @@ export const useServidorStore = defineStore('servidor', () => {
         // Atribui os dados do servidor
         servidor.value = response.data.servidor
 
-        // Atribui estados e cidades
-        estados.value = response.data.estados || []
-        cidades.value = response.data.cidades || []
+        // ATRIBUI estados/cidades SE VIERAM DA API
+        // Se não vieram, mantém os que já foram carregados
+        if (response.data.estados && response.data.estados.length > 0) {
+          estados.value = response.data.estados
+        }
+
+        if (response.data.cidades && response.data.cidades.length > 0) {
+          cidades.value = response.data.cidades
+        }
+
         servidorConfig.value = response.data.servidor_config || []
 
         console.log('Dados carregados:', {
@@ -51,6 +58,44 @@ export const useServidorStore = defineStore('servidor', () => {
       }
     } finally {
       loading.value = false
+    }
+  }
+
+  const carregarEstados = async () => {
+    try {
+      const response = await servidorService.getEstados()
+
+      if (response.success) {
+        estados.value = response.data
+        console.log('Estados carregados na store:', estados.value.length)
+        return { success: true }
+      } else {
+        error.value = response.message
+        return { success: false, message: response.message }
+      }
+    } catch (err) {
+      console.error('Erro na store ao carregar estados:', err)
+      error.value = err.message || 'Erro ao carregar estados'
+      return { success: false, message: err.message }
+    }
+  }
+
+  const carregarCidadesPorEstado = async (codigoEstado) => {
+    try {
+      const response = await servidorService.getCidadesPorEstado(codigoEstado)
+
+      if (response.success) {
+        cidades.value = response.data
+        console.log('Cidades carregadas na store:', cidades.value.length)
+        return { success: true }
+      } else {
+        error.value = response.message
+        return { success: false, message: response.message }
+      }
+    } catch (err) {
+      console.error('Erro na store ao carregar cidades:', err)
+      error.value = err.message || 'Erro ao carregar cidades'
+      return { success: false, message: err.message }
     }
   }
 
@@ -116,6 +161,8 @@ export const useServidorStore = defineStore('servidor', () => {
     loading,
     error,
     carregarServidor,
+    carregarEstados,
+    carregarCidadesPorEstado,
     atualizarServidor,
     limparErros,
     limparDados,

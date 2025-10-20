@@ -298,17 +298,24 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Cor/Raça (IBGE)</label>
-              <input
-                type="text"
+              <select
                 v-model="form.cor_raca"
                 :class="[
                   'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
-                  canEdit('cor_raca')
+                  canEdit('grauinstrucao')
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
-                :readonly="!canEdit('cor_raca')"
-              />
+                :disabled="!canEdit('cor_raca')"
+                required
+              >
+                <option value="">Selecione</option>
+                <option value="Preto">Preto</option>
+                <option value="Pardo">Pardo</option>
+                <option value="Branco">Branco</option>
+                <option value="Indigena">Indígena </option>
+                <option value="Amarelo">Amarelo</option>
+              </select>
             </div>
 
             <div>
@@ -409,10 +416,7 @@
                 :disabled="!canEdit('grauinstrucao')"
               >
                 <option value="">Selecione</option>
-                <!-- <option value="FU">Fundamental Completo</option>
-                <option value="MI">Médio Incompleto</option> -->
                 <option value="MC">Médio Completo</option>
-                <option value="SI">Superior Incompleto</option>
                 <option value="SC">Superior Completo</option>
                 <option value="ES">Especialista</option>
                 <option value="ME">Mestrado</option>
@@ -639,9 +643,9 @@
                 <option
                   v-for="estado in servidorStore.estados"
                   :key="estado.codigo"
-                  :value="estado.nome"
+                  :value="estado.sigla"
                 >
-                  {{ estado.nome }}
+                  {{ estado.sigla }} - {{ estado.nome }}
                 </option>
               </select>
             </div>
@@ -656,12 +660,12 @@
                     ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
-                :disabled="!canEdit('cidade')"
+                :disabled="!canEdit('cidade') || !form.estado"
               >
-                <option value="">Selecione</option>
+                <option value="">Selecione uma cidade</option>
                 <option
-                  v-for="cidade in servidorStore.cidades"
-                  :key="cidade.id"
+                  v-for="cidade in cidadesFiltradas"
+                  :key="cidade.codigo"
                   :value="cidade.codigo"
                 >
                   {{ cidade.nome }}
@@ -883,7 +887,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 import { useAuth } from '@websanova/vue-auth'
 import { useServidorStore } from '@/stores/servidor'
 
@@ -951,6 +955,11 @@ const pasepFormatado = ref('')
 const cnhFormatada = ref('')
 const tituloFormatado = ref('')
 const conjugeCpfFormatado = ref('')
+
+// Computed para cidades filtradas por estado
+const cidadesFiltradas = computed(() => {
+  return servidorStore.cidades || []
+})
 
 // Função para formatar CPF: 000.000.000-00
 const formatarCPF = (event) => {
@@ -1079,12 +1088,21 @@ const formatarTitulo = (event) => {
   form.titulonumero = valor.replace(/\D/g, '')
 }
 
-// Watch para carregar cidades quando o estado mudar
+// Observar mudanças no estado para limpar a cidade
 watch(
   () => form.estado,
-  (novoEstado) => {
-    if (novoEstado) {
-      console.log('Estado selecionado:', novoEstado)
+  async (novoEstado, estadoAnterior) => {
+    if (novoEstado !== estadoAnterior) {
+      form.cidade = ''
+
+      if (novoEstado) {
+        const estadoObj = servidorStore.estados.find((e) => e.sigla === novoEstado)
+        if (estadoObj) {
+          await servidorStore.carregarCidadesPorEstado(estadoObj.codigo)
+        }
+      } else {
+        servidorStore.cidades = []
+      }
     }
   },
 )
@@ -1111,7 +1129,10 @@ const carregarDados = async () => {
 }
 
 // Preencher formulário com dados do servidor
-const preencherForm = (dados) => {
+const preencherForm = async (dadosServidor) => {
+  if (!dadosServidor) return
+
+  const dados = dadosServidor
   console.log('Preenchendo formulário com dados:', dados)
 
   // Limpa o formulário primeiro
@@ -1140,23 +1161,36 @@ const preencherForm = (dados) => {
 
   // Estado
   if (dados.estado) {
-    // Busca o estado pelo código
-    const estadoEncontrado = servidorStore.estados.find(
-      (est) => est.codigo == dados.estado || est.codigo === parseInt(dados.estado),
-    )
+    console.log('Preenchendo estado:', dados.estado, typeof dados.estado)
+
+    const estadoEncontrado = servidorStore.estados.find((est) => est.sigla === dados.estado)
+
     if (estadoEncontrado) {
-      form.estado = estadoEncontrado.nome
-      console.log('Estado encontrado:', estadoEncontrado.nome, 'para código:', dados.estado)
+      form.estado = estadoEncontrado.sigla
+      console.log('Estado preenchido:', form.estado)
+
+      // AGUARDA carregar as cidades ANTES de preencher a cidade
+      console.log(
+        `Carregando cidades do estado ${estadoEncontrado.sigla} (código ${estadoEncontrado.codigo})...`,
+      )
+      await servidorStore.carregarCidadesPorEstado(estadoEncontrado.codigo)
+      console.log('Cidades carregadas:', servidorStore.cidades.length)
     } else {
-      console.warn('Estado não encontrado para código:', dados.estado)
+      console.warn('Estado não encontrado para sigla:', dados.estado)
+      console.log(
+        'Estados disponíveis:',
+        servidorStore.estados.map((e) => e.sigla),
+      )
     }
   }
 
   // Cidade
   if (dados.cidade_nome?.codigo) {
     form.cidade = dados.cidade_nome.codigo
+    console.log('Cidade preenchida (via cidade_nome):', form.cidade)
   } else if (dados.cidade) {
     form.cidade = dados.cidade
+    console.log('Cidade preenchida (via cidade):', form.cidade)
   }
 
   // Data de nascimento
@@ -1476,9 +1510,41 @@ const hideToast = () => {
 }
 
 // Carregar dados ao montar componente
-onMounted(() => {
-  console.log('Componente montado, iniciando carregamento de dados...')
-  carregarDados()
+onMounted(async () => {
+  console.log('Componente montado, iniciando carregamento...')
+
+  // carrega estados (ANTES de carregar o servidor!)
+  console.log('Carregando estados...')
+  await servidorStore.carregarEstados()
+  console.log('Estados carregados:', servidorStore.estados.length)
+  console.log(
+    'Estados:',
+    servidorStore.estados.map((e) => ({ codigo: e.codigo, sigla: e.sigla, nome: e.nome })),
+  )
+
+  //  carrega dados do servidor
+  console.log('Carregando dados do servidor...')
+  await carregarDados()
+  console.log('Servidor carregado. Estado atual:', form.estado)
+
+  //Se já tem estado, carrega as cidades
+  if (form.estado) {
+    console.log('Estado encontrado, buscando cidades...')
+    const estadoObj = servidorStore.estados.find((e) => e.sigla === form.estado)
+    console.log('Estado objeto:', estadoObj)
+
+    if (estadoObj) {
+      console.log(
+        `Carregando cidades do estado ${estadoObj.sigla} (código ${estadoObj.codigo})...`,
+      )
+      await servidorStore.carregarCidadesPorEstado(estadoObj.codigo)
+      console.log('Cidades carregadas:', servidorStore.cidades.length)
+    } else {
+      console.warn('Estado não encontrado para sigla:', form.estado)
+    }
+  } else {
+    console.log('Nenhum estado pré-selecionado')
+  }
 })
 </script>
 
