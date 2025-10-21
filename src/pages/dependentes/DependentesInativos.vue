@@ -236,7 +236,12 @@
 
                   <!-- Nenhum documento -->
                   <span
-                    v-if="!dependente.documento && !dependente.doc_dependencia_financeira && !dependente.doc_laudo_deficiencia && !dependente.doc_curso_superior"
+                    v-if="
+                      !dependente.documento &&
+                      !dependente.doc_dependencia_financeira &&
+                      !dependente.doc_laudo_deficiencia &&
+                      !dependente.doc_curso_superior
+                    "
                     class="text-xs text-neutral-400"
                   >
                     Sem anexos

@@ -1,5 +1,24 @@
 import api from './api'
 
+// Converte null em string vazia
+const sanitizeNullValues = (obj) => {
+  if (obj === null || obj === undefined) return ''
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => sanitizeNullValues(item))
+  }
+
+  if (typeof obj === 'object') {
+    const sanitized = {}
+    for (const key in obj) {
+      sanitized[key] = sanitizeNullValues(obj[key])
+    }
+    return sanitized
+  }
+
+  return obj
+}
+
 export const servidorService = {
   // Buscar dados do servidor
   async getServidor(matricula) {
@@ -13,10 +32,13 @@ export const servidorService = {
 
       const apiData = response.data
 
+      // SANITIZA os dados antes de retornar
+      const servidorSanitizado = sanitizeNullValues(apiData.servidor)
+
       return {
         success: true,
         data: {
-          servidor: apiData.servidor,
+          servidor: servidorSanitizado,
           estados: apiData.estados || [],
           cidades: apiData.cidades || [],
           servidor_config: apiData.servidor_config || [],

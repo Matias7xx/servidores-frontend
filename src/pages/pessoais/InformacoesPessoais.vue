@@ -313,7 +313,7 @@
                 <option value="Preto">Preto</option>
                 <option value="Pardo">Pardo</option>
                 <option value="Branco">Branco</option>
-                <option value="Indigena">Indígena </option>
+                <option value="Indigena">Indígena</option>
                 <option value="Amarelo">Amarelo</option>
               </select>
             </div>
@@ -1140,10 +1140,12 @@ const preencherForm = async (dadosServidor) => {
     form[key] = ''
   })
 
-  // Preenche com os novos dados
+  // Preenche com os novos dados (converte null para string vazia)
   Object.keys(form).forEach((key) => {
     if (dados[key] !== undefined && dados[key] !== null) {
       form[key] = dados[key]
+    } else {
+      form[key] = '' // Garante que null vira string vazia
     }
   })
 
@@ -1534,9 +1536,7 @@ onMounted(async () => {
     console.log('Estado objeto:', estadoObj)
 
     if (estadoObj) {
-      console.log(
-        `Carregando cidades do estado ${estadoObj.sigla} (código ${estadoObj.codigo})...`,
-      )
+      console.log(`Carregando cidades do estado ${estadoObj.sigla} (código ${estadoObj.codigo})...`)
       await servidorStore.carregarCidadesPorEstado(estadoObj.codigo)
       console.log('Cidades carregadas:', servidorStore.cidades.length)
     } else {
