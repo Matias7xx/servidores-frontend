@@ -14,6 +14,7 @@ const DependentesInativos = () => import('../pages/dependentes/DependentesInativ
 const FormacaoLista = () => import('../pages/formacao/FormacaoLista.vue')
 const FormacaoCreate = () => import('../pages/formacao/FormacaoCreate.vue')
 const FormacaoEdit = () => import('../pages/formacao/FormacaoEdit.vue')
+const EmConstrucao = () => import('../pages/EmConstrucao.vue')
 
 const routes = [
   {
@@ -112,6 +113,43 @@ const routes = [
         meta: {
           auth: true,
           title: 'Editar Formação',
+        },
+      },
+      // Novas rotas - Em Construção
+      {
+        path: 'escalas',
+        name: 'escalas',
+        component: EmConstrucao,
+        meta: {
+          auth: true,
+          title: 'Minhas Escalas',
+        },
+      },
+      {
+        path: 'cautelas',
+        name: 'cautelas',
+        component: EmConstrucao,
+        meta: {
+          auth: true,
+          title: 'Minhas Cautelas',
+        },
+      },
+      {
+        path: 'avaliacoes',
+        name: 'avaliacoes',
+        component: EmConstrucao,
+        meta: {
+          auth: true,
+          title: 'Minhas Avaliações',
+        },
+      },
+      {
+        path: 'frequencias',
+        name: 'frequencias',
+        component: EmConstrucao,
+        meta: {
+          auth: true,
+          title: 'Minhas Frequências',
         },
       },
     ],

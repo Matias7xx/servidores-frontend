@@ -141,7 +141,8 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-1.5">
-                Anexo <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
+                Documento de Vínculo entre o Dependente e o Servidor
+                <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
               </label>
               <input
                 type="file"
@@ -568,10 +569,12 @@ const mensagemAnexo = computed(() => {
   const mensagens = {
     Cônjuge:
       'Anexe aqui a <strong>Certidão de Casamento</strong> ou <strong>Declaração de União Estável</strong>.',
-    Filho: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do(a) filho(a).',
-    Enteado: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do(a) enteado(a).',
-    Pai: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do servidor.',
-    Mãe: 'Anexe aqui a <strong>Certidão de Nascimento</strong> do servidor.',
+    Filho:
+      'Anexe aqui o <strong>documento que comprove a relação do(a) filho(a) com o servidor</strong>.',
+    Enteado:
+      'Anexe aqui o <strong>documento que comprove a relação do(a) enteado(a) com o servidor</strong>.',
+    Pai: 'Anexe aqui o <strong>documento que comprove a relação do pai com o servidor</strong>.',
+    Mãe: 'Anexe aqui o <strong>documento que comprove a relação da mãe com o servidor</strong>.',
   }
 
   return mensagens[form.tipo_dependente] || ''
