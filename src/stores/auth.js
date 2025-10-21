@@ -10,6 +10,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLoggedIn = computed(() => isAuthenticated.value && user.value)
 
+  // Função para limpar token inválido
+  const limparTokenInvalido = () => {
+    console.warn('Removendo token inválido...')
+    localStorage.removeItem('auth_token')
+    isAuthenticated.value = false
+    user.value = null
+    error.value = 'Sessão expirada. Por favor, faça login novamente.'
+  }
+
   // Atualizar getMatricula
   const getMatricula = () => {
     // Tentar pegar do user
@@ -19,16 +28,42 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Tentar pegar do token
     const token = localStorage.getItem('auth_token')
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]))
-        return payload.matricula || payload.sub || null
-      } catch (e) {
-        console.error('Erro ao decodificar token:', e)
-      }
+    if (!token) {
+      return null
     }
 
-    return null
+    try {
+      // Validar formato do token JWT
+      const parts = token.split('.')
+
+      if (parts.length !== 3) {
+        console.error('Token JWT inválido - formato incorreto')
+        limparTokenInvalido()
+        return null
+      }
+
+      // Pegar o payload
+      let payload = parts[1]
+
+      // Corrigir padding do base64url se necessário
+      payload = payload.replace(/-/g, '+').replace(/_/g, '/')
+      const pad = payload.length % 4
+      if (pad) {
+        if (pad === 1) {
+          throw new Error('String base64url inválida')
+        }
+        payload += new Array(5 - pad).join('=')
+      }
+
+      // Decodificar o payload
+      const decoded = JSON.parse(atob(payload))
+      return decoded.matricula || decoded.sub || null
+
+    } catch (e) {
+      console.error('Erro ao decodificar token:', e)
+      limparTokenInvalido()
+      return null
+    }
   }
 
   const initAuth = async () => {
@@ -43,17 +78,34 @@ export const useAuthStore = defineStore('auth', () => {
         return false
       }
 
-      // Decodificar token
+      // Validar e decodificar token
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]))
-        user.value = payload
+        const parts = token.split('.')
+
+        if (parts.length !== 3) {
+          throw new Error('Token JWT com formato inválido')
+        }
+
+        // Pegar o payload com tratamento base64url
+        let payload = parts[1]
+        payload = payload.replace(/-/g, '+').replace(/_/g, '/')
+        const pad = payload.length % 4
+        if (pad) {
+          if (pad === 1) {
+            throw new Error('String base64url inválida')
+          }
+          payload += new Array(5 - pad).join('=')
+        }
+
+        const decoded = JSON.parse(atob(payload))
+        user.value = decoded
         isAuthenticated.value = true
-        console.log('Usuário autenticado:', payload.nome || payload.matricula)
+        console.log('Usuário autenticado:', decoded.nome || decoded.matricula)
         return true
+
       } catch (error) {
         console.error('Erro ao decodificar token:', error)
-        isAuthenticated.value = false
-        user.value = null
+        limparTokenInvalido()
         return false
       }
     } catch (error) {
@@ -136,5 +188,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     clearError,
+    limparTokenInvalido,
   }
 })
