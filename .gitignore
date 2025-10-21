@@ -32,3 +32,4 @@ docker-compose.yml
 
 # Backup do entrypoint
 package-lock.json.bak
+.env

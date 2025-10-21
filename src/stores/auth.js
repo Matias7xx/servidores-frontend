@@ -58,7 +58,6 @@ export const useAuthStore = defineStore('auth', () => {
       // Decodificar o payload
       const decoded = JSON.parse(atob(payload))
       return decoded.matricula || decoded.sub || null
-
     } catch (e) {
       console.error('Erro ao decodificar token:', e)
       limparTokenInvalido()
@@ -102,7 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = true
         console.log('Usuário autenticado:', decoded.nome || decoded.matricula)
         return true
-
       } catch (error) {
         console.error('Erro ao decodificar token:', error)
         limparTokenInvalido()
