@@ -167,28 +167,4 @@ const router = createRouter({
   routes,
 })
 
-// Guards de debug
-router.beforeEach((to, from, next) => {
-  console.log('[Router beforeEach]', {
-    from: from.path,
-    to: to.path,
-    requiresAuth: to.meta.auth,
-    timestamp: new Date().toISOString(),
-  })
-
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-
-  next()
-})
-
-//  Verificar navegação concluída
-router.afterEach((to, from) => {
-  console.log('[Router afterEach] Navegação concluída:', {
-    from: from.path,
-    to: to.path,
-  })
-})
-
 export default router

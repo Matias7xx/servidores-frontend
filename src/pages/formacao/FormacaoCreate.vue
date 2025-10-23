@@ -163,6 +163,7 @@
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Certificado Frente <span class="text-red-500">(.pdf)</span>
+              <span class="text-red-500">*</span>
             </label>
             <input
               type="file"
@@ -170,7 +171,6 @@
               @change="onFileChange($event, 'anexo_frente')"
               accept=".pdf"
               class="hidden"
-              required
             />
             <div
               @click="$refs.anexoFrenteInput.click()"
@@ -398,6 +398,14 @@ const submitForm = async () => {
     submitting.value = true
     Object.keys(errors).forEach((key) => delete errors[key])
 
+    //Validação para o anexo obrigatório
+    if (!form.anexo_frente) {
+      errors.anexo_frente = ['O Certificado Frente é obrigatório.']
+      showToastMessage('O Certificado Frente é obrigatório. Por favor, anexe o documento.', 'error')
+      submitting.value = false
+      return
+    }
+
     const formData = new FormData()
 
     formData.append('area_id', form.area_id)
@@ -409,9 +417,8 @@ const submitForm = async () => {
       formData.append('obs', form.obs)
     }
 
-    if (form.anexo_frente) {
-      formData.append('anexo_frente', form.anexo_frente)
-    }
+    formData.append('anexo_frente', form.anexo_frente)
+
     if (form.anexo_verso) {
       formData.append('anexo_verso', form.anexo_verso)
     }

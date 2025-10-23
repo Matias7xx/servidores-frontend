@@ -8,7 +8,7 @@ export default {
 
   // Login
   loginData: {
-    url: '/login',
+    url: 'login',
     method: 'POST',
     redirect: '/',
     fetchUser: false,
@@ -19,37 +19,45 @@ export default {
       (data) => {
         const formData = new FormData()
         formData.append('matricula', data.matricula)
-        formData.append('password', data.password)
+        formData.append('senha', data.senha || data.password)
+
         return formData
       },
     ],
 
-    // Extrair token da resposta
-    parseToken: (response) => {
-      console.log('[parseToken] Response:', response)
+    // Fazer parseToken a executar
+    parseToken: function (res) {
+      // Websanova pode passar res.data ou res diretamente
+      const data = res.data || res
 
-      if (response.data?.token) {
-        return response.data.token
+      if (data?.access_token) {
+        return data.access_token
+      }
+
+      if (data?.token) {
+        return data.token
       }
 
       return null
     },
 
-    // Extrair usuário da resposta
-    parseUserData: (response) => {
-      console.log('[parseUserData] Response:', response)
+    // Fazer parseUserData executar
+    parseUserData: function (res) {
+      // Websanova pode passar res.data ou res diretamente
+      const data = res.data || res
 
-      if (response.data?.user) {
-        return response.data.user
+      if (data?.user) {
+        return data.user
       }
 
-      // Se o backend retorna o usuário no token, decodificar
-      if (response.data?.token) {
+      // Tentar extrair do token
+      const token = data?.access_token || data?.token
+      if (token) {
         try {
-          const payload = JSON.parse(atob(response.data.token.split('.')[1]))
+          const payload = JSON.parse(atob(token.split('.')[1]))
           return payload
         } catch (e) {
-          console.error('Erro ao decodificar token:', e)
+          console.error('[parseUserData] Erro ao decodificar:', e)
         }
       }
 
@@ -58,10 +66,10 @@ export default {
   },
 
   logoutData: {
-    url: '/api/logout',
+    url: 'logout',
     method: 'POST',
     redirect: '/login',
-    makeRequest: false, // Não fazer requisição automática
+    makeRequest: false,
   },
 
   fetchData: {

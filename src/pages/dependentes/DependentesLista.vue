@@ -386,11 +386,14 @@ import { ref, onMounted, watch, onActivated } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
 import { dependentesService } from '@/services/dependentesService'
-import { useAuth } from '@websanova/vue-auth'
+import { inject } from 'vue'
+
+//Pegando usuário do Composable
+const authUser = inject('authUser')
+const { user } = authUser
 
 const route = useRoute()
 const dependentesStore = useDependentesStore()
-const auth = useAuth()
 
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -411,7 +414,7 @@ const fetchDependentes = async () => {
 const confirmarExclusao = async (dependente) => {
   if (confirm(`Tem certeza que deseja inativar o dependente "${dependente.nome}"?`)) {
     try {
-      const matricula = auth.user()?.matricula
+      const matricula = user.value?.matricula || null
       if (!matricula) {
         showToastMessage('Erro: Matrícula do usuário não encontrada', 'error')
         return
@@ -451,8 +454,7 @@ const abrirDocumento = async (idDependente, tipoDocumento) => {
     } else {
       showToastMessage('Erro ao abrir documento', 'error')
     }
-  } catch (error) {
-    console.error('Erro ao buscar URL do documento:', error)
+  } catch {
     showToastMessage('Erro ao abrir documento', 'error')
   }
 }

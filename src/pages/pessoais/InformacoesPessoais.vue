@@ -134,6 +134,7 @@
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('orientacao')"
+                required
               >
                 <option value="">Selecione</option>
                 <option value="HE">Heterossexual</option>
@@ -329,6 +330,7 @@
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('religiao')"
+                required
               >
                 <option value="">Selecione</option>
                 <option value="CA">Catolicismo</option>
@@ -414,6 +416,7 @@
                     : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
                 ]"
                 :disabled="!canEdit('grauinstrucao')"
+                required
               >
                 <option value="">Selecione</option>
                 <option value="MC">Médio Completo</option>
@@ -888,10 +891,13 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted, watch } from 'vue'
-import { useAuth } from '@websanova/vue-auth'
 import { useServidorStore } from '@/stores/servidor'
+import { inject } from 'vue'
 
-const auth = useAuth()
+//Pegando usuário autenticado pelo Composable
+const authUser = inject('authUser')
+const { user } = authUser
+
 const servidorStore = useServidorStore()
 
 // Toast
@@ -1109,21 +1115,18 @@ watch(
 
 // Carregar dados do servidor
 const carregarDados = async () => {
-  const matricula = auth.user()?.matricula
+  const matricula = user.value?.matricula || null
 
   if (!matricula) {
     showToastMessage('Erro: Matrícula não encontrada. Faça login novamente.', 'error')
     return
   }
 
-  console.log('Carregando dados para matrícula:', matricula)
   const result = await servidorStore.carregarServidor(matricula)
 
   if (result.success && result.data) {
-    console.log('Dados recebidos com sucesso:', result.data)
     preencherForm(result.data)
   } else {
-    console.error('Erro ao carregar dados:', result.message)
     showToastMessage(result.message || 'Erro ao carregar dados', 'error')
   }
 }
@@ -1133,7 +1136,6 @@ const preencherForm = async (dadosServidor) => {
   if (!dadosServidor) return
 
   const dados = dadosServidor
-  console.log('Preenchendo formulário com dados:', dados)
 
   // Limpa o formulário primeiro
   Object.keys(form).forEach((key) => {
@@ -1163,36 +1165,21 @@ const preencherForm = async (dadosServidor) => {
 
   // Estado
   if (dados.estado) {
-    console.log('Preenchendo estado:', dados.estado, typeof dados.estado)
-
     const estadoEncontrado = servidorStore.estados.find((est) => est.sigla === dados.estado)
 
     if (estadoEncontrado) {
       form.estado = estadoEncontrado.sigla
-      console.log('Estado preenchido:', form.estado)
 
       // AGUARDA carregar as cidades ANTES de preencher a cidade
-      console.log(
-        `Carregando cidades do estado ${estadoEncontrado.sigla} (código ${estadoEncontrado.codigo})...`,
-      )
       await servidorStore.carregarCidadesPorEstado(estadoEncontrado.codigo)
-      console.log('Cidades carregadas:', servidorStore.cidades.length)
-    } else {
-      console.warn('Estado não encontrado para sigla:', dados.estado)
-      console.log(
-        'Estados disponíveis:',
-        servidorStore.estados.map((e) => e.sigla),
-      )
     }
   }
 
   // Cidade
   if (dados.cidade_nome?.codigo) {
     form.cidade = dados.cidade_nome.codigo
-    console.log('Cidade preenchida (via cidade_nome):', form.cidade)
   } else if (dados.cidade) {
     form.cidade = dados.cidade
-    console.log('Cidade preenchida (via cidade):', form.cidade)
   }
 
   // Data de nascimento
@@ -1285,22 +1272,11 @@ const preencherForm = async (dadosServidor) => {
     conjuge_cpf = conjuge_cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
     conjugeCpfFormatado.value = conjuge_cpf
   }
-
-  console.log('Formulário preenchido com sucesso:', {
-    id: form.id,
-    nome: form.nome,
-    matricula: form.matricula,
-    cargo: form.cargo,
-    cidade: form.cidade,
-    datanascimento: form.datanascimento,
-  })
 }
 
 // Formatar data para input type="date"
 const formatarDataParaInput = (data) => {
   if (!data) return ''
-
-  console.log('Formatando data:', data)
 
   // Se já está no formato YYYY-MM-DD, retorna direto
   if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
@@ -1311,14 +1287,12 @@ const formatarDataParaInput = (data) => {
   if (data.includes('/')) {
     const [dia, mes, ano] = data.split('/')
     const dataFormatada = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`
-    console.log('Data formatada de DD/MM/YYYY:', dataFormatada)
     return dataFormatada
   }
 
   // Se está no formato YYYY-MM-DD HH:mm:ss (datetime)
   if (data.includes('-') && data.includes(' ')) {
     const dataFormatada = data.split(' ')[0]
-    console.log('Data formatada de datetime:', dataFormatada)
     return dataFormatada
   }
 
@@ -1330,14 +1304,12 @@ const formatarDataParaInput = (data) => {
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       const dataFormatada = `${year}-${month}-${day}`
-      console.log('Data formatada de Date object:', dataFormatada)
       return dataFormatada
     }
   } catch (e) {
     console.error('Erro ao formatar data:', e)
   }
 
-  console.warn('Não foi possível formatar a data, retornando original:', data)
   return data
 }
 
@@ -1382,12 +1354,10 @@ const validarCPF = (cpf) => {
 
 const updateDados = async () => {
   try {
-    console.log('Iniciando atualização de dados...')
-
     // Limpa erros anteriores
     Object.keys(errors).forEach((key) => delete errors[key])
 
-    const matricula = auth.user()?.matricula
+    const matricula = user.value?.matricula || null
 
     if (!matricula) {
       showToastMessage('Erro: Matrícula não encontrada. Faça login novamente.', 'error')
@@ -1417,30 +1387,22 @@ const updateDados = async () => {
       ...form,
     }
 
-    console.log('Dados que serão enviados:', dadosParaEnviar)
-
     const result = await servidorStore.atualizarServidor(dadosParaEnviar)
 
     if (result.success) {
-      console.log('Dados atualizados com sucesso!')
       showToastMessage(result.message || 'Dados atualizados com sucesso!', 'success')
     } else {
-      console.error('Erro ao atualizar:', result.message, result.errors)
       if (result.errors) {
         Object.assign(errors, result.errors)
-        console.log('Erros de validação:', errors)
       }
       showToastMessage(result.message || 'Erro ao atualizar dados', 'error')
     }
-  } catch (err) {
-    console.error('Erro capturado ao atualizar:', err)
+  } catch {
     showToastMessage('Erro ao atualizar dados', 'error')
   }
 }
 
 const resetForm = () => {
-  console.log('Resetando formulário...')
-
   // Reseta com dados originais do servidor
   if (servidorStore.servidor) {
     preencherForm(servidorStore.servidor)
@@ -1513,37 +1475,19 @@ const hideToast = () => {
 
 // Carregar dados ao montar componente
 onMounted(async () => {
-  console.log('Componente montado, iniciando carregamento...')
-
   // carrega estados (ANTES de carregar o servidor!)
-  console.log('Carregando estados...')
   await servidorStore.carregarEstados()
-  console.log('Estados carregados:', servidorStore.estados.length)
-  console.log(
-    'Estados:',
-    servidorStore.estados.map((e) => ({ codigo: e.codigo, sigla: e.sigla, nome: e.nome })),
-  )
 
   //  carrega dados do servidor
-  console.log('Carregando dados do servidor...')
   await carregarDados()
-  console.log('Servidor carregado. Estado atual:', form.estado)
 
   //Se já tem estado, carrega as cidades
   if (form.estado) {
-    console.log('Estado encontrado, buscando cidades...')
     const estadoObj = servidorStore.estados.find((e) => e.sigla === form.estado)
-    console.log('Estado objeto:', estadoObj)
 
     if (estadoObj) {
-      console.log(`Carregando cidades do estado ${estadoObj.sigla} (código ${estadoObj.codigo})...`)
       await servidorStore.carregarCidadesPorEstado(estadoObj.codigo)
-      console.log('Cidades carregadas:', servidorStore.cidades.length)
-    } else {
-      console.warn('Estado não encontrado para sigla:', form.estado)
     }
-  } else {
-    console.log('Nenhum estado pré-selecionado')
   }
 })
 </script>

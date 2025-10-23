@@ -367,31 +367,28 @@ const toggleInformacoesMenu = () => {
   isInformacoesOpen.value = !isInformacoesOpen.value
 }
 
-//  Logout
+// Logout
 const handleLogout = async () => {
   if (isLoggingOut.value) return
 
   try {
     isLoggingOut.value = true
 
-    console.log('[Sidebar Logout] Iniciando...')
-
     // Usar auth.logout()
     await auth.logout({
-      makeRequest: false,
-      redirect: '/login',
+      makeRequest: false, // Não fazer requisição ao backend
+      redirect: false, // Não usar o redirect automático
     })
 
+    // Limpar localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
 
-    console.log('[Sidebar Logout] Concluído')
-
-    window.location.href = '/login'
-  } catch (error) {
-    console.error('[Sidebar Logout] Erro:', error)
+    // Usar replace ao invés de href para evitar voltar com botão back
+    window.location.replace('/login')
+  } catch {
     localStorage.clear()
-    window.location.href = '/login'
+    window.location.replace('/login')
   } finally {
     isLoggingOut.value = false
   }

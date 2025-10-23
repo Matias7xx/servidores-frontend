@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { dependentesService } from '../services/dependentesService'
-import { useAuth } from '@websanova/vue-auth'
+import { useAuthUser } from '@/composables/useAuthUser'
 
 export const useDependentesStore = defineStore('dependentes', () => {
   const dependentes = ref([])
@@ -9,11 +9,14 @@ export const useDependentesStore = defineStore('dependentes', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const auth = useAuth()
+  // Usar o composable direto
+  const { userMatricula } = useAuthUser()
 
-  // Função auxiliar para pegar matrícula
+  // Pegar matrícula do Composable
   const getMatricula = () => {
-    return auth.user()?.matricula || null
+    const matricula = userMatricula.value
+
+    return matricula
   }
 
   const carregarDependentes = async () => {
@@ -27,25 +30,13 @@ export const useDependentesStore = defineStore('dependentes', () => {
         throw new Error('Matrícula não encontrada. Faça login novamente.')
       }
 
-      console.log('Carregando dependentes para matrícula:', matricula)
       const response = await dependentesService.getDependentes(matricula)
 
       dependentes.value = response.data || []
 
-      // Log para verificar se o documento vem
-      console.log('Dependentes carregados:', dependentes.value.length)
-      if (dependentes.value.length > 0) {
-        console.log('Primeiro dependente:', {
-          nome: dependentes.value[0].nome,
-          documento: dependentes.value[0].documento,
-          tem_documento: !!dependentes.value[0].documento,
-        })
-      }
-
       return { success: true, data: dependentes.value }
     } catch (err) {
       error.value = err.message || 'Erro ao carregar dependentes'
-      console.error('Erro ao carregar dependentes:', err)
       return { success: false, message: error.value }
     } finally {
       loading.value = false
@@ -63,16 +54,13 @@ export const useDependentesStore = defineStore('dependentes', () => {
         throw new Error('Matrícula não encontrada. Faça login novamente.')
       }
 
-      console.log('Carregando dependentes inativos para matrícula:', matricula)
       const response = await dependentesService.getDependentesInativos(matricula)
 
       dependentesInativos.value = response.data || []
 
-      console.log('Dependentes inativos carregados:', dependentesInativos.value.length)
       return { success: true, data: dependentesInativos.value }
     } catch (err) {
       error.value = err.message || 'Erro ao carregar dependentes inativos'
-      console.error('Erro ao carregar dependentes inativos:', err)
       return { success: false, message: error.value }
     } finally {
       loading.value = false
@@ -93,7 +81,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
         throw new Error('Matrícula não encontrada')
       }
 
-      console.log('Criando dependente:', dados)
       const response = await dependentesService.createDependente(dados)
 
       // Recarrega a lista
@@ -105,7 +92,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
       }
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Erro ao criar dependente'
-      console.error('Erro ao criar dependente:', err)
 
       return {
         success: false,
@@ -135,7 +121,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
         }
       }
 
-      console.log('Store: Enviando FormData para o service')
       const response = await dependentesService.updateDependente(formData)
 
       // Recarrega a lista
@@ -147,7 +132,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
       }
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Erro ao atualizar dependente'
-      console.error('Erro ao atualizar dependente:', err)
 
       return {
         success: false,
@@ -173,7 +157,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
         throw new Error('Matrícula não encontrada')
       }
 
-      console.log('Inativando dependente:', { id, matricula })
       const response = await dependentesService.inativarDependente(id, matricula)
 
       // Recarrega a lista
@@ -185,7 +168,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
       }
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Erro ao inativar dependente'
-      console.error('Erro ao inativar dependente:', err)
 
       return {
         success: false,
@@ -209,7 +191,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
         throw new Error('Matrícula não encontrada')
       }
 
-      console.log('Reativando dependente:', { id, matricula })
       const response = await dependentesService.reativarDependente(id, matricula)
 
       // Recarrega ambas as listas
@@ -222,7 +203,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
       }
     } catch (err) {
       error.value = err.response?.data?.message || err.message || 'Erro ao reativar dependente'
-      console.error('Erro ao reativar dependente:', err)
 
       return {
         success: false,

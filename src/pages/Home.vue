@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-semibold text-neutral-900">
-        {{ greeting }}, {{ auth.user()?.nome || 'Usuário' }}!
+        {{ greeting }}, {{ userName || 'Usuário' }}!
       </h1>
       <p class="text-sm text-neutral-500 mt-2">
         {{ currentDate }} • Gerencie suas informações pessoais e profissionais
@@ -140,9 +140,10 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useAuth } from '@websanova/vue-auth'
+import { inject } from 'vue'
+const authUser = inject('authUser')
 
-const auth = useAuth()
+const { userName } = authUser
 
 const greeting = computed(() => {
   const hour = new Date().getHours()

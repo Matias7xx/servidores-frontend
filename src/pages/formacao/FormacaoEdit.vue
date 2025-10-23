@@ -512,8 +512,7 @@ const abrirCertificadoFrente = async () => {
     } else {
       showToastMessage('Erro ao abrir certificado', 'error')
     }
-  } catch (error) {
-    console.error('Erro ao buscar URL do certificado:', error)
+  } catch {
     showToastMessage('Erro ao abrir certificado', 'error')
   }
 }
@@ -534,8 +533,7 @@ const abrirCertificadoVerso = async () => {
     } else {
       showToastMessage('Erro ao abrir certificado', 'error')
     }
-  } catch (error) {
-    console.error('Erro ao buscar URL do certificado:', error)
+  } catch {
     showToastMessage('Erro ao abrir certificado', 'error')
   }
 }

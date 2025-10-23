@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { servidorService } from '../services/servidorService'
+import { useAuthUser } from '@/composables/useAuthUser'
 
 export const useServidorStore = defineStore('servidor', () => {
   const servidor = ref(null)
@@ -10,12 +11,30 @@ export const useServidorStore = defineStore('servidor', () => {
   const loading = ref(false)
   const error = ref(null)
 
+  const { userMatricula } = useAuthUser()
+
+  // Pegar matrícula do Composable
+  const getMatricula = () => {
+    const matricula = userMatricula.value
+
+    return matricula
+  }
+
   // Carregar dados do servidor
-  const carregarServidor = async (matricula) => {
+  const carregarServidor = async (matricula = null) => {
     loading.value = true
     error.value = null
 
     try {
+      // Se não passou matrícula, pega do auth
+      if (!matricula) {
+        matricula = getMatricula()
+      }
+
+      if (!matricula) {
+        throw new Error('Matrícula não encontrada. Faça login novamente.')
+      }
+
       const response = await servidorService.getServidor(matricula)
 
       if (response.success) {
@@ -34,12 +53,6 @@ export const useServidorStore = defineStore('servidor', () => {
 
         servidorConfig.value = response.data.servidor_config || []
 
-        console.log('Dados carregados:', {
-          servidor: servidor.value,
-          totalEstados: estados.value.length,
-          totalCidades: cidades.value.length,
-        })
-
         return {
           success: true,
           data: servidor.value,
@@ -50,7 +63,6 @@ export const useServidorStore = defineStore('servidor', () => {
         return { success: false, message: response.message }
       }
     } catch (err) {
-      console.error('Erro na store ao carregar servidor:', err)
       error.value = err.message || 'Erro ao carregar dados'
       return {
         success: false,
@@ -67,14 +79,12 @@ export const useServidorStore = defineStore('servidor', () => {
 
       if (response.success) {
         estados.value = response.data
-        console.log('Estados carregados na store:', estados.value.length)
         return { success: true }
       } else {
         error.value = response.message
         return { success: false, message: response.message }
       }
     } catch (err) {
-      console.error('Erro na store ao carregar estados:', err)
       error.value = err.message || 'Erro ao carregar estados'
       return { success: false, message: err.message }
     }
@@ -86,14 +96,12 @@ export const useServidorStore = defineStore('servidor', () => {
 
       if (response.success) {
         cidades.value = response.data
-        console.log('Cidades carregadas na store:', cidades.value.length)
         return { success: true }
       } else {
         error.value = response.message
         return { success: false, message: response.message }
       }
     } catch (err) {
-      console.error('Erro na store ao carregar cidades:', err)
       error.value = err.message || 'Erro ao carregar cidades'
       return { success: false, message: err.message }
     }
@@ -129,7 +137,6 @@ export const useServidorStore = defineStore('servidor', () => {
         }
       }
     } catch (err) {
-      console.error('Erro na store ao atualizar servidor:', err)
       error.value = err.message || 'Erro ao atualizar servidor'
       return {
         success: false,
@@ -166,5 +173,6 @@ export const useServidorStore = defineStore('servidor', () => {
     atualizarServidor,
     limparErros,
     limparDados,
+    getMatricula,
   }
 })

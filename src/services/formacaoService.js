@@ -19,7 +19,6 @@ class FormacaoService {
         throw new Error('Matrícula do servidor é obrigatória')
       }
 
-      console.log('Buscando formações:', matricula)
       const response = await api.get(`/formacao_servidor_list/${matricula}`)
 
       return {
@@ -39,7 +38,6 @@ class FormacaoService {
 
   async getAreas() {
     try {
-      console.log('Buscando áreas')
       const response = await api.get('/formacao_areas')
 
       return {
@@ -63,7 +61,6 @@ class FormacaoService {
         throw new Error('ID da formação é obrigatório')
       }
 
-      console.log('Buscando formação para edição:', id)
       const response = await api.get(`/formacao_servidor_edit/${id}`)
 
       return {
@@ -86,8 +83,6 @@ class FormacaoService {
       if (!matricula) {
         throw new Error('Matrícula do servidor é obrigatória')
       }
-
-      console.log('Criando formação:', matricula)
 
       const response = await api.post(`/formacao_servidor_store/${matricula}`, formData, {
         headers: {
@@ -119,8 +114,6 @@ class FormacaoService {
         throw new Error('ID da formação é obrigatório')
       }
 
-      console.log('Atualizando formação:', id)
-
       formData.append('_method', 'PUT')
 
       const response = await api.post(`/formacao_servidor_update/${id}`, formData, {
@@ -151,7 +144,6 @@ class FormacaoService {
         throw new Error('ID da área é obrigatório')
       }
 
-      console.log('Buscando classes da área:', areaId)
       const response = await api.get(`/formacao_classe_area/${areaId}`)
       return response.data
     } catch (error) {
@@ -166,7 +158,6 @@ class FormacaoService {
         throw new Error('ID da classe é obrigatório')
       }
 
-      console.log('Buscando cursos da classe:', classeId)
       const response = await api.get(`/formacao_curso_classe/${classeId}`)
       return response.data
     } catch (error) {
@@ -177,7 +168,6 @@ class FormacaoService {
 
   async getAnexoFrenteUrl(id) {
     try {
-      console.log('Buscando URL do anexo frente:', id)
       const response = await api.get(`/formacao_anexo_frente/${id}`)
       return {
         success: response.data.success || true,
@@ -194,7 +184,6 @@ class FormacaoService {
 
   async getAnexoVersoUrl(id) {
     try {
-      console.log('Buscando URL do anexo verso:', id)
       const response = await api.get(`/formacao_anexo_verso/${id}`)
       return {
         success: response.data.success || true,

@@ -7,7 +7,6 @@ export const dependentesService = {
       if (!matricula) {
         throw new Error('Matrícula do servidor é obrigatória')
       }
-      console.log('Buscando dependentes ativos:', matricula)
       const response = await api.get(`/servidor_dependentes_ativos/${matricula}`)
 
       return {
@@ -27,7 +26,6 @@ export const dependentesService = {
       if (!matricula) {
         throw new Error('Matrícula do servidor é obrigatória')
       }
-      console.log('Buscando dependentes inativos:', matricula)
       const response = await api.get(`/servidor_dependentes_inativos/${matricula}`)
 
       return {
@@ -64,34 +62,21 @@ export const dependentesService = {
 
       // IMPORTANTE: O backend processa o arquivo em 'anexo' mas salva o nome em 'documento'
       if (data.anexo && data.anexo instanceof File) {
-        console.log('Anexo detectado:', data.anexo.name)
         formData.append('anexo', data.anexo)
         formData.append('documento', data.anexo.name)
       }
 
       // Documentos adicionais opcionais
       if (data.doc_dependencia_financeira && data.doc_dependencia_financeira instanceof File) {
-        console.log('Doc. Dependência Financeira detectado:', data.doc_dependencia_financeira.name)
         formData.append('doc_dependencia_financeira', data.doc_dependencia_financeira)
       }
 
       if (data.doc_laudo_deficiencia && data.doc_laudo_deficiencia instanceof File) {
-        console.log('Doc. Laudo Deficiência detectado:', data.doc_laudo_deficiencia.name)
         formData.append('doc_laudo_deficiencia', data.doc_laudo_deficiencia)
       }
 
       if (data.doc_curso_superior && data.doc_curso_superior instanceof File) {
-        console.log('Doc. Curso Superior detectado:', data.doc_curso_superior.name)
         formData.append('doc_curso_superior', data.doc_curso_superior)
-      }
-
-      console.log('FormData completo:')
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`   ${key}: [FILE] ${value.name}`)
-        } else {
-          console.log(`   ${key}:`, value)
-        }
       }
 
       const response = await api.post(
@@ -103,8 +88,6 @@ export const dependentesService = {
           },
         },
       )
-
-      console.log('Response do backend:', response.data)
 
       return {
         success: response.data.success || true,
@@ -126,25 +109,11 @@ export const dependentesService = {
         throw new Error('ID do dependente é obrigatório')
       }
 
-      console.log('Atualizando dependente ID:', id)
-
-      // Log do FormData para debug
-      console.log('FormData sendo enviado:')
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`   ${key}: [FILE] ${value.name} (${value.size} bytes)`)
-        } else {
-          console.log(`   ${key}:`, value)
-        }
-      }
-
       const response = await api.post(`/servidor_dependentes_update/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
-
-      console.log('Response do backend:', response.data)
 
       return {
         success: response.data.success || true,
@@ -164,8 +133,6 @@ export const dependentesService = {
       if (!id || !matricula) {
         throw new Error('ID do dependente e matrícula são obrigatórios')
       }
-
-      console.log('Inativando dependente:', { id, matricula })
 
       const response = await api.post(`/servidor_dependentes_inativar/${id}/${matricula}`)
 
@@ -187,8 +154,6 @@ export const dependentesService = {
         throw new Error('ID do dependente e matrícula são obrigatórios')
       }
 
-      console.log('Reativando dependente:', { id, matricula })
-
       const response = await api.post(`/servidor_dependentes_reativar/${id}/${matricula}`)
 
       return {
@@ -209,11 +174,6 @@ export const dependentesService = {
       if (!idDependente) {
         throw new Error('ID do dependente é obrigatório')
       }
-
-      console.log('Buscando URL do documento:', {
-        idDependente,
-        tipoDocumento,
-      })
 
       const response = await api.get(
         `/servidor_dependentes_documento/${idDependente}?tipo=${tipoDocumento}`,

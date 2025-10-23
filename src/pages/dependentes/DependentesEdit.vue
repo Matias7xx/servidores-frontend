@@ -637,13 +637,16 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuth } from '@websanova/vue-auth'
 import { dependentesService } from '@/services/dependentesService'
+import { inject } from 'vue'
+
+// Usuário autenticado
+const authUser = inject('authUser')
+const { user } = authUser
 
 const router = useRouter()
 const route = useRoute()
 const dependentesStore = useDependentesStore()
-const auth = useAuth()
 
 const dependente = ref({})
 const loading = ref(true)
@@ -721,8 +724,6 @@ const showNewDocsOver24 = computed(() => {
 const formatarDataParaInput = (data) => {
   if (!data) return ''
 
-  console.log('Data recebida para formatar:', data)
-
   if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
     return data
   }
@@ -771,7 +772,7 @@ const fetchData = async () => {
     dependente.value = dep
 
     form.id = dep.id
-    form.servidor_matricula = auth.user()?.matricula || ''
+    form.servidor_matricula = user.value?.matricula || null
     form.nome = dep.nome || ''
     form.cpf = dep.cpf || ''
     form.sexo_dependente = dep.sexo_dependente || ''
@@ -790,22 +791,7 @@ const fetchData = async () => {
     }
 
     atualizarMensagemAnexo()
-
-    console.log('Dependente carregado:', {
-      id: form.id,
-      nome: form.nome,
-      tipo_dependente: form.tipo_dependente,
-      sexo_dependente: form.sexo_dependente,
-      data_original: dep.data_nascimento,
-      data_formatada: form.data_nascimento,
-      documento: dep.documento,
-      tem_documento: !!dep.documento,
-      doc_dependencia_financeira: dep.doc_dependencia_financeira,
-      doc_laudo_deficiencia: dep.doc_laudo_deficiencia,
-      doc_curso_superior: dep.doc_curso_superior,
-    })
-  } catch (err) {
-    console.error('Erro ao carregar dependente:', err)
+  } catch {
     error.value = 'Erro ao conectar com o servidor'
   } finally {
     loading.value = false
@@ -896,7 +882,6 @@ const onFileChange = (event) => {
 
     form.anexo = file
     nomeArquivoAnexo.value = file.name
-    console.log('Anexo selecionado:', file.name)
   } else {
     nomeArquivoAnexo.value = ''
   }
@@ -922,7 +907,6 @@ const onDocDepFinanceiraChange = (event) => {
 
     form.doc_dependencia_financeira = file
     nomeArquivoDepFinanceira.value = file.name
-    console.log('Doc. Dep. Financeira selecionado:', file.name)
   } else {
     nomeArquivoDepFinanceira.value = ''
   }
@@ -948,7 +932,6 @@ const onDocLaudoDeficienciaChange = (event) => {
 
     form.doc_laudo_deficiencia = file
     nomeArquivoLaudoDeficiencia.value = file.name
-    console.log('Doc. Laudo Deficiência selecionado:', file.name)
   } else {
     nomeArquivoLaudoDeficiencia.value = ''
   }
@@ -974,7 +957,6 @@ const onDocCursoSuperiorChange = (event) => {
 
     form.doc_curso_superior = file
     nomeArquivoCursoSuperior.value = file.name
-    console.log('Doc. Curso Superior selecionado:', file.name)
   } else {
     nomeArquivoCursoSuperior.value = ''
   }
@@ -996,8 +978,7 @@ const abrirDocumento = async (idDependente, tipoDocumento) => {
     } else {
       showToastMessage('Erro ao abrir documento', 'error')
     }
-  } catch (error) {
-    console.error('Erro ao buscar URL do documento:', error)
+  } catch {
     showToastMessage('Erro ao abrir documento', 'error')
   }
 }
@@ -1064,7 +1045,7 @@ const atualizarDependente = async () => {
       }
     }
 
-    form.servidor_matricula = auth.user()?.matricula || ''
+    form.servidor_matricula = user.value?.matricula || null
 
     if (!form.servidor_matricula) {
       showToastMessage('Erro: Matrícula não encontrada', 'error')
@@ -1083,32 +1064,19 @@ const atualizarDependente = async () => {
     formData.append('datanascimento', form.data_nascimento)
 
     if (form.anexo instanceof File) {
-      console.log('Novo anexo sendo adicionado:', form.anexo.name)
       formData.append('anexo', form.anexo)
     }
 
     if (form.doc_dependencia_financeira instanceof File) {
-      console.log('Doc. Dep. Financeira sendo adicionado:', form.doc_dependencia_financeira.name)
       formData.append('doc_dependencia_financeira', form.doc_dependencia_financeira)
     }
 
     if (form.doc_laudo_deficiencia instanceof File) {
-      console.log('Doc. Laudo Deficiência sendo adicionado:', form.doc_laudo_deficiencia.name)
       formData.append('doc_laudo_deficiencia', form.doc_laudo_deficiencia)
     }
 
     if (form.doc_curso_superior instanceof File) {
-      console.log('Doc. Curso Superior sendo adicionado:', form.doc_curso_superior.name)
       formData.append('doc_curso_superior', form.doc_curso_superior)
-    }
-
-    console.log('FormData completo:')
-    for (let [key, value] of formData.entries()) {
-      if (value instanceof File) {
-        console.log(`   ${key}: [FILE] ${value.name} (${value.size} bytes)`)
-      } else {
-        console.log(`   ${key}:`, value)
-      }
     }
 
     const result = await dependentesStore.atualizarDependente(formData)
@@ -1122,18 +1090,14 @@ const atualizarDependente = async () => {
     } else {
       if (result.errors && Object.keys(result.errors).length > 0) {
         Object.assign(errors, result.errors)
-        console.log('Erros de validação:', result.errors)
         showToastMessage('Verifique os campos do formulário', 'error')
       } else {
         showToastMessage(result.message || 'Erro ao atualizar dependente', 'error')
       }
     }
   } catch (err) {
-    console.error('Erro ao atualizar:', err)
-
     if (err.response && err.response.status === 422) {
       const validationErrors = err.response.data.errors || {}
-      console.log('Erros 422:', validationErrors)
       Object.keys(validationErrors).forEach((key) => {
         errors[key] = validationErrors[key]
       })

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { formacaoService } from '../services/formacaoService'
-import { useAuthStore } from './auth'
+import { useAuthUser } from '@/composables/useAuthUser'
 
 export const useFormacaoStore = defineStore('formacao', () => {
   const formacoes = ref([])
@@ -11,14 +11,21 @@ export const useFormacaoStore = defineStore('formacao', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const authStore = useAuthStore()
+  const { userMatricula } = useAuthUser()
+
+  // Pegar matrícula do Composable
+  const getMatricula = () => {
+    const matricula = userMatricula.value
+
+    return matricula
+  }
 
   const carregarFormacoes = async () => {
     loading.value = true
     error.value = null
 
     try {
-      const matricula = authStore.getMatricula()
+      const matricula = getMatricula()
 
       if (!matricula) {
         throw new Error('Matrícula não encontrada. Faça login novamente.')
@@ -90,7 +97,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
     error.value = null
 
     try {
-      const matricula = authStore.getMatricula()
+      const matricula = getMatricula()
 
       if (!matricula) {
         throw new Error('Matrícula não encontrada. Faça login novamente.')
@@ -206,8 +213,6 @@ export const useFormacaoStore = defineStore('formacao', () => {
         url: response.url,
       }
     } catch (error) {
-      console.error('Erro ao buscar URL do certificado:', error)
-
       return {
         success: false,
         message: error.message || 'Erro ao buscar certificado',
@@ -246,5 +251,6 @@ export const useFormacaoStore = defineStore('formacao', () => {
     limparCaches,
     limparErros,
     getCertificadoUrl,
+    getMatricula,
   }
 })

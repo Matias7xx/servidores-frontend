@@ -338,11 +338,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuth } from '@websanova/vue-auth'
 import { dependentesService } from '@/services/dependentesService'
+import { inject } from 'vue'
 
 const dependentesStore = useDependentesStore()
-const auth = useAuth()
+
+//Pegando usuário autenticado pelo Composable
+const authUser = inject('authUser')
+const { user } = authUser
 
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -354,27 +357,22 @@ const convertSexoFromDatabase = (sexo) => {
 }
 
 const fetchDependentesInativos = async () => {
-  console.log('Carregando dependentes inativos...')
   await dependentesStore.carregarDependentesInativos()
 
   if (dependentesStore.error) {
     showToastMessage(dependentesStore.error, 'error')
-  } else {
-    console.log('Inativos carregados:', dependentesStore.dependentesInativos.length)
   }
 }
 
 const confirmarReativacao = async (dependente) => {
   if (confirm(`Tem certeza que deseja reativar o dependente "${dependente.nome}"?`)) {
     try {
-      const matricula = auth.user()?.matricula
+      const matricula = user.value?.matricula || null
 
       if (!matricula) {
         showToastMessage('Erro: Matrícula do usuário não encontrada', 'error')
         return
       }
-
-      console.log('Reativando dependente:', dependente.id)
 
       const result = await dependentesStore.reativarDependente(dependente.id, matricula)
 
@@ -383,8 +381,7 @@ const confirmarReativacao = async (dependente) => {
       } else {
         showToastMessage(result.message || 'Erro ao reativar dependente', 'error')
       }
-    } catch (err) {
-      console.error('Erro ao reativar:', err)
+    } catch {
       showToastMessage('Erro ao reativar dependente', 'error')
     }
   }
@@ -413,8 +410,7 @@ const abrirDocumento = async (idDependente, tipoDocumento) => {
     } else {
       showToastMessage('Erro ao abrir documento', 'error')
     }
-  } catch (error) {
-    console.error('Erro ao buscar URL do documento:', error)
+  } catch {
     showToastMessage('Erro ao abrir documento', 'error')
   }
 }
@@ -450,7 +446,6 @@ const hideToast = () => {
 }
 
 onMounted(() => {
-  console.log('Componente de inativos montado')
   fetchDependentesInativos()
 })
 </script>

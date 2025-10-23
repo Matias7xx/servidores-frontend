@@ -311,8 +311,6 @@ const formatDate = (dateString) => {
 
 const abrirAnexo = async (formacaoId, tipo) => {
   try {
-    console.log(`Buscando URL do anexo ${tipo}:`, formacaoId)
-
     const response =
       tipo === 'frente'
         ? await formacaoService.getAnexoFrenteUrl(formacaoId)
@@ -320,8 +318,6 @@ const abrirAnexo = async (formacaoId, tipo) => {
 
     if (response.success && response.url) {
       window.open(response.url, '_blank', 'width=800,height=600')
-    } else {
-      console.error('Erro ao obter URL do anexo')
     }
   } catch (error) {
     console.error('Erro ao abrir anexo:', error)

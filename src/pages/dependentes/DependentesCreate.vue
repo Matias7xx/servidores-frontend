@@ -439,11 +439,14 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDependentesStore } from '@/stores/dependentes'
-import { useAuth } from '@websanova/vue-auth'
+import { inject } from 'vue'
+
+//Pegando usuário autenticado pelo Composable
+const authUser = inject('authUser')
+const { user } = authUser
 
 const router = useRouter()
 const dependentesStore = useDependentesStore()
-const auth = useAuth()
 
 // Estados
 const loadingData = ref(false)
@@ -609,7 +612,7 @@ const salvarDependente = async () => {
     Object.keys(errors).forEach((key) => delete errors[key])
 
     // Pega a matrícula do usuário logado
-    const matricula = auth.user()?.matricula
+    const matricula = user.value?.matricula || null
 
     if (!matricula) {
       showToastMessage('Erro: Matrícula do usuário não encontrada. Faça login novamente.', 'error')
@@ -683,13 +686,6 @@ const salvarDependente = async () => {
     // Define a matrícula no formulário
     form.servidor_matricula = matricula
 
-    console.log('📝 Dados do formulário antes de enviar:', {
-      ...form,
-      data_nascimento: form.data_nascimento,
-      data_nascimento_length: form.data_nascimento?.length,
-      data_nascimento_type: typeof form.data_nascimento,
-    })
-
     const result = await dependentesStore.criarDependente(form)
 
     if (result.success) {
@@ -717,16 +713,12 @@ const salvarDependente = async () => {
       // Verifica se há erros de validação
       if (result.errors && Object.keys(result.errors).length > 0) {
         Object.assign(errors, result.errors)
-        console.log('Erros de validação:', result.errors)
         showToastMessage('Verifique os campos do formulário', 'error')
       } else {
         showToastMessage(result.message || 'Erro ao cadastrar dependente', 'error')
       }
     }
   } catch (err) {
-    console.error('Erro capturado:', err)
-    console.log('Response completa:', err.response)
-
     if (err.response && err.response.status === 409) {
       const responseData = err.response.data
 
@@ -738,7 +730,6 @@ const salvarDependente = async () => {
       }
     } else if (err.response && err.response.status === 422) {
       const validationErrors = err.response.data.errors || {}
-      console.log('Erros 422:', validationErrors)
       Object.keys(validationErrors).forEach((key) => {
         errors[key] = validationErrors[key]
       })
@@ -751,7 +742,7 @@ const salvarDependente = async () => {
 
 const confirmarReativacao = async () => {
   try {
-    const matricula = auth.user()?.matricula
+    const matricula = user.value?.matricula || null
 
     if (!matricula) {
       showToastMessage('Erro: Matrícula não encontrada', 'error')
@@ -773,8 +764,7 @@ const confirmarReativacao = async () => {
     } else {
       showToastMessage(response.message, 'error')
     }
-  } catch (err) {
-    console.error('Erro ao reativar:', err)
+  } catch {
     showToastMessage('Erro ao reativar dependente', 'error')
   }
 }
@@ -799,12 +789,9 @@ const hideToast = () => {
 }
 
 onMounted(() => {
-  const matricula = auth.user()?.matricula
+  const matricula = user.value?.matricula || null
   if (matricula) {
     form.servidor_matricula = matricula
-    console.log('Matrícula carregada:', matricula)
-  } else {
-    console.warn('Matrícula não encontrada no auth')
   }
 })
 </script>

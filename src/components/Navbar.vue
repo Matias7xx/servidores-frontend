@@ -63,24 +63,15 @@
             aria-label="Menu do usuário"
           >
             <!--  auth.user()?.name → auth.user()?.nome -->
-            <span class="mr-3 hidden sm:inline font-medium" v-if="auth.user()?.nome">
-              {{ auth.user().nome }}
+            <span class="mr-3 hidden sm:inline font-medium" v-if="userName">
+              {{ userName }}
             </span>
             <span v-else class="mr-3 hidden sm:inline font-medium">Usuário</span>
 
             <!-- FOTO DO SERVIDOR -->
             <div class="relative">
-              <img
-                v-if="auth.user()?.foto"
-                :src="auth.user().foto"
-                alt="Foto do servidor"
-                class="w-14 h-14 rounded-full object-cover border-2 border-neutral-600 group-hover:border-neutral-400 transition-all shadow-lg"
-                @error="handleImageError"
-              />
-
               <!-- ÍCONE DE USER COMO FALLBACK -->
               <div
-                v-else
                 class="w-12 h-12 rounded-full bg-neutral-800 border-2 border-neutral-600 group-hover:border-neutral-400 flex items-center justify-center transition-all shadow-lg"
               >
                 <svg
@@ -180,11 +171,12 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useAuth } from '@websanova/vue-auth'
+import { inject } from 'vue'
+const authUser = inject('authUser')
+
+const { userName } = authUser
 
 defineEmits(['toggle-sidebar'])
-
-const auth = useAuth()
 
 const isDropdownOpen = ref(false)
 const isLoggingOut = ref(false)
@@ -201,7 +193,7 @@ const handleImageError = () => {
   console.warn('Erro ao carregar foto do servidor')
 }
 
-// Usar auth.logout()
+// Logout
 const handleLogout = async () => {
   if (isLoggingOut.value) return
 
@@ -209,26 +201,21 @@ const handleLogout = async () => {
     isLoggingOut.value = true
     closeDropdown()
 
-    console.log('[Logout] Iniciando...')
-
-    // método do Websanova
+    // Método do Websanova
     await auth.logout({
-      makeRequest: false, // Não fazer requisição automática
-      redirect: '/login',
+      makeRequest: false, // Não fazer requisição
+      redirect: false, // Não usar o redirect automático
     })
 
     // Limpar localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
 
-    console.log('Logout concluído')
-
-    // Forçar reload
-    window.location.href = '/login'
-  } catch (error) {
-    console.error('Erro no logout:', error)
+    // Usar replace ao invés de href para evitar voltar com botão back
+    window.location.replace('/login')
+  } catch {
     localStorage.clear()
-    window.location.href = '/login'
+    window.location.replace('/login')
   } finally {
     isLoggingOut.value = false
   }

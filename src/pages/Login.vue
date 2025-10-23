@@ -14,7 +14,6 @@
         <h1 class="text-lg sm:text-xl lg:text-3xl font-semibold text-neutral-800 uppercase">
           Ficha Funcional
         </h1>
-        <!-- <p class="text-md text-neutral-600">Polícia Civil da Paraíba</p> -->
       </div>
     </div>
 
@@ -39,17 +38,9 @@
             ></path>
           </svg>
           <div class="text-sm text-red-600">
-            {{ errors.general?.[0] }}
+            {{ errors.general }}
           </div>
         </div>
-      </div>
-
-      <!-- Mensagem de status -->
-      <div
-        v-if="status"
-        class="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 rounded-lg text-green-700 text-sm"
-      >
-        {{ status }}
       </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
@@ -95,7 +86,7 @@
             />
           </div>
           <div v-if="errors.matricula" class="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
-            {{ Array.isArray(errors.matricula) ? errors.matricula[0] : errors.matricula }}
+            {{ errors.matricula }}
           </div>
         </div>
 
@@ -206,7 +197,7 @@
           </div>
 
           <div v-if="errors.password" class="mt-1 sm:mt-2 text-xs sm:text-sm text-red-600">
-            {{ Array.isArray(errors.password) ? errors.password[0] : errors.password }}
+            {{ errors.password }}
           </div>
         </div>
 
@@ -233,7 +224,6 @@
             ]"
             :disabled="loading"
           >
-            <!-- Spinner de loading -->
             <svg
               v-if="loading"
               class="animate-spin h-4 w-4 text-white"
@@ -279,7 +269,7 @@ const router = useRouter()
 const route = useRoute()
 const auth = useAuth()
 
-// Estado reativo
+//Estado reativo
 const form = reactive({
   matricula: '',
   password: '',
@@ -290,13 +280,50 @@ const errors = ref({})
 const status = ref('')
 const showPassword = ref(false)
 const capsLockOn = ref(false)
-const loginSuccess = ref(false)
 const loading = ref(false)
 const currentYear = new Date().getFullYear()
 
-// Refs dos elementos
+//Refs dos elementos
 const matriculaInput = ref(null)
 const passwordInput = ref(null)
+
+//Tradutor de mensagens do backend
+const translateErrorMessage = (message) => {
+  const translations = {
+    'The senha field is required.': 'O campo senha é obrigatório.',
+    'The password field is required.': 'O campo senha é obrigatório.',
+    'The matricula field is required.': 'O campo matrícula é obrigatório.',
+    'The senha must be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
+    'The password must be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
+    'The matricula must be 7 digits.': 'A matrícula deve ter 7 dígitos.',
+    'These credentials do not match our records.': 'Matrícula ou senha incorretos.',
+    'Invalid credentials.': 'Matrícula ou senha incorretos.',
+    Unauthorized: 'Matrícula ou senha incorretos.',
+    'Unauthenticated.': 'Matrícula ou senha incorretos.',
+    'Too many login attempts.': 'Muitas tentativas de login. Tente novamente em alguns minutos.',
+    'The given data was invalid.': 'Dados inválidos. Verifique e tente novamente.',
+  }
+
+  if (translations[message]) {
+    return translations[message]
+  }
+
+  const lowerMessage = message.toLowerCase()
+  if (lowerMessage.includes('required') && lowerMessage.includes('senha')) {
+    return 'O campo senha é obrigatório.'
+  }
+  if (lowerMessage.includes('required') && lowerMessage.includes('matricula')) {
+    return 'O campo matrícula é obrigatório.'
+  }
+  if (lowerMessage.includes('credentials') || lowerMessage.includes('unauthorized')) {
+    return 'Matrícula ou senha incorretos.'
+  }
+  if (lowerMessage.includes('too many')) {
+    return 'Muitas tentativas de login. Aguarde alguns minutos.'
+  }
+
+  return message
+}
 
 // Métodos
 const clearFieldError = (field) => {
@@ -344,72 +371,99 @@ const handleSubmit = async () => {
 
   status.value = ''
   errors.value = {}
-  loginSuccess.value = false
   loading.value = true
 
   try {
-    console.log('[Login] Tentando fazer login...')
+    const formData = new FormData()
+    formData.append('matricula', form.matricula.trim())
+    formData.append('senha', form.password)
+    formData.append('remember', form.remember ? '1' : '0')
 
-    // Fazer requisição manual
-    const response = await api.post('/login', {
-      matricula: form.matricula.trim(),
-      senha: form.password,
-      remember: form.remember ? '1' : '0',
+    const response = await api.post('login', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
 
-    console.log('[Login] Resposta da API:', response.data)
+    // Extrair token e user
+    const token = response.data?.access_token || response.data?.token
+    const user = response.data?.user
 
-    // Salvar token E usuário manualmente
-    if (response.data.access_token) {
-      console.log('[Login] Salvando token...')
-      localStorage.setItem('auth_token', response.data.access_token)
-      auth.token(null, response.data.access_token)
+    if (!token) {
+      throw new Error('Token não encontrado na resposta')
     }
 
-    if (response.data.user) {
-      console.log('[Login] Salvando usuário...')
-      localStorage.setItem('auth_user', JSON.stringify(response.data.user))
-      auth.user(response.data.user)
+    if (!user) {
+      throw new Error('User não encontrado na resposta')
     }
+
+    // Salvar no localStorage
+    localStorage.setItem('auth_token', token)
+    localStorage.setItem('auth_user', JSON.stringify(user))
+
+    // Configurar no Websanova
+    auth.token(null, token, false)
+    auth.user(user)
 
     await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 200))
 
-    // Verificar
-    console.log('[Login] Verificação final:')
-    console.log('  - localStorage token:', localStorage.getItem('auth_token') ? 'OK' : 'ERRO')
-    console.log('  - localStorage user:', localStorage.getItem('auth_user') ? 'OK' : 'ERRO')
-    console.log('  - auth.check():', auth.check())
-    console.log('  - auth.user():', auth.user())
+    // Redirecionar
+    const redirectTo = route.query.redirect || '/'
 
-    if (auth.check()) {
-      const redirectTo = route.query.redirect || '/'
-      console.log('[Login] Redirecionando para:', redirectTo)
-
-      await router.replace(redirectTo)
-      loginSuccess.value = true
-    } else {
-      console.error('[Login] auth.check() = false!')
-    }
+    await router.push(redirectTo)
   } catch (err) {
-    console.error('[Login] Erro:', err)
-
-    if (err.response?.status === 422 && err.response?.data?.errors) {
-      const apiErrors = err.response.data.errors
-      if (apiErrors.senha) {
-        errors.value.password = apiErrors.senha
-      } else {
-        errors.value = apiErrors
-      }
-    } else {
+    // Erro 401 - Credenciais inválidas
+    if (err.response?.status === 401) {
       errors.value = {
-        general: [
-          err.response?.data?.message ||
-            'Não foi possível realizar o login. Verifique sua conexão e tente novamente.',
-        ],
+        general: 'Matrícula ou senha incorretos.',
+      }
+    }
+    // Erro 422 - Validação
+    else if (err.response?.status === 422) {
+      const apiErrors = err.response.data?.errors
+
+      if (apiErrors) {
+        if (apiErrors.senha || apiErrors.password) {
+          const senhaError = apiErrors.senha || apiErrors.password
+          const errorMsg = Array.isArray(senhaError) ? senhaError[0] : senhaError
+          errors.value.password = translateErrorMessage(errorMsg)
+        }
+
+        if (apiErrors.matricula) {
+          const matriculaError = Array.isArray(apiErrors.matricula)
+            ? apiErrors.matricula[0]
+            : apiErrors.matricula
+          errors.value.matricula = translateErrorMessage(matriculaError)
+        }
+
+        // Se não capturou erros específicos
+        if (!errors.value.password && !errors.value.matricula) {
+          errors.value.general = 'Dados inválidos. Verifique e tente novamente.'
+        }
+      } else {
+        errors.value.general = 'Dados inválidos. Verifique e tente novamente.'
+      }
+    }
+    // Erro de rede ou outros
+    else {
+      // Se for erro de rede (sem response)
+      if (!err.response) {
+        errors.value = {
+          general: 'Erro ao conectar com o servidor. Verifique sua conexão e tente novamente.',
+        }
+      } else {
+        // Outros erros HTTP
+        const errorMsg = err.response?.data?.message || err.message
+        errors.value = {
+          general: translateErrorMessage(errorMsg) || 'Erro ao processar sua solicitação.',
+        }
       }
     }
 
+    // Limpar a senha e focar no campo
     form.password = ''
+    await nextTick()
     if (passwordInput.value) {
       passwordInput.value.focus()
     }
@@ -426,20 +480,17 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Efeitos de hover nos elementos */
 button,
 a {
   transition: all 0.2s ease-in-out;
 }
 
-/* Responsividade */
 @media (max-width: 480px) {
   .max-w-sm {
     max-width: 95%;
   }
 }
 
-/* Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
   button,
   a {

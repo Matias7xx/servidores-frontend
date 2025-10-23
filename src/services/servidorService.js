@@ -27,7 +27,6 @@ export const servidorService = {
         throw new Error('Matrícula é obrigatória')
       }
 
-      console.log('Buscando dados do servidor:', matricula)
       const response = await api.get(`/info_pessoal/${matricula}`)
 
       const apiData = response.data
@@ -46,7 +45,6 @@ export const servidorService = {
         message: 'Dados carregados com sucesso',
       }
     } catch (error) {
-      console.error('Erro ao buscar servidor:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar dados',
@@ -57,7 +55,6 @@ export const servidorService = {
 
   async getEstados() {
     try {
-      console.log('Buscando estados...')
       const response = await api.get('/estados')
       return {
         success: true,
@@ -65,7 +62,6 @@ export const servidorService = {
         message: 'Estados carregados com sucesso',
       }
     } catch (error) {
-      console.error('Erro ao buscar estados:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar estados',
@@ -76,7 +72,6 @@ export const servidorService = {
 
   async getCidadesPorEstado(codigoEstado) {
     try {
-      console.log('Buscando cidades do estado:', codigoEstado)
       const response = await api.get(`/cidades/${codigoEstado}`)
       return {
         success: true,
@@ -84,7 +79,6 @@ export const servidorService = {
         message: 'Cidades carregadas com sucesso',
       }
     } catch (error) {
-      console.error('Erro ao buscar cidades:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao carregar cidades',
@@ -103,8 +97,6 @@ export const servidorService = {
         ...dadosEditaveis,
       }
 
-      console.log('Enviando dados para atualização:', payload)
-
       const response = await api.put('/servidor/editar', payload)
 
       return {
@@ -113,7 +105,6 @@ export const servidorService = {
         message: 'Dados atualizados com sucesso',
       }
     } catch (error) {
-      console.error('Erro ao atualizar servidor:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao atualizar dados',
@@ -134,43 +125,10 @@ export const servidorService = {
         message: 'Senha verificada',
       }
     } catch (error) {
-      console.error('Erro ao verificar senha:', error)
       return {
         success: false,
         message: error.response?.data?.message || 'Senha inválida',
       }
-    }
-  },
-
-  async login(credentials) {
-    try {
-      const response = await api.post('/login', credentials)
-
-      if (response.data.token) {
-        localStorage.setItem('auth_token', response.data.token)
-      }
-
-      return {
-        success: true,
-        data: response.data,
-        token: response.data.token,
-        message: 'Login realizado com sucesso',
-      }
-    } catch (error) {
-      console.error('Erro ao fazer login:', error)
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Erro ao fazer login',
-      }
-    }
-  },
-
-  async logout() {
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
-    return {
-      success: true,
-      message: 'Logout realizado',
     }
   },
 }
