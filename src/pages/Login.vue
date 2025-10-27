@@ -1,19 +1,18 @@
 <template>
   <div
-    class="min-h-screen flex flex-col sm:justify-center items-center pt-4 sm:pt-0 px-4 sm:px-6 bg-gradient-to-b from-neutral-50 to-neutral-100"
+    class="min-h-screen flex flex-col sm:justify-center items-center pt-4 sm:pt-0 px-4 sm:px-6 bg-linear-to-b from-neutral-50 to-neutral-100"
   >
     <!-- Logo e título -->
     <div class="relative z-10 mb-6 sm:mb-8 flex flex-col items-center">
       <img
         src="/img/logo-pc.png"
         alt="Logo PCPB"
-        class="w-24 sm:w-32 lg:w-40 h-auto drop-shadow-lg flex-shrink-0"
+        class="w-32 sm:w-40 lg:w-40 h-auto drop-shadow-lg shrink-0"
       />
 
-      <div class="mt-2 sm:mt-3 text-center">
-        <h1 class="text-lg sm:text-xl lg:text-3xl font-semibold text-neutral-800 uppercase">
-          Ficha Funcional
-        </h1>
+      <div class="mt-3 text-center">
+        <h1 class="text-xl sm:text-2xl lg:text-2xl font-bold text-gray-800">Ficha Funcional</h1>
+        <div class="mt-1 text-sm text-gray-600">Diretoria de Recursos Humanos</div>
       </div>
     </div>
 
@@ -25,7 +24,7 @@
       <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
         <div class="flex items-start">
           <svg
-            class="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5"
+            class="w-5 h-5 text-red-500 mr-2 shrink-0 mt-0.5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -72,14 +71,14 @@
               type="text"
               inputmode="numeric"
               :class="[
-                'pl-10 pr-4 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
+                'h-11 pl-10 pr-4 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
                 errors.matricula
-                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                  : 'border-neutral-300 focus:border-[#c1a85a] focus:ring-2 focus:ring-[#c1a85a]/25',
+                  ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-200'
+                  : 'border-neutral-300',
               ]"
               required
               autofocus
-              placeholder="0000000"
+              placeholder="Informe sua Matrícula"
               maxlength="7"
               :disabled="loading"
               @input="handleMatriculaInput"
@@ -117,10 +116,10 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               :class="[
-                'pl-10 pr-10 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
+                'h-11 pl-10 pr-4 block w-full border rounded-md shadow-sm transition-colors duration-200 py-2 sm:py-3 text-sm sm:text-base',
                 errors.password
-                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                  : 'border-neutral-300 focus:border-[#c1a85a] focus:ring-2 focus:ring-[#c1a85a]/25',
+                  ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-200'
+                  : 'border-neutral-300',
               ]"
               required
               placeholder="••••••••"
@@ -181,7 +180,7 @@
             class="mt-1 sm:mt-2 flex items-center text-xs sm:text-sm text-amber-600 bg-amber-50 p-2 rounded-md border border-amber-200"
           >
             <svg
-              class="w-4 h-4 mr-2 flex-shrink-0"
+              class="w-4 h-4 mr-2 shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -244,7 +243,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span>{{ loading ? 'Entrando...' : 'Entrar' }}</span>
+            <span>{{ loading ? 'ENTRANDO...' : 'ENTRAR' }}</span>
           </button>
         </div>
       </form>

@@ -1,16 +1,16 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
+    <div class="mb-4 sm:mb-6 lg:mb-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-semibold text-neutral-900">Dependentes</h1>
+          <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dependentes</h1>
           <p class="text-sm text-neutral-500 mt-1.5">Gerencie seus dependentes cadastrados</p>
         </div>
-        <div class="flex gap-3">
+        <div class="flex flex-col sm:flex-row gap-3">
           <router-link
             to="/dependentes/inativos"
-            class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+            class="w-full sm:w-auto px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +30,7 @@
           </router-link>
           <router-link
             to="/dependentes/create"
-            class="px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-all duration-200"
+            class="w-full sm:w-auto px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-all duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -96,12 +96,12 @@
         </router-link>
       </div>
 
-      <div v-else class="overflow-x-auto">
-        <table class="w-full">
+      <div v-else class="overflow-x-auto -mx-4 sm:mx-0">
+        <table class="text-xs sm:text-sm w-full">
           <thead class="bg-neutral-50 border-b border-neutral-200">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 #
               </th>
@@ -111,22 +111,22 @@
                 Nome
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Sexo
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Parentesco
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Nascimento
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 CPF
               </th>
@@ -142,25 +142,31 @@
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-neutral-200">
+          <tbody class="divide-y divide-neutral-300">
             <tr
               v-for="(dependente, index) in dependentesStore.dependentes"
               :key="dependente.id"
               class="hover:bg-neutral-50 transition-colors"
             >
-              <td class="px-6 py-4 text-sm text-neutral-500">{{ index + 1 }}</td>
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-500">
+                {{ index + 1 }}
+              </td>
               <td class="px-6 py-4 text-sm font-medium text-neutral-900">{{ dependente.nome }}</td>
-              <td class="px-6 py-4 text-sm text-neutral-700">
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
                 {{ convertSexoFromDatabase(dependente.sexo_dependente) }}
               </td>
-              <td class="px-6 py-4 text-sm text-neutral-700">{{ dependente.tipo_dependente }}</td>
-              <td class="px-6 py-4 text-sm text-neutral-700">
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
+                {{ dependente.tipo_dependente }}
+              </td>
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
                 {{ formatarData(dependente.data_nascimento) }}
               </td>
-              <td class="px-6 py-4 text-sm text-neutral-700">{{ formatarCPF(dependente.cpf) }}</td>
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
+                {{ formatarCPF(dependente.cpf) }}
+              </td>
 
               <!-- COLUNA DE ANEXOS -->
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 sm:px-6 sm:py-4">
                 <div class="flex flex-col gap-1.5">
                   <!-- Documento Principal -->
                   <button
@@ -183,7 +189,7 @@
                         d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                       />
                     </svg>
-                    Principal
+                    Comprovação de Vínculo
                   </button>
 
                   <!-- Dependência Financeira -->
@@ -231,7 +237,7 @@
                         d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
                       />
                     </svg>
-                    Laudo Defic.
+                    Laudo Deficiência
                   </button>
 
                   <!-- Curso Superior -->
@@ -273,7 +279,7 @@
                 </div>
               </td>
 
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 sm:px-6 sm:py-4">
                 <div class="flex gap-2">
                   <router-link
                     :to="`/dependentes/edit/${dependente.id}`"
@@ -328,7 +334,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
           toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
         ]"
         role="alert"

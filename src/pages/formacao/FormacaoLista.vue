@@ -1,15 +1,15 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
+    <div class="mb-4 sm:mb-6 lg:mb-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-semibold text-neutral-900">Formação Acadêmica</h1>
+          <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Formação Acadêmica</h1>
           <p class="text-sm text-neutral-500 mt-1.5">Gerencie suas formações e certificados</p>
         </div>
         <router-link
           to="/formacao/create"
-          class="px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-all duration-200"
+          class="w-full sm:w-auto px-4 py-2 bg-neutral-900 text-white rounded-lg text-sm font-medium hover:bg-neutral-800 transition-all duration-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -72,22 +72,22 @@
         </router-link>
       </div>
 
-      <div v-else class="overflow-x-auto">
-        <table class="w-full">
+      <div v-else class="overflow-x-auto -mx-4 sm:mx-0">
+        <table class="text-xs sm:text-sm w-full">
           <thead class="bg-neutral-50 border-b border-neutral-200">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 #
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Área/Classe
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Categoria
               </th>
@@ -97,7 +97,7 @@
                 Curso
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Conclusão
               </th>
@@ -107,12 +107,12 @@
                 Certificado
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Validação
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
+                class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Status
               </th>
@@ -132,23 +132,25 @@
                 !formacao.status ? 'bg-red-50' : '',
               ]"
             >
-              <td class="px-6 py-4 text-sm text-neutral-500">{{ index + 1 }}</td>
-              <td class="px-6 py-4 text-sm text-neutral-900">
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-500">
+                {{ index + 1 }}
+              </td>
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-900">
                 {{ formacao.formacao_servidor_curso?.formacao_classe?.formacao_area?.area || '-' }}
                 /
                 {{ formacao.formacao_servidor_curso?.formacao_classe?.classe || '-' }}
               </td>
-              <td class="px-6 py-4 text-sm text-neutral-700">
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
                 {{ formacao.formacao_servidor_curso?.subcategoria?.categoria?.nome || '-' }} /
                 {{ formacao.formacao_servidor_curso?.subcategoria?.nome || '-' }}
               </td>
               <td class="px-6 py-4 text-sm font-medium text-neutral-900">
                 {{ formacao.formacao_servidor_curso?.curso || '-' }}
               </td>
-              <td class="px-6 py-4 text-sm text-neutral-700">
+              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
                 {{ formatDate(formacao.data_conclusao) }}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 sm:px-6 sm:py-4">
                 <div class="flex gap-1.5">
                   <button
                     v-if="formacao.anexo_frente"
@@ -177,7 +179,7 @@
                   </span>
                 </div>
               </td>
-              <td class="px-6 py-4">
+              <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
                 <span
                   :class="[
                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
@@ -193,7 +195,7 @@
                   }}
                 </span>
               </td>
-              <td class="px-6 py-4">
+              <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
                 <span
                   :class="[
                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
@@ -203,7 +205,7 @@
                   {{ !formacao.status ? 'Recuperado' : 'Ativo' }}
                 </span>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-3 py-3 sm:px-6 sm:py-4">
                 <router-link
                   :to="`/formacao/edit/${formacao.id}`"
                   class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors inline-flex"
@@ -236,7 +238,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
           toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
         ]"
         role="alert"

@@ -37,20 +37,23 @@ api.interceptors.response.use(
     return response
   },
   (error) => {
-    //Verificar se é uma requisição de login
+    // Verificar se é uma requisição de login ou logout
     const isLoginRequest =
       error.config?.url?.includes('login') || error.config?.url?.endsWith('/login')
 
-    // Se for erro 401 E NÃO for login, limpar e redirecionar
-    if (error.response?.status === 401 && !isLoginRequest) {
+    const isLogoutRequest =
+      error.config?.url?.includes('logout') || error.config?.url?.endsWith('/logout')
+
+    // Se for erro 401 E NÃO for login/logout, limpar e redirecionar
+    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
       localStorage.removeItem('auth_token')
       localStorage.removeItem('auth_user')
 
       // Redirecionar para login
       window.location.replace('/login')
     }
-    //Se for erro 401 EM LOGIN, apenas rejeitar (não redirecionar)
-    else if (error.response?.status === 401 && isLoginRequest) {
+    // Se for erro 401 EM LOGIN ou LOGOUT, apenas rejeitar (não redirecionar)
+    else if (error.response?.status === 401 && (isLoginRequest || isLogoutRequest)) {
       // Apenas propagar o erro
     }
     // Erro 500

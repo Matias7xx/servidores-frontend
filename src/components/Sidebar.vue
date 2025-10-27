@@ -1,15 +1,38 @@
 <template>
   <aside
     :class="[
-      'transition-all duration-300 bg-neutral-950 min-h-screen flex-shrink-0',
-      isCollapsed ? 'w-16' : 'w-64',
+      'transition-all duration-300 bg-neutral-950 min-h-screen shrink-0',
+      // Desktop: largura baseada em collapsed
+      'lg:relative',
+      isCollapsed ? 'lg:w-16' : 'lg:w-64',
+      // Mobile: sidebar como drawer
+      'fixed inset-y-0 left-0 z-40 lg:z-auto',
+      'w-64',
+      // Transição mobile
+      isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     ]"
     :aria-label="isCollapsed ? 'Menu de navegação (recolhido)' : 'Menu de navegação'"
     role="complementary"
   >
+    <!-- Botão fechar mobile -->
+    <button
+      @click="$emit('close')"
+      class="absolute top-4 right-4 lg:hidden text-neutral-400 hover:text-white p-2"
+      aria-label="Fechar menu"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+
     <nav class="h-full" aria-label="Menu principal">
       <div class="h-full overflow-y-auto">
-        <div class="py-4 space-y-1">
+        <div class="py-4 space-y-1 pt-16 lg:pt-4">
           <!-- Dashboard -->
           <router-link
             to="/"
@@ -20,8 +43,8 @@
             :aria-current="$route.name === 'Home' ? 'page' : undefined"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="currentColor"
               viewBox="0 0 20 20"
               aria-hidden="true"
@@ -30,7 +53,9 @@
                 d="M10.707 2.293a1 1 0 00-1.414 0l-9 9a1 1 0 001.414 1.414L2 12.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-4.586l.293.293a1 1 0 001.414-1.414l-9-9z"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate font-medium">Início</span>
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+              Início
+            </span>
           </router-link>
 
           <!-- Menu Informações -->
@@ -45,10 +70,10 @@
               aria-controls="submenu-informacoes"
               aria-label="Expandir ou recolher menu de Informações"
             >
-              <div class="flex items-center">
+              <div class="flex items-center min-w-0">
                 <svg
-                  class="w-5 h-5 flex-shrink-0"
-                  :class="isCollapsed ? 'mr-0' : 'mr-3'"
+                  class="w-5 h-5 shrink-0"
+                  :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -61,14 +86,14 @@
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   ></path>
                 </svg>
-                <span v-show="!isCollapsed" class="text-base truncate font-medium"
-                  >Minhas Informações</span
-                >
+                <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+                  Minhas Informações
+                </span>
               </div>
               <svg
-                v-show="!isCollapsed"
+                v-show="(!isCollapsed && !isOpen) || isOpen"
                 :class="[
-                  'w-4 h-4 transition-transform duration-200',
+                  'w-4 h-4 transition-transform duration-200 shrink-0',
                   isInformacoesOpen ? 'rotate-180' : '',
                 ]"
                 fill="none"
@@ -95,7 +120,7 @@
               leave-to-class="opacity-0 -translate-y-2"
             >
               <div
-                v-show="isInformacoesOpen && !isCollapsed"
+                v-show="isInformacoesOpen && (!isCollapsed || isOpen)"
                 id="submenu-informacoes"
                 class="bg-neutral-900 rounded-r-sm mr-2 overflow-hidden border-l-2 border-[#c1a85a]"
               >
@@ -108,7 +133,7 @@
                   :aria-current="$route.name === 'info_pessoal' ? 'page' : undefined"
                 >
                   <svg
-                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    class="w-4 h-4 mr-3 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -133,7 +158,7 @@
                   :aria-current="$route.name === 'dependentes' ? 'page' : undefined"
                 >
                   <svg
-                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    class="w-4 h-4 mr-3 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -158,7 +183,7 @@
                   :aria-current="$route.name === 'formacao' ? 'page' : undefined"
                 >
                   <svg
-                    class="w-4 h-4 mr-3 flex-shrink-0"
+                    class="w-4 h-4 mr-3 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -187,8 +212,8 @@
             :aria-current="$route.name === 'escalas' ? 'page' : undefined"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -201,7 +226,9 @@
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate font-medium">Minhas Escalas</span>
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+              Minhas Escalas
+            </span>
           </router-link>
 
           <!-- Minhas Cautelas -->
@@ -214,8 +241,8 @@
             :aria-current="$route.name === 'cautelas' ? 'page' : undefined"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -228,9 +255,9 @@
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate font-medium"
-              >Minhas Cautelas</span
-            >
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+              Minhas Cautelas
+            </span>
           </router-link>
 
           <!-- Minhas Avaliações -->
@@ -243,8 +270,8 @@
             :aria-current="$route.name === 'avaliacoes' ? 'page' : undefined"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -257,9 +284,9 @@
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate font-medium"
-              >Minhas Avaliações</span
-            >
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+              Minhas Avaliações
+            </span>
           </router-link>
 
           <!-- Minhas Frequências -->
@@ -272,8 +299,8 @@
             :aria-current="$route.name === 'frequencias' ? 'page' : undefined"
           >
             <svg
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -286,9 +313,9 @@
                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate font-medium"
-              >Minhas Frequências</span
-            >
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate font-medium">
+              Minhas Frequências
+            </span>
           </router-link>
 
           <!-- Logout -->
@@ -299,8 +326,8 @@
           >
             <svg
               v-if="!isLoggingOut"
-              class="w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -315,8 +342,8 @@
             </svg>
             <svg
               v-else
-              class="animate-spin w-5 h-5 flex-shrink-0"
-              :class="isCollapsed ? 'mr-0' : 'mr-3'"
+              class="animate-spin w-5 h-5 shrink-0"
+              :class="isCollapsed ? 'lg:mr-0' : 'mr-3'"
               fill="none"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -335,9 +362,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            <span v-show="!isCollapsed" class="text-base truncate">
-              {{ isLoggingOut ? 'Saindo...' : 'Sair' }}
-            </span>
+            <span v-show="!isCollapsed || isOpen" class="text-base truncate"> Sair </span>
           </button>
         </div>
       </div>
@@ -349,13 +374,20 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '@websanova/vue-auth'
+import api from '../services/api'
 
 const props = defineProps({
   isCollapsed: {
     type: Boolean,
     default: false,
   },
+  isOpen: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+defineEmits(['close'])
 
 const auth = useAuth()
 const route = useRoute()
@@ -367,26 +399,47 @@ const toggleInformacoesMenu = () => {
   isInformacoesOpen.value = !isInformacoesOpen.value
 }
 
-// Logout
+// Logout invalida o token no backend
 const handleLogout = async () => {
   if (isLoggingOut.value) return
 
   try {
     isLoggingOut.value = true
 
-    // Usar auth.logout()
+    // 1. Invalidar token no backend (usando a blacklist do JWT)
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      try {
+        await api.post(
+          'logout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+        console.log('[Logout] Token invalidado no backend')
+      } catch (error) {
+        console.warn('[Logout] Erro ao invalidar token no backend:', error)
+      }
+    }
+
+    // 2. Limpar do Websanova
     await auth.logout({
-      makeRequest: false, // Não fazer requisição ao backend
-      redirect: false, // Não usar o redirect automático
+      makeRequest: false,
+      redirect: false,
     })
 
-    // Limpar localStorage
+    // 3. Limpar localStorage
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
 
-    // Usar replace ao invés de href para evitar voltar com botão back
+    // 4. Redirecionar
     window.location.replace('/login')
-  } catch {
+  } catch (error) {
+    console.error('[Logout] Erro:', error)
+    // Em caso de erro, força limpeza
     localStorage.clear()
     window.location.replace('/login')
   } finally {

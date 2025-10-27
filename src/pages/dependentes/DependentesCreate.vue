@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-semibold text-neutral-900">Novo Dependente</h1>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+      <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Novo Dependente</h1>
       <p class="text-sm text-neutral-500 mt-1.5">Cadastre um novo dependente</p>
     </div>
 
@@ -17,12 +17,12 @@
     <div v-else>
       <form @submit.prevent="salvarDependente" class="space-y-5">
         <!-- Card: Dados do Dependente -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Dados do Dependente
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-2 mb-5">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Nome Completo <span class="text-red-500">*</span>
@@ -67,7 +67,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2 mb-5">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Tipo de Parentesco <span class="text-red-500">*</span>
@@ -115,7 +115,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 CPF <span class="text-red-500">*</span>
@@ -139,7 +139,7 @@
               }}</span>
             </div>
 
-            <div>
+            <div class="grid grid-cols-1">
               <label class="block text-sm font-medium text-neutral-700 mb-1.5">
                 Documento de Vínculo entre o Dependente e o Servidor
                 <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
@@ -191,7 +191,7 @@
 
         <div
           v-if="showDeficienciaOuFinanceiraInput"
-          class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6"
+          class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6"
         >
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Documentos de Comprovação Adicionais
@@ -215,10 +215,10 @@
             </p>
           </div>
 
-          <div class="space-y-5">
+          <div class="space-y-5 grid grid-cols-1">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                Declaração de Dependência Financeira
+                Comprovante de Dependência Financeira
               </label>
               <input
                 type="file"
@@ -259,7 +259,7 @@
 
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                Laudo de Deficiência
+                Laudo Médico de Deficiência
               </label>
               <input
                 type="file"
@@ -298,7 +298,7 @@
 
             <div v-if="showNewDocs21To24">
               <label class="block text-sm font-medium text-neutral-700 mb-2">
-                Comprovante de Curso Superior
+                Comprovante de Matrícula em Curso Superior
               </label>
               <input
                 type="file"
@@ -338,16 +338,16 @@
         </div>
 
         <!-- Botões de Ação -->
-        <div class="flex items-center justify-end gap-3 pt-4">
+        <div class="flex gap-3 justify-end">
           <router-link
             to="/dependentes"
-            class="px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg transition-all duration-200 hover:bg-neutral-50 hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
+            class="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors duration-200 text-center"
           >
             Cancelar
           </router-link>
           <button
             type="submit"
-            class="px-5 py-2.5 text-sm font-medium text-white bg-neutral-900 border border-transparent rounded-lg transition-all duration-200 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full sm:w-auto px-4 py-2.5 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800 transition-colors duration-200"
           >
             Salvar
           </button>
@@ -365,16 +365,16 @@
         <p class="text-sm text-neutral-600 mb-6">
           Este dependente já foi cadastrado anteriormente e está inativo. Deseja reativá-lo?
         </p>
-        <div class="flex justify-end gap-3">
+        <div class="flex flex-col sm:flex-row justify-end gap-3">
           <button
             @click="cancelarReativacao"
-            class="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50"
+            class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50"
           >
             Cancelar
           </button>
           <button
             @click="confirmarReativacao"
-            class="px-4 py-2 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800"
+            class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800"
           >
             Reativar
           </button>
@@ -387,7 +387,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-xl text-white text-sm font-medium max-w-sm z-50',
+          'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 px-6 py-4 rounded-lg shadow-xl text-white text-sm font-medium max-w-sm z-50',
           toastType === 'success'
             ? 'bg-green-600'
             : toastType === 'error'

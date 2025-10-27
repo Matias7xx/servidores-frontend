@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-semibold text-neutral-900">Editar Dependente</h1>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+      <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Editar Dependente</h1>
       <p class="text-sm text-neutral-500 mt-1.5">Atualize os dados do dependente</p>
     </div>
 
@@ -23,12 +23,12 @@
     <div v-else>
       <form @submit.prevent="atualizarDependente" class="space-y-5">
         <!-- Card: Dados do Dependente -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Dados do Dependente
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-2 mb-5">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Nome Completo <span class="text-red-500">*</span>
@@ -72,7 +72,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2 mb-5">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Tipo de Parentesco <span class="text-red-500">*</span>
@@ -120,7 +120,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 CPF <span class="text-red-500">*</span>
@@ -153,7 +153,7 @@
           </h2>
 
           <!-- Documento Principal -->
-          <div class="mb-5">
+          <div class="mb-5 grid grid-cols-1">
             <label class="block text-sm font-medium text-neutral-700 mb-1.5">
               Documento de Vínculo entre o Dependente e o Servidor
               <span class="text-red-500">(.pdf)</span> <span class="text-red-500">*</span>
@@ -168,13 +168,13 @@
             <div
               @click="$refs.anexoInput.click()"
               :class="[
-                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between flex-wrap gap-2',
                 errors.anexo
                   ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
                   : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
               ]"
             >
-              <span class="truncate">
+              <span class="flex-1 min-w-0 truncate">
                 {{ nomeArquivoAnexo || 'Clique para alterar a comprovação de vínculo' }}
               </span>
               <span
@@ -251,7 +251,7 @@
         <!-- Card: Documentos Adicionais (para Filho/Enteado) -->
         <div
           v-if="showDeficienciaOuFinanceiraInput"
-          class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6"
+          class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 md:p-5 lg:p-6 grid grid-cols-1"
         >
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Documentos de Comprovação Adicionais
@@ -295,14 +295,14 @@
               <div
                 @click="$refs.docDepFinanceiraInput.click()"
                 :class="[
-                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between flex-wrap gap-2',
                   errors.doc_dependencia_financeira
                     ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
                     : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
                 ]"
               >
-                <span class="truncate">
-                  {{ nomeArquivoDepFinanceira || 'Nenhum arquivo escolhido' }}
+                <span class="flex-1 min-w-0 truncate">
+                  {{ nomeArquivoDepFinanceira || 'O novo arquivo irá sobrescrever o atual' }}
                 </span>
                 <span
                   :class="[
@@ -318,10 +318,8 @@
               <span
                 v-if="errors.doc_dependencia_financeira"
                 class="text-red-600 text-xs mt-1.5 block"
+                >{{ errors.doc_dependencia_financeira[0] }}</span
               >
-                {{ errors.doc_dependencia_financeira[0] }}
-              </span>
-
               <!-- Arquivo atual -->
               <div
                 v-if="dependente.doc_dependencia_financeira"
@@ -391,14 +389,14 @@
               <div
                 @click="$refs.docLaudoDeficienciaInput.click()"
                 :class="[
-                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between flex-wrap gap-2',
                   errors.doc_laudo_deficiencia
                     ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
                     : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
                 ]"
               >
-                <span class="truncate">
-                  {{ nomeArquivoLaudoDeficiencia || 'Nenhum arquivo escolhido' }}
+                <span class="flex-1 min-w-0 truncate">
+                  {{ nomeArquivoLaudoDeficiencia || 'O novo arquivo irá sobrescrever o atual' }}
                 </span>
                 <span
                   :class="[
@@ -411,11 +409,10 @@
                   Escolher arquivo
                 </span>
               </div>
-              <span v-if="errors.doc_laudo_deficiencia" class="text-red-600 text-xs mt-1.5 block">
-                {{ errors.doc_laudo_deficiencia[0] }}
-              </span>
+              <span v-if="errors.doc_laudo_deficiencia" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.doc_laudo_deficiencia[0]
+              }}</span>
 
-              <!-- Arquivo atual -->
               <div v-if="dependente.doc_laudo_deficiencia" class="mt-2 flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -443,7 +440,6 @@
                 </p>
               </div>
 
-              <!-- Novo arquivo selecionado -->
               <div v-if="form.doc_laudo_deficiencia" class="mt-2 flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -465,8 +461,8 @@
               </div>
             </div>
 
-            <!-- Doc. Curso Superior (somente para 21-24 anos) -->
-            <div v-if="showNewDocs21To24">
+            <!-- Doc. Curso Superior -->
+            <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Comprovante de Matrícula em Curso Superior
                 <span class="text-neutral-500 text-xs">(.pdf, máx 2MB)</span>
@@ -481,14 +477,14 @@
               <div
                 @click="$refs.docCursoSuperiorInput.click()"
                 :class="[
-                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between',
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 cursor-pointer flex items-center justify-between flex-wrap gap-2',
                   errors.doc_curso_superior
                     ? 'border-red-400 bg-red-50 text-red-900 hover:bg-red-100'
                     : 'bg-white border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50',
                 ]"
               >
-                <span class="truncate">
-                  {{ nomeArquivoCursoSuperior || 'Nenhum arquivo escolhido' }}
+                <span class="flex-1 min-w-0 truncate">
+                  {{ nomeArquivoCursoSuperior || 'O novo arquivo irá sobrescrever o atual' }}
                 </span>
                 <span
                   :class="[
@@ -501,9 +497,9 @@
                   Escolher arquivo
                 </span>
               </div>
-              <span v-if="errors.doc_curso_superior" class="text-red-600 text-xs mt-1.5 block">
-                {{ errors.doc_curso_superior[0] }}
-              </span>
+              <span v-if="errors.doc_curso_superior" class="text-red-600 text-xs mt-1.5 block">{{
+                errors.doc_curso_superior[0]
+              }}</span>
 
               <!-- Arquivo atual -->
               <div v-if="dependente.doc_curso_superior" class="mt-2 flex items-center gap-2">
@@ -557,79 +553,82 @@
           </div>
         </div>
 
-        <!-- Botões de Ação -->
+        <!-- Actions -->
         <div class="flex gap-3 justify-end">
-          <button
-            type="button"
-            @click="router.push('/dependentes')"
-            class="px-4 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors duration-200"
+          <router-link
+            to="/dependentes"
+            class="w-full sm:w-auto px-4 sm:px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200 text-center"
           >
             Cancelar
-          </button>
+          </router-link>
+
           <button
             type="submit"
-            class="px-4 py-2.5 text-sm font-medium text-white bg-neutral-900 rounded-lg hover:bg-neutral-800 transition-colors duration-200"
+            :disabled="submitting"
+            class="w-full sm:w-auto px-4 sm:px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
           >
-            Salvar Alterações
+            <span v-if="submitting">Atualizando...</span>
+            <span v-else>Salvar Alterações</span>
           </button>
         </div>
       </form>
-    </div>
 
-    <!-- Toast -->
-    <Transition name="toast">
-      <div
-        v-if="showToast"
-        :class="[
-          'fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50',
-          toastType === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white',
-        ]"
-      >
-        <svg
-          v-if="toastType === 'success'"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="w-5 h-5"
+      <!-- Toast -->
+      <Transition name="toast">
+        <div
+          v-if="showToast"
+          :class="[
+            'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 left-4 sm:left-auto flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+            toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
+          ]"
+          role="alert"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <svg
-          v-else
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="w-5 h-5"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-          />
-        </svg>
-        <p class="text-sm font-medium">{{ toastMessage }}</p>
-        <button @click="hideToast" class="ml-2 text-white hover:text-neutral-200">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="w-4 h-4"
+          <div
+            :class="[
+              'shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
+              toastType === 'success' ? 'bg-green-500' : 'bg-red-500',
+            ]"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </Transition>
+            <svg
+              v-if="toastType === 'success'"
+              class="w-4 h-4 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <svg v-else class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-neutral-900">{{ toastMessage }}</p>
+          </div>
+          <button
+            type="button"
+            @click="hideToast"
+            class="shrink-0 text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
 

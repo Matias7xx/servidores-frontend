@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-semibold text-neutral-900">Nova Formação</h1>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+      <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Nova Formação</h1>
       <p class="text-sm text-neutral-500 mt-1.5">Cadastre uma nova formação acadêmica</p>
     </div>
 
@@ -25,12 +25,12 @@
     <!-- Formulário (sempre visível, exceto em loading) -->
     <form v-if="!formacaoStore.loading" @submit.prevent="submitForm" class="space-y-5">
       <!-- Card: Dados da Formação -->
-      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
         <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
           Dados da Formação
         </h2>
 
-        <div class="grid gap-5 md:grid-cols-2 mb-5">
+        <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Área <span class="text-red-500">*</span>
@@ -87,7 +87,7 @@
           </div>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2 mb-5">
+        <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Curso <span class="text-red-500">*</span>
@@ -159,7 +159,7 @@
           }}</span>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2">
+        <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Certificado Frente <span class="text-red-500">(.pdf)</span>
@@ -242,10 +242,10 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center justify-end gap-3">
+      <div class="flex gap-3 justify-end">
         <router-link
           to="/formacao"
-          class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+          class="w-full sm:w-auto px-4 sm:px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200 text-center"
         >
           Cancelar
         </router-link>
@@ -253,7 +253,7 @@
         <button
           type="submit"
           :disabled="submitting"
-          class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+          class="w-full sm:w-auto px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
         >
           <span v-if="submitting">Cadastrando...</span>
           <span v-else>Cadastrar Formação</span>
@@ -266,7 +266,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
           toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
         ]"
         role="alert"

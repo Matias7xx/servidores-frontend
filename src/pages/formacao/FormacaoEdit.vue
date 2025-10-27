@@ -1,9 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-semibold text-neutral-900">Editar Formação</h1>
-      <p class="text-sm text-neutral-500 mt-1.5">Atualize os dados da formação acadêmica</p>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+      <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Editar Formação</h1>
+      <p class="text-xs sm:text-sm text-neutral-500 mt-1.5">
+        Atualize os dados da formação acadêmica
+      </p>
     </div>
 
     <!-- Loading -->
@@ -25,12 +27,12 @@
     <!-- Formulário (sempre visível, exceto em loading) -->
     <form v-if="!formacaoStore.loading" @submit.prevent="submitForm" class="space-y-5">
       <!-- Card: Dados da Formação -->
-      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
         <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
           Dados da Formação
         </h2>
 
-        <div class="grid gap-5 md:grid-cols-2 mb-5">
+        <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 mb-4 sm:mb-5">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Área <span class="text-red-500">*</span>
@@ -87,7 +89,7 @@
           </div>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2 mb-5">
+        <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 mb-4 sm:mb-5">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Curso <span class="text-red-500">*</span>
@@ -159,7 +161,7 @@
           }}</span>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2">
+        <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2">
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Substituir Certificado Frente <span class="text-red-500">(.pdf)</span>
@@ -199,7 +201,10 @@
             }}</span>
 
             <!-- Mostrar certificado atual -->
-            <div v-if="formacaoAtual?.anexo_frente" class="mt-2 flex items-center gap-2">
+            <div
+              v-if="formacaoAtual?.anexo_frente"
+              class="mt-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -214,7 +219,7 @@
                   d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <p class="text-sm text-neutral-600">
+              <p class="text-xs sm:text-sm text-neutral-600">
                 Arquivo atual:
                 <button
                   type="button"
@@ -227,22 +232,11 @@
             </div>
 
             <!-- Mostrar novo arquivo selecionado -->
-            <div v-if="form.anexo_frente" class="mt-2 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-4 h-4 text-blue-600"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-              <p class="text-sm text-blue-600 font-medium">
+            <div
+              v-if="form.anexo_frente"
+              class="mt-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm"
+            >
+              <p class="text-xs sm:text-sm text-blue-600 font-medium">
                 ✓ Novo arquivo: {{ form.anexo_frente.name }}
               </p>
             </div>
@@ -288,7 +282,10 @@
             }}</span>
 
             <!-- Mostrar certificado atual -->
-            <div v-if="formacaoAtual?.anexo_verso" class="mt-2 flex items-center gap-2">
+            <div
+              v-if="formacaoAtual?.anexo_verso"
+              class="mt-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -303,7 +300,7 @@
                   d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <p class="text-sm text-neutral-600">
+              <p class="text-xs sm:text-sm text-neutral-600">
                 Arquivo atual:
                 <button
                   type="button"
@@ -316,22 +313,11 @@
             </div>
 
             <!-- Mostrar novo arquivo selecionado -->
-            <div v-if="form.anexo_verso" class="mt-2 flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-4 h-4 text-blue-600"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-              <p class="text-sm text-blue-600 font-medium">
+            <div
+              v-if="form.anexo_verso"
+              class="mt-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm"
+            >
+              <p class="text-xs sm:text-sm text-blue-600 font-medium">
                 ✓ Novo arquivo: {{ form.anexo_verso.name }}
               </p>
             </div>
@@ -340,10 +326,10 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center justify-end gap-3">
+      <div class="flex gap-3 justify-end">
         <router-link
           to="/formacao"
-          class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+          class="w-full sm:w-auto px-4 sm:px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200 text-center"
         >
           Cancelar
         </router-link>
@@ -351,7 +337,7 @@
         <button
           type="submit"
           :disabled="submitting"
-          class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+          class="w-full sm:w-auto px-4 sm:px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
         >
           <span v-if="submitting">Atualizando...</span>
           <span v-else>Salvar Alterações</span>
@@ -364,7 +350,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          'fixed bottom-4 right-4 sm:bottom-6 sm:right-6 left-4 sm:left-auto flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
           toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
         ]"
         role="alert"

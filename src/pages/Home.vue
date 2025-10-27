@@ -1,30 +1,30 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-semibold text-neutral-900">
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-semibold text-neutral-900">
         {{ greeting }}, {{ userName || 'Usuário' }}!
       </h1>
-      <p class="text-sm text-neutral-500 mt-2">
-        {{ currentDate }} • Gerencie suas informações pessoais e profissionais
+      <p class="text-xs sm:text-sm text-neutral-500 mt-2">
+        {{ currentDate }} • Gerencie suas informações
       </p>
     </div>
 
     <!-- Conteúdo -->
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
       <!-- Ações Rápidas -->
-      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <!-- Atualizar Dados -->
           <router-link
             to="/info_pessoal"
-            class="group p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
+            class="group p-4 sm:p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
           >
             <div
-              class="p-3 bg-neutral-50 rounded-lg mb-4 group-hover:bg-neutral-100 transition-colors"
+              class="p-2 sm:p-3 bg-neutral-50 rounded-lg mb-3 sm:mb-4 group-hover:bg-neutral-100 transition-colors"
             >
               <svg
-                class="w-6 h-6 text-neutral-700"
+                class="w-5 h-5 sm:w-6 sm:h-6 text-neutral-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -37,20 +37,24 @@
                 />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">Atualizar Dados Pessoais</h3>
-            <p class="text-sm text-neutral-600">Mantenha suas informações pessoais atualizadas</p>
+            <h3 class="text-sm sm:text-base font-semibold text-neutral-900 mb-1 sm:mb-2">
+              Atualizar Dados Pessoais
+            </h3>
+            <p class="text-xs sm:text-sm text-neutral-600">
+              Mantenha suas informações pessoais atualizadas
+            </p>
           </router-link>
 
           <!-- Gerenciar Dependentes -->
           <router-link
             to="/dependentes"
-            class="group p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
+            class="group p-4 sm:p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
           >
             <div
-              class="p-3 bg-neutral-50 rounded-lg mb-4 group-hover:bg-neutral-100 transition-colors"
+              class="p-2 sm:p-3 bg-neutral-50 rounded-lg mb-3 sm:mb-4 group-hover:bg-neutral-100 transition-colors"
             >
               <svg
-                class="w-6 h-6 text-neutral-700"
+                class="w-5 h-5 sm:w-6 sm:h-6 text-neutral-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -63,20 +67,24 @@
                 />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">Gerenciar Dependentes</h3>
-            <p class="text-sm text-neutral-600">Adicione ou atualize informações dos dependentes</p>
+            <h3 class="text-sm sm:text-base font-semibold text-neutral-900 mb-1 sm:mb-2">
+              Gerenciar Dependentes
+            </h3>
+            <p class="text-xs sm:text-sm text-neutral-600">
+              Adicione ou atualize informações dos dependentes
+            </p>
           </router-link>
 
           <!-- Registrar Formação -->
           <router-link
             to="/formacao"
-            class="group p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
+            class="group p-4 sm:p-5 border border-neutral-200 rounded-lg hover:border-neutral-400 hover:shadow-md transition-all duration-200"
           >
             <div
-              class="p-3 bg-neutral-50 rounded-lg mb-4 group-hover:bg-neutral-100 transition-colors"
+              class="p-2 sm:p-3 bg-neutral-50 rounded-lg mb-3 sm:mb-4 group-hover:bg-neutral-100 transition-colors"
             >
               <svg
-                class="w-6 h-6 text-neutral-700"
+                class="w-5 h-5 sm:w-6 sm:h-6 text-neutral-700"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -95,22 +103,24 @@
                 />
               </svg>
             </div>
-            <h3 class="text-base font-semibold text-neutral-900 mb-2">
+            <h3 class="text-sm sm:text-base font-semibold text-neutral-900 mb-1 sm:mb-2">
               Registrar Formação Acadêmica
             </h3>
-            <p class="text-sm text-neutral-600">Adicione suas formações e certificados</p>
+            <p class="text-xs sm:text-sm text-neutral-600">
+              Adicione suas formações e certificados
+            </p>
           </router-link>
         </div>
       </div>
 
       <!-- Informações do Sistema -->
       <div
-        class="bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-lg border border-neutral-200 p-6"
+        class="bg-linear-to-br from-neutral-50 to-neutral-100 rounded-lg border border-neutral-200 p-4 sm:p-6"
       >
-        <div class="flex items-start gap-4">
-          <div class="p-3 bg-white rounded-lg shadow-sm">
+        <div class="flex items-start gap-3 sm:gap-4">
+          <div class="p-2 sm:p-3 bg-white rounded-lg shadow-sm shrink-0">
             <svg
-              class="w-6 h-6 text-neutral-600"
+              class="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -123,8 +133,8 @@
               />
             </svg>
           </div>
-          <div class="flex-1">
-            <h3 class="text-sm font-semibold text-neutral-900 mb-1">
+          <div class="flex-1 min-w-0">
+            <h3 class="text-xs sm:text-sm font-semibold text-neutral-900 mb-1">
               Mantenha seus dados atualizados
             </h3>
             <p class="text-xs text-neutral-600 leading-relaxed">
@@ -176,18 +186,22 @@ const currentDate = computed(() => {
   }
 }
 
+.space-y-4 > *,
 .space-y-6 > * {
   animation: fadeInUp 0.4s ease-out forwards;
 }
 
+.space-y-4 > *:nth-child(1),
 .space-y-6 > *:nth-child(1) {
   animation-delay: 0.1s;
 }
 
+.space-y-4 > *:nth-child(2),
 .space-y-6 > *:nth-child(2) {
   animation-delay: 0.2s;
 }
 
+.space-y-4 > *:nth-child(3),
 .space-y-6 > *:nth-child(3) {
   animation-delay: 0.3s;
 }

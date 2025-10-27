@@ -69,7 +69,7 @@ export default {
     url: 'logout',
     method: 'POST',
     redirect: '/login',
-    makeRequest: false,
+    makeRequest: true, // Requisição para invalidar TOKEN no backend
   },
 
   fetchData: {

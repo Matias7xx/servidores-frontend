@@ -30,20 +30,20 @@
     <!-- Conteúdo -->
     <div v-else>
       <!-- Header -->
-      <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
+      <div class="mb-4 sm:mb-6 lg:mb-8">
+        <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
         <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="updateDados" class="space-y-5">
         <!-- Card: Dados Básicos -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Dados Básicos
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-3 mb-5">
+          <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-4 sm:mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Nome Completo</label>
               <input
@@ -76,7 +76,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-4">
+          <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">CPF</label>
               <input
@@ -154,12 +154,12 @@
         </div>
 
         <!-- Card: Filiação e Documentos -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Filiação e Documentos
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-2 mb-5">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Nome do Pai</label>
               <input
@@ -191,7 +191,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-4">
+          <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">PASEP</label>
               <input
@@ -261,12 +261,12 @@
         </div>
 
         <!-- Card: Características Pessoais -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Características Pessoais
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-4 mb-5">
+          <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Nacionalidade</label>
               <input
@@ -350,7 +350,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-4">
+          <div class="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Tipo Sanguíneo</label>
               <select
@@ -430,13 +430,13 @@
         </div>
 
         <!-- Card: Dados Eleitorais e Uniformes -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Dados Eleitorais e Uniformes
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-4 mb-5">
-            <div class="md:col-span-2">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-5">
+            <div class="sm:col-span-1 md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2"
                 >Título de Eleitor</label
               >
@@ -487,7 +487,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-3">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Tamanho Camisa</label>
               <select
@@ -531,12 +531,12 @@
         </div>
 
         <!-- Card: Contato -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Contato
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-3">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">
                 Telefone 1
@@ -606,12 +606,12 @@
         </div>
 
         <!-- Card: Endereço -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Endereço
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-6 mb-5">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-6 mb-5">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">CEP</label>
               <input
@@ -653,7 +653,7 @@
               </select>
             </div>
 
-            <div class="md:col-span-2">
+            <div class="sm:col-span-1 md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Cidade</label>
               <select
                 v-model="form.cidade"
@@ -676,7 +676,7 @@
               </select>
             </div>
 
-            <div class="md:col-span-2">
+            <div class="sm:col-span-1 md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Bairro</label>
               <input
                 type="text"
@@ -692,8 +692,8 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-6">
-            <div class="md:col-span-4">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
+            <div class="sm:col-span-1 md:col-span-4">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Rua</label>
               <input
                 type="text"
@@ -742,12 +742,12 @@
         </div>
 
         <!-- Card: Estado Civil -->
-        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-6">
+        <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">
           <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-5">
             Estado Civil
           </h2>
 
-          <div class="grid gap-5 md:grid-cols-2">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Estado Civil</label>
               <select
@@ -787,7 +787,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2 mt-5" v-if="temConjuge()">
+          <div class="grid gap-5 sm:grid-cols-1 md:grid-cols-2 mt-5" v-if="temConjuge()">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">CPF do Cônjuge</label>
               <input
@@ -810,11 +810,11 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center justify-end gap-3 pt-3">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3">
           <button
             type="button"
             @click="resetForm"
-            class="px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200"
+            class="w-full sm:w-auto px-6 py-2.5 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 hover:border-neutral-400 transition-all duration-200 order-2 sm:order-1"
           >
             Cancelar
           </button>
@@ -822,7 +822,7 @@
           <button
             type="submit"
             :disabled="servidorStore.loading"
-            class="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
+            class="w-full sm:w-auto px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900 order-1 sm:order-2"
           >
             <span v-if="servidorStore.loading">Salvando...</span>
             <span v-else>Salvar Alterações</span>
@@ -836,7 +836,7 @@
       <div
         v-if="showToast"
         :class="[
-          'fixed bottom-6 right-6 flex items-start gap-3 w-full max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
+          'fixed bottom-4 right-4 left-4 sm:left-auto sm:bottom-6 sm:right-6 flex items-start gap-3 w-auto sm:w-full sm:max-w-sm p-4 rounded-lg shadow-xl border-2 z-50 backdrop-blur-sm',
           toastType === 'success' ? 'bg-white/95 border-green-500' : 'bg-white/95 border-red-500',
         ]"
         role="alert"

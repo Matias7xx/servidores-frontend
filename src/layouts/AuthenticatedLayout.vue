@@ -13,12 +13,33 @@
     <!-- Layout principal -->
     <template v-else>
       <!-- Navbar -->
-      <Navbar @toggle-sidebar="toggleSidebar" />
+      <Navbar @toggle-sidebar="toggleSidebar" :is-sidebar-open="isSidebarOpen" />
+
+      <!-- Overlay para mobile quando sidebar está aberto -->
+      <Transition
+        enter-active-class="transition-opacity duration-300"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-300"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isSidebarOpen"
+          @click="closeSidebar"
+          class="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          aria-hidden="true"
+        ></div>
+      </Transition>
 
       <!-- Layout com Sidebar -->
       <div class="flex flex-1 overflow-hidden">
         <!-- Sidebar -->
-        <Sidebar :is-collapsed="isSidebarCollapsed" />
+        <Sidebar
+          :is-collapsed="isSidebarCollapsed"
+          :is-open="isSidebarOpen"
+          @close="closeSidebar"
+        />
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-h-0">
@@ -50,14 +71,26 @@ const { user, userName, userMatricula, isAuthenticated, reloadUser } = useAuthUs
 
 // Estado do sidebar
 const isSidebarCollapsed = ref(false)
+const isSidebarOpen = ref(false)
 const loading = ref(true)
 
 // Função para toggle do sidebar
 const toggleSidebar = () => {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value
+  // Em mobile, abre/fecha o drawer
+  // Em desktop, apenas colapsa
+  if (window.innerWidth < 1024) {
+    isSidebarOpen.value = !isSidebarOpen.value
+  } else {
+    isSidebarCollapsed.value = !isSidebarCollapsed.value
+  }
 }
 
-//Fornecer dados do user para todos os componentes filhos
+// Função para fechar sidebar (usado no overlay mobile)
+const closeSidebar = () => {
+  isSidebarOpen.value = false
+}
+
+// Fornecer dados do user para todos os componentes filhos
 provide('authUser', {
   user,
   userName,
@@ -90,7 +123,7 @@ onMounted(async () => {
   loading.value = false
 })
 
-//Observar mudanças no user
+// Observar mudanças no user
 watch(
   () => user.value,
   (newUser) => {
@@ -100,6 +133,14 @@ watch(
     }
   },
 )
-</script>
 
-<style scoped></style>
+// Fechar sidebar mobile quando mudar de rota
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    if (window.innerWidth < 1024) {
+      closeSidebar()
+    }
+  },
+)
+</script>

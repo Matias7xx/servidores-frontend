@@ -8,12 +8,24 @@ export default function authInitPlugin(app, options) {
 
     if (token && userStr) {
       try {
-        const user = JSON.parse(userStr)
+        // Decodificar o JWT para verificar expiração
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        const expTimestamp = payload.exp * 1000 // exp vem em segundos, converter para ms
+        const now = Date.now()
 
-        //Restaurar token e user no Websanova
+        // Se o token expirou, limpar tudo e não restaurar a sessão
+        if (expTimestamp < now) {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('auth_user')
+          return
+        }
+
+        // Token ainda válido, restaurar sessão
+        const user = JSON.parse(userStr)
         auth.token(null, token, false)
         auth.user(user)
       } catch {
+        //Erro ao validar token
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')
       }
