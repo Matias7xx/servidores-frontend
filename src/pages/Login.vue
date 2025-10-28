@@ -294,7 +294,6 @@ const translateErrorMessage = (message) => {
     'The matricula field is required.': 'O campo matrícula é obrigatório.',
     'The senha must be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
     'The password must be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
-    'The matricula must be 7 digits.': 'A matrícula deve ter 7 dígitos.',
     'These credentials do not match our records.': 'Matrícula ou senha incorretos.',
     'Invalid credentials.': 'Matrícula ou senha incorretos.',
     Unauthorized: 'Matrícula ou senha incorretos.',
@@ -335,7 +334,7 @@ const clearFieldError = (field) => {
 }
 
 const handleMatriculaInput = (event) => {
-  const value = event.target.value.replace(/\D/g, '').slice(0, 7)
+  const value = event.target.value.replace(/\D/g, '')
   form.matricula = value
   clearFieldError('matricula')
 }
@@ -353,8 +352,8 @@ const checkCapsLock = (event) => {
 const validateForm = () => {
   const newErrors = {}
 
-  if (!form.matricula || form.matricula.length !== 7) {
-    newErrors.matricula = 'A matrícula deve ter exatamente 7 dígitos'
+  if (!form.matricula) {
+    newErrors.matricula = 'A matrícula é obrigatória'
   }
 
   if (!form.password || form.password.length < 6) {
