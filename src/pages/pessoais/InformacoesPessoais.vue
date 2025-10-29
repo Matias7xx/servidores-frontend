@@ -1,14 +1,14 @@
 <template>
   <div>
     <!-- Loading State -->
-    <div v-if="servidorStore.loading" class="flex justify-center items-center py-20">
+    <!-- <div v-if="servidorStore.loading" class="flex justify-center items-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
-    </div>
+    </div> -->
 
     <!-- Estado de Erro -->
-    <div v-else-if="servidorStore.error">
+    <div v-if="servidorStore.error">
       <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start justify-between">
         <div>
           <p class="font-medium text-red-900">Erro ao carregar dados</p>
@@ -489,7 +489,9 @@
 
           <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-2">Tamanho Camisa</label>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Tamanho da Camisa Polo</label
+              >
               <select
                 v-model="form.tamanhocamisa"
                 :class="[
@@ -501,15 +503,42 @@
                 :disabled="!canEdit('tamanhocamisa')"
               >
                 <option value="">Selecione</option>
+                <option value="PP">PP</option>
                 <option value="P">P</option>
                 <option value="M">M</option>
                 <option value="G">G</option>
                 <option value="GG">GG</option>
+                <option value="XG">XG</option>
+                <option value="XGG">XGG</option>
+                <option value="EG">EG</option>
+                <option value="EGG">EGG</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-neutral-700 mb-2">Tamanho Colete</label>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Numeração da Calça</label
+              >
+              <input
+                type="number"
+                v-model="form.numeracao_calcas"
+                placeholder="Ex: 42"
+                min="36"
+                max="66"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  canEdit('numeracao_calcas')
+                    ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :readonly="!canEdit('numeracao_calcas')"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Tamanho do Colete</label
+              >
               <select
                 v-model="form.tamanho_colete"
                 :class="[
@@ -524,8 +553,102 @@
                 <option value="P">P</option>
                 <option value="M">M</option>
                 <option value="G">G</option>
-                <option value="EG">EG</option>
+                <option value="GG">GG</option>
               </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Tamanho da Combat Shirt</label
+              >
+              <select
+                v-model="form.tamanho_combat_shirt"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  canEdit('tamanho_combat_shirt')
+                    ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :disabled="!canEdit('tamanho_combat_shirt')"
+              >
+                <option value="">Selecione</option>
+                <option value="PP">PP</option>
+                <option value="P">P</option>
+                <option value="M">M</option>
+                <option value="G">G</option>
+                <option value="GG">GG</option>
+                <option value="XG">XG</option>
+                <option value="XGG">XGG</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2"
+                >Numeração da Bota</label
+              >
+              <input
+                type="number"
+                v-model="form.numeracao_botas"
+                placeholder="Ex: 42"
+                min="33"
+                max="46"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  canEdit('numeracao_botas')
+                    ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :readonly="!canEdit('numeracao_botas')"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">Tipo de Bota</label>
+              <select
+                v-model="form.tipo_bota"
+                :class="[
+                  'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200',
+                  canEdit('tipo_bota')
+                    ? 'bg-white border-neutral-300 text-neutral-900 hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 focus:ring-opacity-20'
+                    : 'bg-neutral-100 border-neutral-200 text-neutral-500 font-medium cursor-not-allowed',
+                ]"
+                :disabled="!canEdit('tipo_bota')"
+              >
+                <option value="">Selecione</option>
+                <option value="curto">Cano Curto</option>
+                <option value="medio">Cano Longo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Alerta de Prazo -->
+          <div class="bg-red-50 border-l-4 border-red-500 p-4 mt-6">
+            <div class="flex items-start">
+              <svg
+                class="h-6 w-6 text-red-500 mr-3 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div>
+                <h3 class="text-xl font-semibold text-red-800 mb-1">
+                  ⚠️ Prazo para preenchimento das informações de uniforme
+                </h3>
+                <p class="text-md text-red-700">
+                  <strong>Atenção:</strong> os dados referentes ao uniforme (Tamanho da Camisa,
+                  Numeração da Calça, Tamanho do Colete, Tamanho da Combat Shirt, Numeração da Bota
+                  e Tipo da Bota) estarão disponíveis para edição somente até
+                  <strong>domingo, 02/11/2025 às 23:59</strong>. Após esse horário, não será mais
+                  possível realizar alterações.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -933,6 +1056,10 @@ const form = reactive({
   categoriacnh: '',
   grauinstrucao: '',
   tamanhocamisa: '',
+  numeracao_botas: '',
+  tipo_bota: '',
+  numeracao_calcas: '',
+  tamanho_combat_shirt: '',
   cor_raca: '',
   telefone_1: '',
   telefone_2: '',
@@ -1413,6 +1540,7 @@ const resetForm = () => {
   showToastMessage('Alterações canceladas', 'success')
 }
 
+//Comentar o campo que deseja deixar desativado para o usuário
 const canEdit = (field) => {
   const editableFields = [
     'orientacao',
@@ -1430,11 +1558,15 @@ const canEdit = (field) => {
     'titulonumero',
     'titulozona',
     'titulosecao',
-    'tamanho_colete',
+    'tamanho_colete', //desativar aqui
+    'numeracao_botas', //desativar aqui
+    'tipo_bota', //desativar aqui
+    'numeracao_calcas', //desativar aqui
+    'tamanho_combat_shirt', //desativar aqui
     'numerocnh',
     'categoriacnh',
     'grauinstrucao',
-    'tamanhocamisa',
+    'tamanhocamisa', //desativar aqui
     'cor_raca',
     'telefone_1',
     'telefone_2',

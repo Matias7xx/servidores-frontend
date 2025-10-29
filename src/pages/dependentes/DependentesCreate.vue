@@ -7,14 +7,14 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loadingData" class="flex justify-center py-20">
+    <!-- <div v-if="loadingData" class="flex justify-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
-    </div>
+    </div> -->
 
     <!-- Formulário -->
-    <div v-else>
+    <div>
       <form @submit.prevent="salvarDependente" class="space-y-5">
         <!-- Card: Dados do Dependente -->
         <div class="bg-white rounded-lg border border-neutral-200 shadow-sm p-4 sm:p-5 lg:p-6">

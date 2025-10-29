@@ -7,11 +7,11 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="formacaoStore.loading" class="flex justify-center py-20">
+    <!-- <div v-if="formacaoStore.loading" class="flex justify-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
-    </div>
+    </div> -->
 
     <!-- Erro -->
     <div

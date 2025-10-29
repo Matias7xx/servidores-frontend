@@ -7,14 +7,14 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex justify-center py-20">
+    <!-- <div v-if="loading" class="flex justify-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
-    </div>
+    </div> -->
 
     <!-- Erro -->
-    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+    <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
       <p class="font-medium text-red-900">Erro ao carregar dados</p>
       <p class="text-sm text-red-700 mt-1">{{ error }}</p>
     </div>
