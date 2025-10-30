@@ -654,7 +654,7 @@
 
           <!-- Banner de Medidas -->
           <div
-            class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-5 flex items-center gap-3 mt-3"
+            class="bg-blue-50 border border-blue-200 rounded-lg p-3 w-fit mb-5 flex items-center gap-3 mt-3"
           >
             <svg
               class="w-5 h-5 text-blue-600 shrink-0"
