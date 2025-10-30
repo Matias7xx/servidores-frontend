@@ -259,7 +259,7 @@
             </div>
           </div>
 
-          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-5">
+          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <div class="sm:col-span-1 md:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2"
                 >Título de Eleitor</label
@@ -654,7 +654,7 @@
 
           <!-- Banner de Medidas -->
           <div
-            class="bg-blue-50 border border-blue-200 rounded-lg p-3 w-fit mb-5 flex items-center gap-3 mt-3"
+            class="bg-blue-50 border border-blue-200 rounded-lg p-3 w-fit flex items-center gap-3 mt-3"
           >
             <svg
               class="w-5 h-5 text-blue-600 shrink-0"
@@ -677,7 +677,7 @@
                 rel="noopener noreferrer"
                 class="font-semibold underline hover:text-blue-700"
               >
-                Consulte a tabela de medidas aqui
+                Consulte o Guia de Medidas aqui.
               </a>
             </p>
           </div>
