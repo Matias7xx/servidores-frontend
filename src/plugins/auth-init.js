@@ -17,6 +17,11 @@ export default function authInitPlugin(app, options) {
         if (expTimestamp < now) {
           localStorage.removeItem('auth_token')
           localStorage.removeItem('auth_user')
+
+          // Limpar também o websanova
+          auth.token(null, null, false)
+          auth.user(null)
+
           return
         }
 
@@ -28,6 +33,10 @@ export default function authInitPlugin(app, options) {
         //Erro ao validar token
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')
+
+        // Limpar também o websanova
+        auth.token(null, null, false)
+        auth.user(null)
       }
     }
   }, 0)
