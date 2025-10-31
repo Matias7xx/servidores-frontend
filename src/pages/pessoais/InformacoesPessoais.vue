@@ -511,7 +511,7 @@
                   <strong>Atenção:</strong> os dados referentes ao uniforme (Tamanho da Camisa,
                   Numeração da Calça, Numeração da Bota, Tamanho do Colete e Tamanho da Combat
                   Shirt) estarão disponíveis para edição somente até
-                  <strong>domingo, 02/11/2025 às 23:59</strong>. Após esse horário, não será mais
+                  <strong>segunda-feira, 03/11/2025 às 08:00</strong>. Após esse horário, não será mais
                   possível realizar alterações.
                 </p>
               </div>
