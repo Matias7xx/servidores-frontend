@@ -81,16 +81,16 @@
               >
                 #
               </th>
-              <th
+              <!-- <th
                 class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Área/Classe
-              </th>
-              <th
+              </th> -->
+              <!-- <th
                 class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Categoria
-              </th>
+              </th> -->
               <th
                 class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
@@ -106,20 +106,20 @@
               >
                 Certificado
               </th>
-              <th
+              <!-- <th
                 class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Validação
-              </th>
-              <th
+              </th> -->
+              <!-- <th
                 class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
                 Status
-              </th>
+              </th> -->
               <th
                 class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
-                Ações
+                Editar
               </th>
             </tr>
           </thead>
@@ -135,15 +135,15 @@
               <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-500">
                 {{ index + 1 }}
               </td>
-              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-900">
+              <!-- <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-900">
                 {{ formacao.formacao_servidor_curso?.formacao_classe?.formacao_area?.area || '-' }}
                 /
                 {{ formacao.formacao_servidor_curso?.formacao_classe?.classe || '-' }}
-              </td>
-              <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
+              </td> -->
+              <!-- <td class="hidden sm:table-cell px-6 py-4 text-sm text-neutral-700">
                 {{ formacao.formacao_servidor_curso?.subcategoria?.categoria?.nome || '-' }} /
                 {{ formacao.formacao_servidor_curso?.subcategoria?.nome || '-' }}
-              </td>
+              </td> -->
               <td class="px-6 py-4 text-sm font-medium text-neutral-900">
                 {{ formacao.formacao_servidor_curso?.curso || '-' }}
               </td>
@@ -155,7 +155,7 @@
                   <button
                     v-if="formacao.anexo_frente"
                     @click="abrirAnexo(formacao.id, 'frente')"
-                    class="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                    class="ml-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
                     Frente
                   </button>
@@ -179,7 +179,7 @@
                   </span>
                 </div>
               </td>
-              <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
+              <!-- <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
                 <span
                   :class="[
                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
@@ -194,8 +194,8 @@
                       : 'Válido'
                   }}
                 </span>
-              </td>
-              <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
+              </td> -->
+              <!-- <td class="hidden sm:table-cell px-3 py-3 sm:px-6 sm:py-4">
                 <span
                   :class="[
                     'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium',
@@ -204,7 +204,7 @@
                 >
                   {{ !formacao.status ? 'Recuperado' : 'Ativo' }}
                 </span>
-              </td>
+              </td> -->
               <td class="px-3 py-3 sm:px-6 sm:py-4">
                 <router-link
                   :to="`/formacao/edit/${formacao.id}`"
@@ -217,7 +217,7 @@
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-4 h-4"
+                    class="w-4 h-4 ml-2"
                   >
                     <path
                       stroke-linecap="round"

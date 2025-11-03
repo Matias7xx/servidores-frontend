@@ -1,7 +1,14 @@
 <template>
   <div>
+
+    <!-- Header -->
+      <div class="mb-4 sm:mb-6 lg:mb-8">
+        <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
+        <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
+      </div>
+
     <!-- Loading State -->
-    <div v-if="servidorStore.loading" class="flex justify-center items-center py-20">
+    <div v-if="servidorStore.loading" class="flex justify-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
@@ -29,11 +36,6 @@
 
     <!-- Conteúdo -->
     <div v-else>
-      <!-- Header -->
-      <div class="mb-4 sm:mb-6 lg:mb-8">
-        <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
-        <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
-      </div>
 
       <!-- Form -->
       <form @submit.prevent="updateDados" class="space-y-5">
