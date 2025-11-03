@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-neutral-950 border-b border-neutral-800 px-3 sm:px-4 py-3 sticky top-0 z-20"
+    class="bg-neutral-900 border-b border-neutral-800 px-3 sm:px-4 py-3 sticky top-0 z-20"
     role="navigation"
     aria-label="Navegação principal"
   >
@@ -33,7 +33,7 @@
         <!-- Botão Toggle Sidebar -->
         <button
           @click="$emit('toggle-sidebar')"
-          class="ml-2 sm:ml-4 lg:ml-6 bg-neutral-950 text-white hover:text-neutral-300 hover:bg-neutral-900 transition-colors p-2 rounded focus:outline-none flex-shrink-0"
+          class="ml-2 sm:ml-4 lg:ml-6 bg-neutral-900 text-white hover:text-neutral-300 hover:bg-neutral-800 transition-colors p-2 rounded focus:outline-none flex-shrink-0"
           type="button"
           :aria-label="isSidebarOpen ? 'Fechar menu lateral' : 'Abrir menu lateral'"
           :aria-expanded="isSidebarOpen"
@@ -79,10 +79,21 @@
             <!-- FOTO DO SERVIDOR / Ícone -->
             <div class="relative shrink-0">
               <div
-                class="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-neutral-800 border-2 border-neutral-600 group-hover:border-neutral-400 flex items-center justify-center transition-all shadow-lg"
+                class="w-10 h-10 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-full bg-neutral-800 border border-neutral-600 group-hover:border-neutral-400 flex items-center justify-center transition-all duration-300 shadow-lg overflow-hidden"
               >
+                <!-- Exibir foto do servidor se disponível -->
+                <img
+                  v-if="userPhoto && !imageLoadError"
+                  :src="userPhoto"
+                  :alt="`Foto de ${userName || 'usuário'}`"
+                  @error="handleImageError"
+                  class="w-full h-full object-cover"
+                />
+
+                <!-- Ícone padrão como fallback -->
                 <svg
-                  class="w-5 h-5 sm:w-6 sm:h-6 text-neutral-300"
+                  v-else
+                  class="w-6 h-6 sm:w-7 sm:h-7 text-neutral-300"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   aria-hidden="true"
@@ -188,7 +199,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { inject } from 'vue'
 import { useAuth } from '@websanova/vue-auth'
 import api from '../services/api'
@@ -203,6 +214,30 @@ defineProps({
 const authUser = inject('authUser')
 const { userName } = authUser
 const auth = useAuth()
+
+// Obter foto do usuário do token JWT
+const userPhoto = computed(() => {
+  try {
+    const token = localStorage.getItem('auth_token')
+    if (!token) return null
+
+    // Decodificar o payload do JWT (segunda parte do token)
+    const payload = token.split('.')[1]
+    const decoded = JSON.parse(atob(payload))
+
+    // Retornar a URL da foto (foto_url está dentro de user)
+    return decoded.user?.foto_url || null
+  } catch {
+    return null
+  }
+})
+
+// Estado para controlar erro de carregamento da imagem
+const imageLoadError = ref(false)
+
+const handleImageError = () => {
+  imageLoadError.value = true
+}
 
 defineEmits(['toggle-sidebar'])
 

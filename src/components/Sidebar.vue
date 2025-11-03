@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="[
-      'transition-all duration-300 bg-neutral-950 min-h-screen shrink-0',
+      'transition-all duration-300 bg-neutral-900 min-h-screen shrink-0',
       // Desktop: largura baseada em collapsed
       'lg:relative',
       isCollapsed ? 'lg:w-16' : 'lg:w-64',
@@ -122,7 +122,7 @@
               <div
                 v-show="isInformacoesOpen && (!isCollapsed || isOpen)"
                 id="submenu-informacoes"
-                class="bg-neutral-900 rounded-r-sm mr-2 overflow-hidden border-l-2 border-[#c1a85a]"
+                class="bg-neutral-800 rounded-r-sm mr-2 overflow-hidden border-l-2 border-[#c1a85a]"
               >
                 <router-link
                   to="/info_pessoal"
@@ -321,7 +321,7 @@
           <!-- Logout -->
           <button
             @click="handleLogout"
-            class="w-full flex items-center px-4 py-3 text-neutral-100 hover:text-red-400 hover:bg-neutral-900 transition-all text-left mr-2 mt-4"
+            class="w-full flex items-center px-4 py-3 text-neutral-100 hover:text-red-400 hover:bg-neutral-800 transition-all text-left mr-2 mt-4"
             :disabled="isLoggingOut"
           >
             <svg
