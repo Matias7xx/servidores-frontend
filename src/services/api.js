@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { validateToken, clearAuth } from '@/utils/token-validator'
 
 const apiBaseUrl = `${import.meta.env.VITE_API_URL}/api`
 
@@ -16,8 +17,12 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token')
 
-    if (token) {
+    // Validar token antes de usar
+    if (token && validateToken(token)) {
       config.headers.Authorization = `Bearer ${token}`
+    } else if (token && !validateToken(token)) {
+      // Limpar token expirado
+      clearAuth()
     }
 
     if (config.data instanceof FormData) {
@@ -46,8 +51,8 @@ api.interceptors.response.use(
 
     // Se for erro 401 E NÃO for login/logout, limpar e redirecionar
     if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
+      // Limpar autenticação
+      clearAuth()
 
       // Redirecionar para login
       window.location.replace('/login')
@@ -55,6 +60,10 @@ api.interceptors.response.use(
     // Se for erro 401 EM LOGIN ou LOGOUT, apenas rejeitar (não redirecionar)
     else if (error.response?.status === 401 && (isLoginRequest || isLogoutRequest)) {
       // Apenas propagar o erro
+    }
+    // Erro 403 - Acesso negado
+    else if (error.response?.status === 403) {
+      error.message = 'Você não tem permissão para acessar este recurso.'
     }
     // Erro 500
     else if (error.response?.status === 500) {

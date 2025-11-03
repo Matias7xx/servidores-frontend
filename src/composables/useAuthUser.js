@@ -1,10 +1,11 @@
 import { ref, computed, watch } from 'vue'
 import { useAuth } from '@websanova/vue-auth'
+import { validateToken, clearAuth } from '@/utils/token-validator'
 
-//Esse Composable gerencia o estado do usuário autenticado,
-//integrando o sistema de autenticação do Websanova com o localStorage,
-//para garantir que os dados do usuário estejam sempre disponíveis
-//mesmo após recarregamentos de página ou sessões expiradas. Foi necessário pois o Websanova tem um bug ao carregar dados com FormData.
+// Esse Composable gerencia o estado do usuário autenticado,
+// integrando o sistema de autenticação do Websanova com o localStorage,
+// para garantir que os dados do usuário estejam sempre disponíveis
+// mesmo após recarregamentos de página ou sessões expiradas.
 
 // Estado reativo global do user
 const userState = ref(null)
@@ -13,20 +14,31 @@ let initialized = false
 export function useAuthUser() {
   const auth = useAuth()
 
-  // Função para carregar user do localStorage
+  // Função para carregar user do localStorage COM VALIDAÇÃO
   const loadUserFromStorage = () => {
+    const token = localStorage.getItem('auth_token')
     const userStr = localStorage.getItem('auth_user')
 
+    // Validar token primeiro
+    if (!token || !validateToken(token)) {
+      clearAuth(auth)
+      userState.value = null
+      return null
+    }
+
+    // Token válido, carregar user
     if (userStr) {
       try {
         const user = JSON.parse(userStr)
         userState.value = user
         return user
       } catch {
+        clearAuth(auth)
         userState.value = null
         return null
       }
     } else {
+      clearAuth(auth)
       userState.value = null
       return null
     }
@@ -54,11 +66,23 @@ export function useAuthUser() {
     initialized = true
   }
 
-  // Computed para acessar o user
+  // Computed para acessar o user COM VALIDAÇÃO
   const user = computed(() => {
+    // Validar token
+    const token = localStorage.getItem('auth_token')
+    if (!validateToken(token)) {
+      clearAuth(auth)
+
+      // Redirecionar para login se não estiver lá
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.replace('/login')
+      }
+
+      return null
+    }
+
     // Primeiro tenta pegar do Websanova
     const authUser = auth.user()
-
     if (authUser && authUser.matricula) {
       return authUser
     }
@@ -74,9 +98,10 @@ export function useAuthUser() {
 
   // Computed helpers
   const isAuthenticated = computed(() => {
-    const hasToken = !!localStorage.getItem('auth_token')
+    const token = localStorage.getItem('auth_token')
+    const hasValidToken = validateToken(token)
     const hasUser = !!user.value
-    return hasToken && hasUser
+    return hasValidToken && hasUser
   })
 
   const userName = computed(() => {

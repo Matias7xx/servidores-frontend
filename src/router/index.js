@@ -167,4 +167,47 @@ const router = createRouter({
   routes,
 })
 
+// Router Guard
+// A validação de expiração do token acontece no useAuthUser!!
+// Aqui verifica se o token existe
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some((record) => record.meta.auth === true)
+
+  if (!requiresAuth) {
+    return next()
+  }
+
+  // Verificar se existe token E se está válido
+  const token = localStorage.getItem('auth_token')
+
+  if (!token) {
+    return next('/login')
+  }
+
+  // Se token expirado, limpar e redirecionar
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const expTimestamp = payload.exp * 1000
+
+    if (expTimestamp < Date.now()) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      return next('/login')
+    }
+  } catch {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+    return next('/login')
+  }
+
+  // Token existe e está válido, permitir navegação
+  next()
+})
+
+// Atualizar título da página
+router.afterEach((to) => {
+  const title = to.meta.title
+  document.title = title ? `${title} - Ficha Funcional` : 'Ficha Funcional'
+})
+
 export default router

@@ -511,8 +511,8 @@
                   <strong>Atenção:</strong> os dados referentes ao uniforme (Tamanho da Camisa,
                   Numeração da Calça, Numeração da Bota, Tamanho do Colete e Tamanho da Combat
                   Shirt) estarão disponíveis para edição somente até
-                  <strong>segunda-feira, 03/11/2025 às 08:00</strong>. Após esse horário, não será mais
-                  possível realizar alterações.
+                  <strong>segunda-feira, 03/11/2025 às 08:00</strong>. Após esse horário, não será
+                  mais possível realizar alterações.
                 </p>
               </div>
             </div>
@@ -1588,15 +1588,15 @@ const canEdit = (field) => {
     'titulonumero',
     'titulozona',
     'titulosecao',
-    'tamanho_colete', //desativar aqui
-    'numeracao_botas', //desativar aqui
+    //'tamanho_colete', //desativar aqui
+    //'numeracao_botas', //desativar aqui
     //'tipo_bota', //desativar aqui
-    'numeracao_calcas', //desativar aqui
-    'tamanho_combat_shirt', //desativar aqui
+    //'numeracao_calcas', //desativar aqui
+    //'tamanho_combat_shirt', //desativar aqui
     'numerocnh',
     'categoriacnh',
     'grauinstrucao',
-    'tamanhocamisa', //desativar aqui
+    //'tamanhocamisa', //desativar aqui
     'cor_raca',
     'telefone_1',
     'telefone_2',
