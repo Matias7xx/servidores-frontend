@@ -92,6 +92,20 @@ export const useFormacaoStore = defineStore('formacao', () => {
     }
   }
 
+  //Buscar cursos no SEARCH
+  const buscarCursos = async (termo) => {
+    try {
+      const response = await formacaoService.buscarCursos(termo)
+      return response
+    } catch (err) {
+      return {
+        success: false,
+        message: err.message || 'Erro ao buscar cursos',
+        data: [],
+      }
+    }
+  }
+
   const criarFormacao = async (formData) => {
     loading.value = true
     error.value = null
@@ -244,6 +258,7 @@ export const useFormacaoStore = defineStore('formacao', () => {
     carregarAreas,
     carregarClasses,
     carregarCursos,
+    buscarCursos,
     criarFormacao,
     atualizarFormacao,
     inativarFormacao,

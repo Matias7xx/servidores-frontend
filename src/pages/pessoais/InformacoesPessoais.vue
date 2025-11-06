@@ -1,11 +1,10 @@
 <template>
   <div>
-
     <!-- Header -->
-      <div class="mb-4 sm:mb-6 lg:mb-8">
-        <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
-        <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
-      </div>
+    <div class="mb-4 sm:mb-6 lg:mb-8">
+      <h1 class="text-xl sm:text-2xl font-semibold text-neutral-900">Dados Pessoais</h1>
+      <p class="text-sm text-neutral-500 mt-1.5">Atualize seus dados</p>
+    </div>
 
     <!-- Loading State -->
     <div v-if="servidorStore.loading" class="flex justify-center py-20">
@@ -36,7 +35,6 @@
 
     <!-- Conteúdo -->
     <div v-else>
-
       <!-- Form -->
       <form @submit.prevent="updateDados" class="space-y-5">
         <!-- Card: Dados Básicos -->
@@ -513,7 +511,7 @@
                   <strong>Atenção:</strong> os dados referentes ao uniforme (Tamanho da Camisa,
                   Numeração da Calça, Numeração da Bota, Tamanho do Colete e Tamanho da Combat
                   Shirt) estarão disponíveis para edição somente até
-                  <strong>segunda-feira, 03/11/2025 às 08:00</strong>. Após esse horário, não será
+                  <strong>quinta-feira, 06/11/2025 às 16:00</strong>. Após esse horário, não será
                   mais possível realizar alterações.
                 </p>
               </div>

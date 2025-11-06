@@ -166,6 +166,49 @@ class FormacaoService {
     }
   }
 
+  //Buscar cursos no SEARCH
+  async buscarCursos(termo) {
+    try {
+      if (!termo || termo.length < 3) {
+        return {
+          success: false,
+          message: 'Digite pelo menos 3 caracteres',
+          data: [],
+        }
+      }
+
+      const response = await api.get('/formacao_cursos_buscar', {
+        params: { termo },
+      })
+
+      // Mapear os dados do backend para o frontend
+      const cursosFormatados = response.data.map((curso) => ({
+        id: curso.id,
+        curso: curso.curso,
+        classe_id: curso.classe_id,
+        classe: curso.formacao_classe?.classe || '',
+        area_id: curso.area_id || curso.formacao_classe?.area_id,
+        area: curso.formacao_area?.area || curso.formacao_classe?.formacao_area?.area || '',
+        subcategoria_id: curso.sub_categoria_id,
+        subcategoria: curso.subcategoria?.nome || '',
+        categoria: curso.subcategoria?.categoria?.nome || '',
+      }))
+
+      return {
+        success: true,
+        data: cursosFormatados,
+        message: 'Cursos encontrados',
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao buscar cursos',
+        data: [],
+        error: error.response?.data,
+      }
+    }
+  }
+
   async getAnexoFrenteUrl(id) {
     try {
       const response = await api.get(`/formacao_anexo_frente/${id}`)
