@@ -68,7 +68,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
   }
 
   const criarDependente = async (dados) => {
-    loading.value = true
     error.value = null
 
     try {
@@ -83,9 +82,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
 
       const response = await dependentesService.createDependente(dados)
 
-      // Recarrega a lista
-      await carregarDependentes()
-
       return {
         success: true,
         message: response.message || 'Dependente cadastrado com sucesso!',
@@ -99,13 +95,10 @@ export const useDependentesStore = defineStore('dependentes', () => {
         message: err.response?.data?.message || 'Erro ao criar dependente',
         errors: err.response?.data?.errors || {},
       }
-    } finally {
-      loading.value = false
     }
   }
 
   const atualizarDependente = async (formData) => {
-    loading.value = true
     error.value = null
 
     try {
@@ -123,9 +116,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
 
       const response = await dependentesService.updateDependente(formData)
 
-      // Recarrega a lista
-      await carregarDependentes()
-
       return {
         success: true,
         message: response.message || 'Dependente atualizado com sucesso!',
@@ -139,13 +129,10 @@ export const useDependentesStore = defineStore('dependentes', () => {
         message: err.response?.data?.message || 'Erro ao atualizar dependente',
         errors: err.response?.data?.errors || {},
       }
-    } finally {
-      loading.value = false
     }
   }
 
   const inativarDependente = async (id, matricula = null) => {
-    loading.value = true
     error.value = null
 
     try {
@@ -173,13 +160,10 @@ export const useDependentesStore = defineStore('dependentes', () => {
         success: false,
         message: error.value,
       }
-    } finally {
-      loading.value = false
     }
   }
 
   const reativarDependente = async (id, matricula = null) => {
-    loading.value = true
     error.value = null
 
     try {
@@ -208,8 +192,6 @@ export const useDependentesStore = defineStore('dependentes', () => {
         success: false,
         message: error.value,
       }
-    } finally {
-      loading.value = false
     }
   }
 

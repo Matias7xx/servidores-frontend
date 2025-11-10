@@ -396,7 +396,7 @@
         ]"
       >
         <div class="flex items-start gap-3">
-          <div class="flex-shrink-0">
+          <div class="shrink-0">
             <svg
               v-if="toastType === 'success'"
               class="w-5 h-5"
@@ -418,9 +418,9 @@
             </svg>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="whitespace-pre-wrap break-words">{{ toastMessage }}</p>
+            <p class="whitespace-pre-wrap wrap-break-word">{{ toastMessage }}</p>
           </div>
-          <button @click="hideToast" class="flex-shrink-0 ml-2 text-white hover:text-neutral-200">
+          <button @click="hideToast" class="shrink-0 ml-2 text-white hover:text-neutral-200">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"

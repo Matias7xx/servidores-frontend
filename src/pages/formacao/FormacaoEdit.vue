@@ -37,6 +37,7 @@
                 v-model="searchQuery"
                 @input="onSearchInput"
                 @focus="onFocus"
+                @blur="onBlur"
                 placeholder="Digite pelo menos 3 caracteres para buscar..."
                 :class="[
                   'w-full border rounded-lg py-2.5 pl-10 pr-3.5 text-sm transition-all duration-200',
@@ -69,7 +70,7 @@
                 type="button"
                 v-for="curso in searchResults"
                 :key="curso.id"
-                @click="selectCurso(curso)"
+                @mousedown.prevent="selectCurso(curso)"
                 class="w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-b-0"
               >
                 <div class="font-medium text-sm text-neutral-900">
@@ -375,13 +376,7 @@
               : 'bg-neutral-900 hover:bg-neutral-800',
           ]"
         >
-          <span v-if="submitting" class="flex items-center gap-2">
-            <div
-              class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"
-            ></div>
-            Salvando...
-          </span>
-          <span v-else>Atualizar Formação</span>
+          <span>Atualizar Formação</span>
         </button>
       </div>
     </form>
@@ -542,6 +537,12 @@ const onFocus = () => {
   }
 }
 
+const onBlur = () => {
+  setTimeout(() => {
+    showDropdown.value = false
+  }, 200)
+}
+
 const selectCurso = (curso) => {
   form.curso_id = curso.id
   form.curso_nome = curso.curso
@@ -553,15 +554,6 @@ const selectCurso = (curso) => {
   showDropdown.value = false
   searchResults.value = []
 }
-
-// Fechar dropdown ao clicar fora
-onMounted(() => {
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.relative')) {
-      showDropdown.value = false
-    }
-  })
-})
 
 const onFileChange = (event, fieldName) => {
   const file = event.target.files[0]

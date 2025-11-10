@@ -108,7 +108,6 @@ export const useServidorStore = defineStore('servidor', () => {
   }
 
   const atualizarServidor = async (dados) => {
-    loading.value = true
     error.value = null
 
     try {
@@ -143,8 +142,6 @@ export const useServidorStore = defineStore('servidor', () => {
         message: err.response?.data?.message || 'Erro ao atualizar servidor',
         errors: err.response?.data?.errors || {},
       }
-    } finally {
-      loading.value = false
     }
   }
 

@@ -567,8 +567,7 @@
             :disabled="submitting"
             class="w-full sm:w-auto px-4 sm:px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-lg hover:bg-neutral-800 active:bg-neutral-950 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-neutral-900"
           >
-            <span v-if="submitting">Atualizando...</span>
-            <span v-else>Salvar Alterações</span>
+            <span>Salvar Alterações</span>
           </button>
         </div>
       </form>
