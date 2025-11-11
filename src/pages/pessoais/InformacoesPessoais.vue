@@ -1042,7 +1042,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, watch } from 'vue'
+import { ref, computed, reactive, onBeforeMount, onMounted, watch } from 'vue'
 import { useServidorStore } from '@/stores/servidor'
 import { inject } from 'vue'
 
@@ -1635,6 +1635,11 @@ const hideToast = () => {
 }
 
 // Carregar dados ao montar componente
+// Limpar dados antigos ANTES de montar o componente
+onBeforeMount(() => {
+  servidorStore.limparDados()
+})
+
 onMounted(async () => {
   // carrega estados (ANTES de carregar o servidor!)
   await servidorStore.carregarEstados()

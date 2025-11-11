@@ -14,6 +14,8 @@ const DependentesInativos = () => import('../pages/dependentes/DependentesInativ
 const FormacaoLista = () => import('../pages/formacao/FormacaoLista.vue')
 const FormacaoCreate = () => import('../pages/formacao/FormacaoCreate.vue')
 const FormacaoEdit = () => import('../pages/formacao/FormacaoEdit.vue')
+//const AvaliacoesLista = () => import('../pages/avaliacoes/AvaliacoesLista.vue')
+//const AvaliacoesView = () => import('../pages/avaliacoes/AvaliacoesView.vue')
 const EmConstrucao = () => import('../pages/EmConstrucao.vue')
 
 const routes = [
@@ -115,6 +117,25 @@ const routes = [
           title: 'Editar Formação',
         },
       },
+      // Rotas de Avaliações
+      /* {
+        path: 'avaliacoes',
+        name: 'avaliacoes',
+        component: AvaliacoesLista,
+        meta: {
+          auth: true,
+          title: 'Minhas Avaliações',
+        },
+      },
+      {
+        path: 'avaliacoes/:mes/:ano',
+        name: 'avaliacoes_view',
+        component: AvaliacoesView,
+        meta: {
+          auth: true,
+          title: 'Visualizar Avaliação',
+        },
+      }, */
       // Novas rotas - Em Construção
       {
         path: 'escalas',
@@ -134,7 +155,7 @@ const routes = [
           title: 'Minhas Cautelas',
         },
       },
-      {
+      {//remover depois
         path: 'avaliacoes',
         name: 'avaliacoes',
         component: EmConstrucao,
@@ -142,7 +163,7 @@ const routes = [
           auth: true,
           title: 'Minhas Avaliações',
         },
-      },
+      },//remover depois
       {
         path: 'frequencias',
         name: 'frequencias',
@@ -185,16 +206,39 @@ router.beforeEach((to, from, next) => {
   }
 
   // Se token expirado, limpar e redirecionar
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const expTimestamp = payload.exp * 1000
+  //DECODIFICAR JWT
+  function decodeTokenSafely(token) {
+    try {
+      let payload = token.split('.')[1]
+      if (!payload) return null
 
-    if (expTimestamp < Date.now()) {
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('auth_user')
-      return next('/login')
+      // Corrige URL-safe Base64
+      payload = payload.replace(/-/g, '+').replace(/_/g, '/')
+
+      // Adiciona padding se necessário
+      const padding = payload.length % 4
+      if (padding) {
+        payload += '='.repeat(4 - padding)
+      }
+
+      const decoded = atob(payload)
+      return JSON.parse(decoded)
+    } catch (e) {
+      console.warn('Token JWT inválido ou corrompido:', e.message)
+      return null
     }
-  } catch {
+  }
+
+  // VALIDAÇÃO COM DECODE
+  const payload = decodeTokenSafely(token)
+  if (!payload || !payload.exp) {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+    return next('/login')
+  }
+
+  const expTimestamp = payload.exp * 1000
+  if (expTimestamp < Date.now()) {
     localStorage.removeItem('auth_token')
     localStorage.removeItem('auth_user')
     return next('/login')

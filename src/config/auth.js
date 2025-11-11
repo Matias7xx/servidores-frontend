@@ -1,3 +1,5 @@
+import { decodeJWTPayloadSafely } from '@/utils/token-validator'
+
 export default {
   tokenDefaultKey: 'auth_token',
   tokenType: 'Bearer',
@@ -53,11 +55,9 @@ export default {
       // Tentar extrair do token
       const token = data?.access_token || data?.token
       if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]))
+        const payload = decodeJWTPayloadSafely(token) // IMPORTAR de '@/utils/token-validator'
+        if (payload) {
           return payload
-        } catch (e) {
-          console.error('[parseUserData] Erro ao decodificar:', e)
         }
       }
 
