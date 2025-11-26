@@ -14,8 +14,8 @@ const DependentesInativos = () => import('../pages/dependentes/DependentesInativ
 const FormacaoLista = () => import('../pages/formacao/FormacaoLista.vue')
 const FormacaoCreate = () => import('../pages/formacao/FormacaoCreate.vue')
 const FormacaoEdit = () => import('../pages/formacao/FormacaoEdit.vue')
-//const AvaliacoesLista = () => import('../pages/avaliacoes/AvaliacoesLista.vue')
-//const AvaliacoesView = () => import('../pages/avaliacoes/AvaliacoesView.vue')
+const AvaliacoesLista = () => import('../pages/avaliacoes/AvaliacoesLista.vue')
+const AvaliacoesView = () => import('../pages/avaliacoes/AvaliacoesView.vue')
 const EmConstrucao = () => import('../pages/EmConstrucao.vue')
 
 const routes = [
@@ -118,7 +118,7 @@ const routes = [
         },
       },
       // Rotas de Avaliações
-      /* {
+      {
         path: 'avaliacoes',
         name: 'avaliacoes',
         component: AvaliacoesLista,
@@ -135,7 +135,7 @@ const routes = [
           auth: true,
           title: 'Visualizar Avaliação',
         },
-      }, */
+      },
       // Novas rotas - Em Construção
       {
         path: 'escalas',
@@ -155,15 +155,6 @@ const routes = [
           title: 'Minhas Cautelas',
         },
       },
-      {//remover depois
-        path: 'avaliacoes',
-        name: 'avaliacoes',
-        component: EmConstrucao,
-        meta: {
-          auth: true,
-          title: 'Minhas Avaliações',
-        },
-      },//remover depois
       {
         path: 'frequencias',
         name: 'frequencias',

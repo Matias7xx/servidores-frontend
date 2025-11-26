@@ -115,8 +115,8 @@
           </span>
 
           <p class="text-xs text-neutral-500 mt-2">
-            Digite pelo menos 3 caracteres para buscar. Os campos Formação, Tipo, Área e Classe serão
-            preenchidos automaticamente.
+            Digite pelo menos 3 caracteres para buscar. Os campos Formação, Tipo, Área e Classe
+            serão preenchidos automaticamente.
           </p>
 
           <p class="text-xs text-neutral-500 mt-2">
