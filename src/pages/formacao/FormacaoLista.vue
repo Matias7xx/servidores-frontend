@@ -94,7 +94,7 @@
               <th
                 class="px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"
               >
-                Curso
+                Formação
               </th>
               <th
                 class="hidden sm:table-cell px-6 py-3 text-left text-xs font-semibold text-neutral-700 uppercase tracking-wider"

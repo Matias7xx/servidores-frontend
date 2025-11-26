@@ -28,7 +28,7 @@
         <!-- Busca de Curso -->
         <div class="mb-5">
           <label class="block text-sm font-medium text-neutral-700 mb-2">
-            Buscar Curso <span class="text-red-500">*</span>
+            Buscar Formação <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <div class="relative">
@@ -115,17 +115,54 @@
           </span>
 
           <p class="text-xs text-neutral-500 mt-2">
-            Digite pelo menos 3 caracteres para buscar. Os campos Área, Classe e Curso serão
+            Digite pelo menos 3 caracteres para buscar. Os campos Formação, Tipo, Área e Classe serão
             preenchidos automaticamente.
           </p>
 
           <p class="text-xs text-neutral-500 mt-2">
-            Caso seu Curso não conste na lista, solicite atendimento à Diretoria de Tecnologia da
-            Informação por meio de um chamado.
+            Caso sua Formação não conste na lista, solicite atendimento à Diretoria de Tecnologia da
+            Informação
+            <a
+              href="https://helpdesk.apps.pc.pb.gov.br/login"
+              target="_blank"
+              class="text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              por meio de um chamado.
+            </a>
           </p>
         </div>
 
         <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 mb-4 sm:mb-5">
+          <div>
+            <label class="block text-sm font-medium text-neutral-700 mb-2">
+              Formação <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              v-model="form.curso_nome"
+              disabled
+              :class="[
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 bg-neutral-50 border-neutral-200 text-neutral-600 cursor-not-allowed',
+              ]"
+              placeholder="Será preenchido automaticamente"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-neutral-700 mb-2">
+              Tipo <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              v-model="form.subcategoria_nome"
+              disabled
+              :class="[
+                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 bg-neutral-50 border-neutral-200 text-neutral-600 cursor-not-allowed',
+              ]"
+              placeholder="Será preenchido automaticamente"
+            />
+          </div>
+
           <div>
             <label class="block text-sm font-medium text-neutral-700 mb-2">
               Área <span class="text-red-500">*</span>
@@ -148,23 +185,6 @@
             <input
               type="text"
               v-model="form.classe_nome"
-              disabled
-              :class="[
-                'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 bg-neutral-50 border-neutral-200 text-neutral-600 cursor-not-allowed',
-              ]"
-              placeholder="Será preenchido automaticamente"
-            />
-          </div>
-        </div>
-
-        <div class="grid gap-4 sm:gap-5 grid-cols-1 md:grid-cols-2 mb-4 sm:mb-5">
-          <div>
-            <label class="block text-sm font-medium text-neutral-700 mb-2">
-              Curso <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              v-model="form.curso_nome"
               disabled
               :class="[
                 'w-full border rounded-lg py-2.5 px-3.5 text-sm transition-all duration-200 bg-neutral-50 border-neutral-200 text-neutral-600 cursor-not-allowed',
@@ -472,6 +492,7 @@ const form = reactive({
   classe_nome: '',
   curso_id: null,
   curso_nome: '',
+  subcategoria_nome: '',
   dataconclusao: '',
   obs: '',
   anexo_frente: null,
@@ -546,6 +567,7 @@ const onBlur = () => {
 const selectCurso = (curso) => {
   form.curso_id = curso.id
   form.curso_nome = curso.curso
+  form.subcategoria_nome = curso.subcategoria
   form.area_id = curso.area_id
   form.area_nome = curso.area
   form.classe_id = curso.classe_id
@@ -697,6 +719,24 @@ onMounted(async () => {
     form.area_id = dadosFormacao.formacao_servidor_curso?.formacao_classe?.area_id
     form.area_nome =
       dadosFormacao.formacao_servidor_curso?.formacao_classe?.formacao_area?.area || ''
+
+    //Buscar o curso para pegar a subcategoria (o edit do backend não está retornando a subcategoria, o buscarCursos traz)
+    if (form.curso_nome) {
+      try {
+        const buscaResponse = await formacaoStore.buscarCursos(form.curso_nome)
+
+        if (buscaResponse.success && buscaResponse.data.length > 0) {
+          const cursoEncontrado = buscaResponse.data.find((curso) => curso.id === form.curso_id)
+
+          if (cursoEncontrado) {
+            // Preencher a subcategoria com os dados da busca
+            form.subcategoria_nome = cursoEncontrado.subcategoria || ''
+          }
+        }
+      } catch (error) {
+        console.warn('Não foi possível carregar subcategoria:', error)
+      }
+    }
 
     // Preencher o campo de busca com o nome do curso
     searchQuery.value = form.curso_nome
