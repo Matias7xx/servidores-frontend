@@ -5,6 +5,7 @@ import AuthenticatedLayout from '../layouts/AuthenticatedLayout.vue'
 
 // Views
 import Login from '../pages/Login.vue'
+import RecuperarSenha from '../pages/RecuperarSenha.vue'
 const Home = () => import('../pages/Home.vue')
 const InformacoesPessoais = () => import('../pages/pessoais/InformacoesPessoais.vue')
 const DependentesLista = () => import('../pages/dependentes/DependentesLista.vue')
@@ -26,6 +27,15 @@ const routes = [
     meta: {
       auth: false,
       title: 'Login',
+    },
+  },
+  {
+    path: '/recuperar-senha',
+    name: 'RecuperarSenha',
+    component: RecuperarSenha,
+    meta: {
+      auth: false,
+      title: 'Recuperar Senha',
     },
   },
 

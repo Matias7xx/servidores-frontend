@@ -18,7 +18,7 @@
           <div class="relative">
             <select
               v-model="anoSelecionado"
-              :disabled="carregando"
+              :disabled="carregandoLocal || carregando"
               class="pl-3 pr-9 py-2 border border-neutral-300 rounded-lg text-sm bg-white text-neutral-900 hover:border-neutral-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60 appearance-none cursor-pointer min-w-[100px]"
               @change="buscarAvaliacoes"
             >
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="carregando" class="flex justify-center py-20">
+    <div v-if="carregandoLocal || carregando" class="flex justify-center py-20">
       <div
         class="animate-spin rounded-full h-12 w-12 border-2 border-neutral-300 border-t-neutral-900"
       ></div>
@@ -57,7 +57,7 @@
 
     <!-- Tabela de Avaliações -->
     <div
-      v-else-if="!carregando && avaliacoes.length != 0"
+      v-else-if="avaliacoes.length != 0"
       class="bg-white rounded-lg border border-neutral-200 shadow-sm overflow-hidden"
     >
       <div class="px-4 sm:px-6 py-4 border-b border-neutral-200">
@@ -161,7 +161,7 @@
 
     <!-- Estado Vazio -->
     <div
-      v-else-if="!carregando && !inicializando && avaliacoes.length === 0"
+      v-else-if="!carregandoLocal && !carregando && !inicializando && avaliacoes.length === 0"
       class="bg-white rounded-lg border border-neutral-200 shadow-sm p-12 text-center"
     >
       <svg
@@ -231,7 +231,7 @@
         <div class="shrink-0">
           <svg
             v-if="toastType === 'success'"
-            class="w-5 h-5 text-green-600"
+            class="w-6 h-6 text-green-600"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -241,7 +241,12 @@
               clip-rule="evenodd"
             />
           </svg>
-          <svg v-else class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            v-else-if="toastType === 'error'"
+            class="w-6 h-6 text-red-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -272,7 +277,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onBeforeMount, onMounted, watch } from 'vue'
+import { ref, computed, onBeforeMount, onMounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAvaliacoesStore } from '@/stores/avaliacoes'
 
@@ -282,6 +287,13 @@ const avaliacoesStore = useAvaliacoesStore()
 const tipoAvaliacao = ref('servidor')
 const anoSelecionado = ref(new Date().getFullYear())
 const anosComAvaliacoes = ref([])
+
+// Cache de anos
+const cacheAnosServidor = ref([])
+const cacheAnosGestor = ref([])
+
+// Loading local para spinning
+const carregandoLocal = ref(false)
 
 // Toast
 const showToast = ref(false)
@@ -356,7 +368,22 @@ const hideToast = () => {
 }
 
 // Buscar anos com avaliações (busca últimos 10 anos e filtra os que têm dados)
-const carregarAnosDisponiveis = async () => {
+const carregarAnosDisponiveis = async (forcarRecarregar = false) => {
+  // Verifica se já tem cache para o tipo atual
+  const cacheAtual =
+    tipoAvaliacao.value === 'servidor' ? cacheAnosServidor.value : cacheAnosGestor.value
+
+  // Se já tem cache e não está forçando recarregar, usa o cache
+  if (cacheAtual.length > 0 && !forcarRecarregar) {
+    anosComAvaliacoes.value = cacheAtual
+
+    // Seleciona o ano mais recente se o atual não estiver disponível
+    if (!cacheAtual.includes(anoSelecionado.value)) {
+      anoSelecionado.value = Math.max(...cacheAtual)
+    }
+    return
+  }
+
   const anoAtual = new Date().getFullYear()
   const anosParaBuscar = Array.from({ length: 10 }, (_, i) => anoAtual - i)
   const anosEncontrados = []
@@ -391,6 +418,13 @@ const carregarAnosDisponiveis = async () => {
     }
   })
 
+  // Atualiza o cache
+  if (tipoAvaliacao.value === 'servidor') {
+    cacheAnosServidor.value = anosEncontrados
+  } else {
+    cacheAnosGestor.value = anosEncontrados
+  }
+
   anosComAvaliacoes.value = anosEncontrados
 
   // Se encontrou anos, seleciona o mais recente
@@ -403,8 +437,14 @@ const carregarAnosDisponiveis = async () => {
 }
 
 // Buscar avaliações usando a store
-const buscarAvaliacoes = async () => {
-  //Limpa o estado da lista anual imediatamente antes da busca
+const buscarAvaliacoes = async (gerenciarLoading = true) => {
+  // Ativa loading local
+  if (gerenciarLoading) {
+    carregandoLocal.value = true
+    await nextTick()
+  }
+
+  // Limpa o estado da lista anual
   avaliacoesStore.limparAvaliacoesAnuais()
 
   try {
@@ -422,6 +462,11 @@ const buscarAvaliacoes = async () => {
   } catch (error) {
     console.error('Erro ao buscar avaliações:', error)
     showToastMessage('Erro ao carregar avaliações. Tente novamente.', 'error')
+  } finally {
+    // Desativa loading local
+    if (gerenciarLoading) {
+      carregandoLocal.value = false
+    }
   }
 }
 
@@ -442,16 +487,31 @@ onBeforeMount(() => {
 
 // Buscar ao montar componente
 onMounted(async () => {
-  await carregarAnosDisponiveis()
-  await buscarAvaliacoes()
-  inicializando.value = false // Marca que já carregou pela primeira vez
+  // Ativa loading ao montar
+  carregandoLocal.value = true
+  await nextTick()
+
+  try {
+    await carregarAnosDisponiveis()
+    await buscarAvaliacoes(false) // false = não gerencia loading internamente
+  } finally {
+    inicializando.value = false // Marca que já carregou pela primeira vez
+    carregandoLocal.value = false
+  }
 })
 
 // Recarregar anos disponíveis quando mudar o tipo
 watch(tipoAvaliacao, async () => {
-  avaliacoesStore.limparAvaliacoesAnuais()
-  await carregarAnosDisponiveis()
-  await buscarAvaliacoes()
+  carregandoLocal.value = true
+  await nextTick()
+
+  try {
+    avaliacoesStore.limparAvaliacoesAnuais()
+    await carregarAnosDisponiveis()
+    await buscarAvaliacoes(false) // false = não gerencia loading internamente
+  } finally {
+    carregandoLocal.value = false
+  }
 })
 </script>
 

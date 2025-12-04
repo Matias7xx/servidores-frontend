@@ -200,15 +200,25 @@
           </div>
         </div>
 
-        <!-- Lembrar-me -->
-        <div class="flex items-center">
-          <input
-            id="remember"
-            v-model="form.remember"
-            type="checkbox"
-            class="rounded border-neutral-300 h-4 w-4 text-[#c1a85a]"
-          />
-          <label for="remember" class="ml-2 text-sm text-neutral-600">Lembrar-me</label>
+        <!-- Lembrar-me & Esqueceu a senha -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              id="remember"
+              v-model="form.remember"
+              type="checkbox"
+              class="rounded border-neutral-300 h-4 w-4 text-[#c1a85a]"
+            />
+            <label for="remember" class="ml-2 text-sm text-neutral-600">Lembrar-me</label>
+          </div>
+
+          <!-- Link para recuperação de senha -->
+          <router-link
+            to="/recuperar-senha"
+            class="text-xs sm:text-sm text-[#c1a85a] hover:text-[#a8924e] font-medium transition-colors"
+          >
+            Esqueceu a senha?
+          </router-link>
         </div>
 
         <!-- Botão de Login -->
@@ -250,11 +260,11 @@
     </div>
 
     <!-- Rodapé -->
-    <div class="mt-4 sm:mt-8 text-center px-4">
+    <!-- <div class="mt-4 sm:mt-8 text-center px-4">
       <div class="text-xs sm:text-sm text-neutral-600">
         © {{ currentYear }} Polícia Civil da Paraíba - Todos os direitos reservados
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
