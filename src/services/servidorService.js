@@ -131,4 +131,50 @@ export const servidorService = {
       }
     }
   },
+
+  async alterarSenhaAcesso(data) {
+    try {
+      const response = await api.post('/servidor/senha-acesso', data)
+
+      if (response.data.ok) {
+        return {
+          success: true,
+          message: response.data.msg || 'Senha de acesso alterada com sucesso',
+        }
+      } else {
+        return {
+          success: false,
+          message: response.data.msg || 'Erro ao alterar senha de acesso',
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.msg || 'Erro ao alterar senha de acesso',
+      }
+    }
+  },
+
+  async alterarSenhaAssinatura(data) {
+    try {
+      const response = await api.post('/servidor/senha-assinatura', data)
+
+      if (response.data.ok) {
+        return {
+          success: true,
+          message: response.data.msg || 'Senha de assinatura alterada com sucesso',
+        }
+      } else {
+        return {
+          success: false,
+          message: response.data.msg || 'Erro ao alterar senha de assinatura',
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.msg || 'Erro ao alterar senha de assinatura',
+      }
+    }
+  },
 }

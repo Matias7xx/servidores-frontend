@@ -11,6 +11,7 @@ import TwoFactorVerify from '../pages/TwoFactorVerify.vue'
 
 const Home = () => import('../pages/Home.vue')
 const InformacoesPessoais = () => import('../pages/pessoais/InformacoesPessoais.vue')
+const AlterarSenha = () => import('../pages/AlterarSenha.vue')
 const DependentesLista = () => import('../pages/dependentes/DependentesLista.vue')
 const DependentesCreate = () => import('../pages/dependentes/DependentesCreate.vue')
 const DependentesEdit = () => import('../pages/dependentes/DependentesEdit.vue')
@@ -86,6 +87,15 @@ const routes = [
         meta: {
           auth: true,
           title: 'Dados Pessoais',
+        },
+      },
+      {
+        path: 'alterar-senha',
+        name: 'alterar_senha',
+        component: AlterarSenha,
+        meta: {
+          auth: true,
+          title: 'Alterar Senha',
         },
       },
       {
