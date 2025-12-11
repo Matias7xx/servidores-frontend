@@ -66,6 +66,13 @@ export function useAuthUser() {
     initialized = true
   }
 
+  // Função auxiliar para verificar se está em rota 2FA
+  const is2FARoute = () => {
+    if (typeof window === 'undefined') return false
+    const path = window.location.pathname
+    return path.includes('/2fa/') || path === '/2fa/setup' || path === '/2fa/verify'
+  }
+
   // Computed para acessar o user COM VALIDAÇÃO
   const user = computed(() => {
     // Validar token
@@ -73,8 +80,13 @@ export function useAuthUser() {
     if (!validateToken(token)) {
       clearAuth(auth)
 
-      // Redirecionar para login se não estiver lá
-      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      // NÃO redirecionar se estiver em rota 2FA
+      if (
+        typeof window !== 'undefined' &&
+        window.location.pathname !== '/login' &&
+        window.location.pathname !== '/recuperar-senha' &&
+        !is2FARoute()
+      ) {
         window.location.replace('/login')
       }
 

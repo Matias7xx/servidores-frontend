@@ -258,13 +258,6 @@
         </div>
       </form>
     </div>
-
-    <!-- Rodapé -->
-    <!-- <div class="mt-4 sm:mt-8 text-center px-4">
-      <div class="text-xs sm:text-sm text-neutral-600">
-        © {{ currentYear }} Polícia Civil da Paraíba - Todos os direitos reservados
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -273,6 +266,7 @@ import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@websanova/vue-auth'
 import api from '../services/api'
+import { twoFactorService } from '../services/twoFactorService'
 
 const router = useRouter()
 const route = useRoute()
@@ -382,6 +376,7 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
+    // 1. Fazer login
     const formData = new FormData()
     formData.append('matricula', form.matricula.trim())
     formData.append('senha', form.password)
@@ -405,21 +400,25 @@ const handleSubmit = async () => {
       throw new Error('User não encontrado na resposta')
     }
 
-    // Salvar no localStorage
-    localStorage.setItem('auth_token', token)
-    localStorage.setItem('auth_user', JSON.stringify(user))
+    // 2. Verificar status do 2FA
+    const twoFactorStatus = await twoFactorService.checkStatus(form.matricula)
 
-    // Configurar no Websanova
-    auth.token(null, token, false)
-    auth.user(user)
+    // Salvar dados temporários na sessionStorage
+    const tempData = {
+      token,
+      user,
+      matricula: form.matricula,
+    }
+    sessionStorage.setItem('temp_login_data', JSON.stringify(tempData))
 
-    await nextTick()
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
-    // Redirecionar
-    const redirectTo = route.query.redirect || '/'
-
-    await router.push(redirectTo)
+    // 3. Redirecionar conforme 2FA
+    if (twoFactorStatus.hasToken) {
+      // Já tem 2FA configurado -> Verificar código
+      await router.push('/2fa/verify')
+    } else {
+      // Não tem 2FA configurado -> Configurar
+      await router.push('/2fa/setup')
+    }
   } catch (err) {
     // Erro 401 - Credenciais inválidas
     if (err.response?.status === 401) {

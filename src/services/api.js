@@ -42,23 +42,33 @@ api.interceptors.response.use(
     return response
   },
   (error) => {
-    // Verificar se é uma requisição de login ou logout
+    // Verificar se é uma requisição de login, logout ou 2FA
     const isLoginRequest =
       error.config?.url?.includes('login') || error.config?.url?.endsWith('/login')
 
     const isLogoutRequest =
       error.config?.url?.includes('logout') || error.config?.url?.endsWith('/logout')
 
-    // Se for erro 401 E NÃO for login/logout, limpar e redirecionar
-    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest) {
+    // Permitir rotas de 2FA sem redirecionar
+    const is2FARequest =
+      error.config?.url?.includes('/2fa/') ||
+      error.config?.url?.includes('2fa/status') ||
+      error.config?.url?.includes('2fa/qrcode') ||
+      error.config?.url?.includes('2fa/verify-save')
+
+    // Se for erro 401 E NÃO for login/logout/2FA, limpar e redirecionar
+    if (error.response?.status === 401 && !isLoginRequest && !isLogoutRequest && !is2FARequest) {
       // Limpar autenticação
       clearAuth()
 
       // Redirecionar para login
       window.location.replace('/login')
     }
-    // Se for erro 401 EM LOGIN ou LOGOUT, apenas rejeitar (não redirecionar)
-    else if (error.response?.status === 401 && (isLoginRequest || isLogoutRequest)) {
+    // Se for erro 401 EM LOGIN, LOGOUT ou 2FA, apenas rejeitar (não redirecionar)
+    else if (
+      error.response?.status === 401 &&
+      (isLoginRequest || isLogoutRequest || is2FARequest)
+    ) {
       // Apenas propagar o erro
     }
     // Erro 403 - Acesso negado

@@ -12,7 +12,8 @@ export default {
   loginData: {
     url: 'login',
     method: 'POST',
-    redirect: '/',
+    // IMPORTANTE: NÃO fazer redirect automático - será tratado manualmente no Login.vue
+    redirect: null,
     fetchUser: false,
     staySignedIn: true,
 
@@ -27,41 +28,16 @@ export default {
       },
     ],
 
-    // Fazer parseToken a executar
+    // NÃO fazer parseToken - será tratado manualmente no Login.vue
     parseToken: function (res) {
-      // Websanova pode passar res.data ou res diretamente
-      const data = res.data || res
-
-      if (data?.access_token) {
-        return data.access_token
-      }
-
-      if (data?.token) {
-        return data.token
-      }
-
+      // Retornar null para evitar que o Websanova salve o token automaticamente
       return null
     },
 
-    // Fazer parseUserData executar
+    // NÃO fazer parseUserData - será tratado manualmente no Login.vue
     parseUserData: function (res) {
-      // Websanova pode passar res.data ou res diretamente
-      const data = res.data || res
-
-      if (data?.user) {
-        return data.user
-      }
-
-      // Tentar extrair do token
-      const token = data?.access_token || data?.token
-      if (token) {
-        const payload = decodeJWTPayloadSafely(token) // IMPORTAR de '@/utils/token-validator'
-        if (payload) {
-          return payload
-        }
-      }
-
-      return {}
+      // Retornar null para evitar que o Websanova salve o user automaticamente
+      return null
     },
   },
 

@@ -6,6 +6,9 @@ import AuthenticatedLayout from '../layouts/AuthenticatedLayout.vue'
 // Views
 import Login from '../pages/Login.vue'
 import RecuperarSenha from '../pages/RecuperarSenha.vue'
+import TwoFactorSetup from '../pages/TwoFactorSetup.vue'
+import TwoFactorVerify from '../pages/TwoFactorVerify.vue'
+
 const Home = () => import('../pages/Home.vue')
 const InformacoesPessoais = () => import('../pages/pessoais/InformacoesPessoais.vue')
 const DependentesLista = () => import('../pages/dependentes/DependentesLista.vue')
@@ -36,6 +39,27 @@ const routes = [
     meta: {
       auth: false,
       title: 'Recuperar Senha',
+    },
+  },
+  // ROTAS DE 2FA - Permitem acesso com dados temporários
+  {
+    path: '/2fa/setup',
+    name: 'TwoFactorSetup',
+    component: TwoFactorSetup,
+    meta: {
+      auth: false, // Permite acesso sem token
+      requiresTempData: true, // Flag para verificar dados temporários
+      title: 'Configurar 2FA',
+    },
+  },
+  {
+    path: '/2fa/verify',
+    name: 'TwoFactorVerify',
+    component: TwoFactorVerify,
+    meta: {
+      auth: false, // Permite acesso sem token
+      requiresTempData: true, // Flag para verificar dados temporários
+      title: 'Verificar 2FA',
     },
   },
 
@@ -190,11 +214,24 @@ const router = createRouter({
 })
 
 // Router Guard
-// A validação de expiração do token acontece no useAuthUser!!
-// Aqui verifica se o token existe
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.auth === true)
+  const requiresTempData = to.matched.some((record) => record.meta.requiresTempData === true)
 
+  // Se a rota requer dados temporários (2FA)
+  if (requiresTempData) {
+    const tempData = sessionStorage.getItem('temp_login_data')
+
+    if (!tempData) {
+      // Sem dados temporários, redirecionar para login
+      return next('/login')
+    }
+
+    // Tem dados temporários, permitir acesso
+    return next()
+  }
+
+  // Se não requer autenticação, permitir acesso
   if (!requiresAuth) {
     return next()
   }
